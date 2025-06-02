@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Palette de couleurs personnalisée - Thème sombre */
+  --color-primary-dark: #100000;    /* Noir profond - Arrière-plans */
+  --color-accent: #e60b18;          /* Rouge vibrant - Accents */
+  --color-white: #ffffff;           /* Blanc pur - Texte principal */
+  
+  /* Couleurs dérivées pour les variantes */
+  --color-primary-dark-50: rgba(16, 0, 0, 0.05);
+  --color-primary-dark-100: rgba(16, 0, 0, 0.1);
+  --color-primary-dark-200: rgba(16, 0, 0, 0.2);
+  --color-primary-dark-300: rgba(16, 0, 0, 0.3);
+  --color-primary-dark-400: rgba(16, 0, 0, 0.4);
+  --color-primary-dark-500: rgba(16, 0, 0, 0.5);
+  --color-primary-dark-600: rgba(16, 0, 0, 0.6);
+  --color-primary-dark-700: rgba(16, 0, 0, 0.7);
+  --color-primary-dark-800: rgba(16, 0, 0, 0.8);
+  --color-primary-dark-900: rgba(16, 0, 0, 0.9);
+  
+  --color-accent-50: rgba(230, 11, 24, 0.05);
+  --color-accent-100: rgba(230, 11, 24, 0.1);
+  --color-accent-200: rgba(230, 11, 24, 0.2);
+  --color-accent-300: rgba(230, 11, 24, 0.3);
+  --color-accent-400: rgba(230, 11, 24, 0.4);
+  --color-accent-500: rgba(230, 11, 24, 0.5);
+  --color-accent-600: rgba(230, 11, 24, 0.6);
+  --color-accent-700: rgba(230, 11, 24, 0.7);
+  --color-accent-800: rgba(230, 11, 24, 0.8);
+  --color-accent-900: rgba(230, 11, 24, 0.9);
+  
+  /* Couleurs neutres pour thème sombre */
+  --color-gray-50: #2a2a2a;
+  --color-gray-100: #3a3a3a;
+  --color-gray-200: #4a4a4a;
+  --color-gray-300: #5a5a5a;
+  --color-gray-400: #6b6b6b;
+  --color-gray-500: #8a8a8a;
+  --color-gray-600: #b5b5b5;
+  --color-gray-700: #d1d1d1;
+  --color-gray-800: #e5e5e5;
+  --color-gray-900: var(--color-white);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Configuration des couleurs personnalisées pour Tailwind - Thème sombre */
+  --color-primary: var(--color-primary-dark);
+  --color-accent: var(--color-accent);
+  --color-white: var(--color-white);
+  
+  /* Échelle de couleurs pour primary */
+  --color-primary-50: var(--color-primary-dark-50);
+  --color-primary-100: var(--color-primary-dark-100);
+  --color-primary-200: var(--color-primary-dark-200);
+  --color-primary-300: var(--color-primary-dark-300);
+  --color-primary-400: var(--color-primary-dark-400);
+  --color-primary-500: var(--color-primary-dark-500);
+  --color-primary-600: var(--color-primary-dark-600);
+  --color-primary-700: var(--color-primary-dark-700);
+  --color-primary-800: var(--color-primary-dark-800);
+  --color-primary-900: var(--color-primary-dark-900);
+  
+  /* Échelle de couleurs pour accent */
+  --color-accent-50: var(--color-accent-50);
+  --color-accent-100: var(--color-accent-100);
+  --color-accent-200: var(--color-accent-200);
+  --color-accent-300: var(--color-accent-300);
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
+  --color-accent-700: var(--color-accent-700);
+  --color-accent-800: var(--color-accent-800);
+  --color-accent-900: var(--color-accent-900);
+  
+  /* Couleurs de base - Thème sombre */
+  --color-background: var(--color-primary-dark);    /* Fond noir */
+  --color-foreground: var(--color-white);           /* Texte blanc */
+  
+  /* Échelle gray adaptée pour thème sombre */
+  --color-gray-50: var(--color-gray-50);    /* Plus sombre = nombres plus bas */
+  --color-gray-100: var(--color-gray-100);
+  --color-gray-200: var(--color-gray-200);
+  --color-gray-300: var(--color-gray-300);
+  --color-gray-400: var(--color-gray-400);
+  --color-gray-500: var(--color-gray-500);
+  --color-gray-600: var(--color-gray-600);
+  --color-gray-700: var(--color-gray-700);
+  --color-gray-800: var(--color-gray-800);
+  --color-gray-900: var(--color-gray-900);  /* Blanc pour texte */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);    /* Fond noir par défaut */
+  color: var(--color-foreground);         /* Texte blanc par défaut */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Classes utilitaires personnalisées pour thème sombre */
+.bg-primary { background-color: var(--color-primary); }
+.bg-accent { background-color: var(--color-accent); }
+.text-primary { color: var(--color-primary); }
+.text-accent { color: var(--color-accent); }
+.border-primary { border-color: var(--color-primary); }
+.border-accent { border-color: var(--color-accent); }
+
+/* Classes spécifiques pour le thème sombre */
+.bg-dark { background-color: var(--color-primary-dark); }
+.text-light { color: var(--color-white); }
+.card-dark { 
+  background-color: var(--color-gray-50); 
+  border: 1px solid var(--color-gray-200);
 }

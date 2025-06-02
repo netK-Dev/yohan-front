@@ -1,103 +1,71 @@
-import Image from "next/image";
+import { COLOR_COMBINATIONS } from '@/lib/colors'
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className={`min-h-screen flex flex-col items-center justify-center ${COLOR_COMBINATIONS.page.background}`}>
+      <main className="text-center space-y-8 p-8">
+        <h1 className={`text-4xl font-bold ${COLOR_COMBINATIONS.page.text}`}>
+          Bienvenue sur Yohan Front
+        </h1>
+        <p className={`text-xl ${COLOR_COMBINATIONS.page.text} opacity-80 max-w-2xl`}>
+          Site portfolio moderne avec design dark mode élégant et palette cohérente
+        </p>
+        <div className="space-y-6">
+          <div className={`${COLOR_COMBINATIONS.card.background} p-6 rounded-lg ${COLOR_COMBINATIONS.card.shadow} ${COLOR_COMBINATIONS.card.border} border`}>
+            <h2 className={`text-2xl font-semibold ${COLOR_COMBINATIONS.card.text} mb-4`}>
+              Technologies utilisées
+            </h2>
+            <ul className={`space-y-2 ${COLOR_COMBINATIONS.card.text} opacity-90`}>
+              <li>✅ Next.js 15.3.3 avec App Router</li>
+              <li>✅ TypeScript</li>
+              <li>✅ Tailwind CSS v4</li>
+              <li>✅ Design System Dark Mode</li>
+              <li>✅ ESLint & Prettier</li>
+            </ul>
+          </div>
+          
+          {/* Démonstration de la palette de couleurs thème sombre */}
+          <div className={`${COLOR_COMBINATIONS.card.background} p-6 rounded-lg ${COLOR_COMBINATIONS.card.shadow} ${COLOR_COMBINATIONS.card.border} border`}>
+            <h2 className={`text-2xl font-semibold ${COLOR_COMBINATIONS.card.text} mb-4`}>
+              🌙 Palette Dark Mode
+            </h2>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="text-center">
+                <div className="bg-primary h-16 rounded mb-2 border border-gray-600"></div>
+                <p className={`text-sm font-medium ${COLOR_COMBINATIONS.card.text}`}>Primary</p>
+                <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>#100000</p>
+                <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>Arrière-plans</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-accent h-16 rounded mb-2"></div>
+                <p className={`text-sm font-medium ${COLOR_COMBINATIONS.card.text}`}>Accent</p>
+                <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>#e60b18</p>
+                <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>Actions & liens</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white h-16 rounded mb-2"></div>
+                <p className={`text-sm font-medium ${COLOR_COMBINATIONS.card.text}`}>White</p>
+                <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>#ffffff</p>
+                <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>Texte principal</p>
+              </div>
+            </div>
+            
+            {/* Exemples de boutons thème sombre */}
+            <div className="flex gap-4 justify-center flex-wrap">
+              <button className={`${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} px-6 py-3 rounded-lg ${COLOR_COMBINATIONS.primaryButton.hover} transition-colors font-medium`}>
+                Bouton Principal
+              </button>
+              <button className={`${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} border px-6 py-3 rounded-lg ${COLOR_COMBINATIONS.secondaryButton.hover} transition-colors font-medium`}>
+                Bouton Secondaire
+              </button>
+            </div>
+          </div>
+          
+          <p className={`text-sm ${COLOR_COMBINATIONS.page.text} opacity-60`}>
+            Modifiez <code className="bg-gray-100 text-gray-900 px-2 py-1 rounded text-sm">src/app/page.tsx</code> pour commencer le développement
+          </p>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
