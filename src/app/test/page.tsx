@@ -7,114 +7,124 @@ export default function TestPage() {
       {/* Affichage du Header */}
       <Header />
       
-      {/* Contenu de test pour voir le rendu */}
-      <main className="max-w-7xl mx-auto py-8 px-4">
+      {/* Contenu de test pour voir le rendu - avec padding-top pour header fixé */}
+      <main className="max-w-7xl mx-auto pt-36 py-8 px-4">
         <div className={`${COLOR_COMBINATIONS.card.background} rounded-lg ${COLOR_COMBINATIONS.card.shadow} p-6 ${COLOR_COMBINATIONS.card.border} border`}>
           <h1 className={`text-3xl font-bold ${COLOR_COMBINATIONS.card.text} mb-4`}>
-            🚀 Page de Test - Doens Production Header
+            📌 Page de Test - Header Fixé
           </h1>
           
           <div className="space-y-6">
             <p className={`${COLOR_COMBINATIONS.card.text} opacity-80`}>
-              Cette page teste le nouveau Header avec logo Doens Production et design moderne.
+              Cette page teste le header fixé qui reste en haut de la page lors du défilement.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded border-l-4 border-accent`}>
-                <h2 className={`font-semibold ${COLOR_COMBINATIONS.section.text}`}>🎨 Logo & Branding</h2>
+                <h2 className={`font-semibold ${COLOR_COMBINATIONS.section.text}`}>📌 Header Fixé</h2>
                 <p className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm`}>
-                  Logo Yohan + &quot;Doens&quot; (rouge) &quot;Production&quot; (blanc)
+                  Position fixed avec z-index élevé
                 </p>
               </div>
               
               <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded border-l-4 border-white`}>
-                <h2 className={`font-semibold ${COLOR_COMBINATIONS.section.text}`}>✨ Design moderne</h2>
+                <h2 className={`font-semibold ${COLOR_COMBINATIONS.section.text}`}>🎬 Navigation Toujours Visible</h2>
                 <p className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm`}>
-                  Dégradé, logo responsive et animations fluides
+                  Menu accessible en permanence
                 </p>
               </div>
             </div>
             
-            {/* Caractéristiques du nouveau header avec logo */}
+            {/* Fonctionnalités du header fixé */}
             <div className="space-y-4">
-              <h3 className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text}`}>🎯 Nouvelles fonctionnalités :</h3>
+              <h3 className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text}`}>📌 Fonctionnalités Header Fixé :</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded`}>
-                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-2`}>🖼️ Logo & Image</h4>
+                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-2`}>🎯 Position</h4>
                   <ul className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm space-y-1`}>
-                    <li>• Logo Yohan intégré (48x48px)</li>
-                    <li>• Image Next.js optimisée</li>
-                    <li>• Effet hover scale sur le logo</li>
-                    <li>• Responsive design adaptatif</li>
+                    <li>• <code className="text-accent">fixed top-0</code> - Toujours en haut</li>
+                    <li>• <code className="text-accent">z-50</code> - Au-dessus du contenu</li>
+                    <li>• <code className="text-accent">left-0 right-0</code> - Largeur complète</li>
+                    <li>• Padding-top 128px sur le contenu</li>
                   </ul>
                 </div>
                 
                 <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded`}>
-                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-2`}>✨ Typographie stylée</h4>
+                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-2`}>✨ Avantages</h4>
                   <ul className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm space-y-1`}>
-                    <li>• &quot;Doens&quot; en rouge vibrant (text-accent)</li>
-                    <li>• &quot;Production&quot; en blanc élégant</li>
-                    <li>• Effet hover sur les couleurs</li>
-                    <li>• Layout flexible mobile/desktop</li>
+                    <li>• Navigation toujours accessible</li>
+                    <li>• UX améliorée pour les longues pages</li>
+                    <li>• Branding constamment visible</li>
+                    <li>• Menu déroulant fonctionnel partout</li>
                   </ul>
                 </div>
               </div>
             </div>
             
-            {/* Palette de couleurs avec focus sur le branding */}
+            {/* Structure de navigation */}
             <div className="space-y-4">
-              <h3 className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text}`}>🎨 Palette Doens Production :</h3>
+              <h3 className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text}`}>📋 Structure de Navigation :</h3>
               
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="bg-primary h-20 rounded mb-2 flex items-center justify-center border border-gray-600">
-                    <span className="text-white font-medium">Header Base</span>
-                  </div>
-                  <p className={`text-sm ${COLOR_COMBINATIONS.card.text}`}>#100000</p>
-                  <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>Début du dégradé</p>
+              <div className="grid grid-cols-1 gap-4">
+                <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded`}>
+                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-3`}>🏠 Accueil</h4>
+                  <p className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm`}>
+                    Page d&apos;accueil principale du site
+                  </p>
                 </div>
-                <div className="text-center">
-                  <div className="bg-accent h-20 rounded mb-2 flex items-center justify-center">
-                    <span className="text-white font-medium text-center">&quot;Doens&quot;<br/>Rouge</span>
-                  </div>
-                  <p className={`text-sm ${COLOR_COMBINATIONS.card.text}`}>#e60b18</p>
-                  <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>Nom de marque</p>
+                
+                <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded`}>
+                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-3`}>🎬 Réalisation (Menu Déroulant)</h4>
+                  <ul className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm space-y-2 ml-4`}>
+                    <li>• <strong>3D/VFX et Compositing</strong> - Effets visuels et composition</li>
+                    <li>• <strong>Motion Design</strong> - Animation graphique et motion</li>
+                    <li>• <strong>Court Métrage</strong> - Productions cinématographiques</li>
+                  </ul>
                 </div>
-                <div className="text-center">
-                  <div className="bg-white h-20 rounded mb-2 flex items-center justify-center">
-                    <span className="text-gray-900 font-medium text-center">&quot;Production&quot;<br/>Blanc</span>
-                  </div>
-                  <p className={`text-sm ${COLOR_COMBINATIONS.card.text}`}>#ffffff</p>
-                  <p className={`text-xs ${COLOR_COMBINATIONS.card.text} opacity-60`}>Complément</p>
+                
+                <div className={`${COLOR_COMBINATIONS.section.background} p-4 rounded`}>
+                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-3`}>📞 Contact</h4>
+                  <p className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm`}>
+                    Formulaire de contact et informations
+                  </p>
                 </div>
               </div>
             </div>
             
-            {/* Test des boutons thème sombre */}
+            {/* Section pour tester le défilement */}
             <div className="space-y-4">
-              <h3 className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text}`}>Test des interactions :</h3>
-              <div className="flex flex-wrap gap-4">
-                <button className={`${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} px-6 py-3 rounded-lg ${COLOR_COMBINATIONS.primaryButton.hover} transition-all duration-200 font-medium`}>
-                  Style &quot;Doens&quot; (Rouge)
-                </button>
-                <button className={`${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} border px-6 py-3 rounded-lg ${COLOR_COMBINATIONS.secondaryButton.hover} transition-all duration-200 font-medium`}>
-                  Style &quot;Production&quot; (Blanc)
-                </button>
-                <button className={`${COLOR_COMBINATIONS.section.background} ${COLOR_COMBINATIONS.section.text} ${COLOR_COMBINATIONS.section.border} border px-6 py-3 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-all duration-200 font-medium`}>
-                  Bouton Neutre
-                </button>
-              </div>
+              <h3 className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text}`}>📜 Test de Défilement :</h3>
+              
+              {/* Contenu répétitif pour forcer le scroll */}
+              {[1, 2, 3, 4, 5].map((num) => (
+                <div key={num} className={`${COLOR_COMBINATIONS.section.background} p-6 rounded`}>
+                  <h4 className={`font-semibold ${COLOR_COMBINATIONS.section.text} mb-2`}>
+                    🎬 Section de Test #{num}
+                  </h4>
+                  <p className={`${COLOR_COMBINATIONS.section.text} opacity-80`}>
+                    Cette section permet de tester que le header reste bien fixé en haut de la page 
+                    même quand vous faites défiler le contenu. Le menu déroulant &quot;Réalisation&quot; 
+                    doit rester fonctionnel à tout moment. Faites défiler vers le bas pour voir 
+                    l&apos;effet et testez la navigation.
+                  </p>
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div className="bg-accent h-8 rounded"></div>
+                    <div className="bg-primary h-8 rounded"></div>
+                    <div className="bg-white h-8 rounded"></div>
+                  </div>
+                </div>
+              ))}
             </div>
             
             <div className={`mt-6 p-4 ${COLOR_COMBINATIONS.section.background} rounded border-l-4 border-accent`}>
-              <h3 className={`font-semibold ${COLOR_COMBINATIONS.section.text}`}>🚀 Header Doens Production :</h3>
+              <h3 className={`font-semibold ${COLOR_COMBINATIONS.section.text}`}>📌 Header Fixé Configuré :</h3>
               <ul className={`${COLOR_COMBINATIONS.section.text} opacity-80 text-sm mt-2 space-y-1`}>
-                <li>• Logo : <code className="text-accent">/img/logo_yohan.png</code> (48x48px responsive)</li>
-                <li>• Texte : <code className="text-accent">&quot;Doens&quot;</code> (rouge) + <code className="text-white">&quot;Production&quot;</code> (blanc)</li>
-                <li>• Layout : Flexible colonnes/lignes selon l&apos;écran</li>
-                <li>• Animations : Hover effects sur logo et texte</li>
-                <li>• Next.js Image : Optimisation automatique</li>
+                <li>• Position : <code className="text-accent">fixed top-0 left-0 right-0</code></li>
+                <li>• Z-index : <code className="text-accent">z-50</code> (au-dessus de tout)</li>
+                <li>• Fond transparent sur le conteneur parent</li>
+                <li>• Padding-top : <code className="text-accent">pt-36</code> sur le contenu</li>
+                <li>• Navigation toujours accessible au scroll</li>
               </ul>
             </div>
           </div>

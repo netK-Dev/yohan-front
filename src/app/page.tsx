@@ -2,7 +2,7 @@ import { COLOR_COMBINATIONS } from '@/lib/colors'
 
 export default function Home() {
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center ${COLOR_COMBINATIONS.page.background}`}>
+    <div className={`min-h-screen pt-32 flex flex-col items-center justify-center ${COLOR_COMBINATIONS.page.background}`}>
       <main className="text-center space-y-8 p-8">
         <h1 className={`text-4xl font-bold ${COLOR_COMBINATIONS.page.text}`}>
           Bienvenue sur Yohan Front
