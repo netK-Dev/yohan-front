@@ -88,13 +88,13 @@ export default function VideoBanner() {
       ref={containerRef}
       className="relative w-full overflow-hidden bg-black"
     >
-      {/* Container responsive pour la vidéo */}
+      {/* Container responsive plein écran pour la vidéo */}
       <div className="relative w-full">
-        {/* Aspect ratio responsive 16:9 sur desktop, 9:16 sur mobile */}
-        <div className="relative aspect-video w-full md:aspect-video">
+        {/* Hauteur viewport complète sur mobile, aspect video sur desktop */}
+        <div className="relative h-screen w-full sm:h-[70vh] md:h-[80vh] lg:aspect-video lg:h-auto">
           <video
             ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-contain"
             muted
             playsInline
             preload="auto"
@@ -102,16 +102,16 @@ export default function VideoBanner() {
             <source src="/videos/yohandoens-banner.mp4" type="video/mp4" />
           </video>
 
-          {/* Loading moderne sans texte */}
+          {/* Loading moderne responsive */}
           {(!isVisible || isLoading) && !isEnded && (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-sm">
               <div className="relative">
-                {/* Cercles animés */}
-                <div className="relative h-20 w-20">
-                  <div className="border-accent/20 absolute inset-0 rounded-full border-4"></div>
-                  <div className="border-t-accent absolute inset-0 animate-spin rounded-full border-4 border-transparent"></div>
+                {/* Cercles animés - responsive */}
+                <div className="relative h-16 w-16 sm:h-20 sm:w-20">
+                  <div className="border-accent/20 absolute inset-0 rounded-full border-2 sm:border-4"></div>
+                  <div className="border-t-accent absolute inset-0 animate-spin rounded-full border-2 border-transparent sm:border-4"></div>
                   <div
-                    className="absolute inset-2 animate-spin rounded-full border-2 border-transparent border-t-white/60"
+                    className="absolute inset-1 animate-spin rounded-full border border-transparent border-t-white/60 sm:inset-2 sm:border-2"
                     style={{
                       animationDirection: 'reverse',
                       animationDuration: '1.5s',
@@ -120,20 +120,20 @@ export default function VideoBanner() {
                 </div>
 
                 {/* Point central pulsant */}
-                <div className="bg-accent absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full"></div>
+                <div className="bg-accent absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full sm:h-3 sm:w-3"></div>
               </div>
             </div>
           )}
 
-          {/* Bouton de lecture si erreur */}
+          {/* Bouton de lecture si erreur - responsive */}
           {hasError && !isEnded && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
               <button
                 onClick={handleManualPlay}
-                className="bg-accent hover:bg-accent-600 group relative flex h-20 w-20 items-center justify-center rounded-full shadow-2xl transition-all duration-300 hover:scale-110"
+                className="bg-accent hover:bg-accent-600 group relative flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 hover:scale-110 sm:h-20 sm:w-20"
               >
                 <svg
-                  className="ml-1 h-8 w-8 text-white transition-transform group-hover:scale-110"
+                  className="ml-1 h-6 w-6 text-white transition-transform group-hover:scale-110 sm:h-8 sm:w-8"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >

@@ -37,24 +37,24 @@ export default function ServicesSection() {
 
   return (
     <section
-      className={`relative py-20 lg:py-32 ${COLOR_COMBINATIONS.page.background}`}
+      className={`relative py-12 sm:py-16 lg:py-20 xl:py-32 ${COLOR_COMBINATIONS.page.background}`}
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="bg-accent/10 absolute -left-20 top-20 h-40 w-40 rounded-full blur-3xl" />
-        <div className="absolute -right-20 bottom-20 h-40 w-40 rounded-full bg-white/5 blur-3xl" />
+        <div className="bg-accent/10 absolute -left-10 top-10 h-20 w-20 rounded-full blur-3xl sm:-left-20 sm:top-20 sm:h-40 sm:w-40" />
+        <div className="absolute -right-10 bottom-10 h-20 w-20 rounded-full bg-white/5 blur-3xl sm:-right-20 sm:bottom-20 sm:h-40 sm:w-40" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="mb-16 text-center">
-          <div className="bg-accent/10 text-accent mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
-            <div className="bg-accent h-2 w-2 animate-pulse rounded-full" />
+        <div className="mb-12 text-center sm:mb-16">
+          <div className="bg-accent/10 text-accent mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
+            <div className="bg-accent h-1.5 w-1.5 animate-pulse rounded-full sm:h-2 sm:w-2" />
             Nos Expertises
           </div>
 
           <h2
-            className={`mb-6 text-4xl font-bold leading-tight ${COLOR_COMBINATIONS.page.text} md:text-5xl lg:text-6xl`}
+            className={`mb-4 text-3xl font-bold leading-tight ${COLOR_COMBINATIONS.page.text} sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl`}
           >
             Domaines de{' '}
             <span className="from-accent to-accent-700 bg-gradient-to-r bg-clip-text text-transparent">
@@ -63,7 +63,7 @@ export default function ServicesSection() {
           </h2>
 
           <p
-            className={`mx-auto max-w-3xl text-lg leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-80 md:text-xl`}
+            className={`mx-auto max-w-3xl text-base leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-80 sm:text-lg md:text-xl`}
           >
             Découvrez l&apos;univers créatif de{' '}
             <span className="text-accent font-semibold">Doens Production</span>,
@@ -73,11 +73,11 @@ export default function ServicesSection() {
         </div>
 
         {/* Services Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {services.map((service, index) => (
             <div
               key={service.id}
-              className={`group relative overflow-hidden rounded-3xl border border-white/10 ${COLOR_COMBINATIONS.card.background} hover:shadow-accent/10 p-8 shadow-2xl transition-all duration-500 hover:scale-105`}
+              className={`group relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} hover:shadow-accent/10 p-6 shadow-2xl transition-all duration-500 hover:scale-105 sm:rounded-3xl sm:p-8`}
               style={{
                 animationDelay: `${index * 150}ms`,
               }}
@@ -90,7 +90,7 @@ export default function ServicesSection() {
               {/* Card content */}
               <div className="relative z-10">
                 {/* Image container with advanced effects */}
-                <div className="relative mb-6 h-48 overflow-hidden rounded-2xl">
+                <div className="relative mb-4 h-40 overflow-hidden rounded-xl sm:mb-6 sm:h-48 sm:rounded-2xl">
                   {/* Image background glow */}
                   <div className="from-accent/20 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -99,30 +99,30 @@ export default function ServicesSection() {
                     alt={service.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
 
                 {/* Service title */}
                 <h3
-                  className={`mb-4 text-2xl font-bold leading-tight ${COLOR_COMBINATIONS.card.text} group-hover:text-accent transition-colors duration-300`}
+                  className={`mb-3 text-xl font-bold leading-tight ${COLOR_COMBINATIONS.card.text} group-hover:text-accent transition-colors duration-300 sm:mb-4 sm:text-2xl`}
                 >
                   {service.title}
                 </h3>
 
                 {/* Service description */}
                 <p
-                  className={`mb-6 text-base leading-relaxed ${COLOR_COMBINATIONS.card.text} opacity-80`}
+                  className={`mb-4 text-sm leading-relaxed ${COLOR_COMBINATIONS.card.text} opacity-80 sm:mb-6 sm:text-base`}
                 >
                   {service.description}
                 </p>
 
                 {/* Tags */}
-                <div className="mb-6 flex flex-wrap gap-2">
+                <div className="mb-4 flex flex-wrap gap-1.5 sm:mb-6 sm:gap-2">
                   {service.tags.map((tag, tagIndex) => (
                     <span
                       key={tagIndex}
-                      className="group-hover:bg-accent/20 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm transition-all duration-300 group-hover:text-white"
+                      className="group-hover:bg-accent/20 rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-white/80 backdrop-blur-sm transition-all duration-300 group-hover:text-white sm:px-3 sm:py-1"
                     >
                       {tag}
                     </span>
@@ -130,7 +130,7 @@ export default function ServicesSection() {
                 </div>
 
                 {/* Call to action */}
-                <button className="bg-accent hover:bg-accent-700 focus:ring-accent w-full rounded-2xl px-6 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50">
+                <button className="bg-accent hover:bg-accent-700 focus:ring-accent w-full rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 sm:rounded-2xl sm:px-6 sm:py-4 sm:text-base">
                   Découvrir ce domaine
                 </button>
               </div>

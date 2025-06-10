@@ -193,6 +193,16 @@ body {
   .carousel-3d-stage {
     animation-duration: 30s; /* Plus lent sur mobile */
   }
+
+  .carousel-3d-container {
+    perspective: 600px; /* Perspective réduite sur mobile */
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-3d-container {
+    perspective: 500px; /* Perspective encore plus réduite sur petit mobile */
+  }
 }
 
 /* États de hover avancés */

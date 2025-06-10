@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
@@ -239,11 +241,12 @@ export default function Footer() {
               >
                 Recevez nos dernières créations
               </p>
-              <form className="flex flex-col gap-3">
+              <form className="flex flex-col gap-3" suppressHydrationWarning>
                 <input
                   type="email"
                   placeholder="Votre email"
                   className="focus:border-accent focus:ring-accent/20 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2"
+                  suppressHydrationWarning
                 />
                 <button
                   type="submit"
