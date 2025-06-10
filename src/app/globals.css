@@ -1,11 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   /* Palette de couleurs personnalisée - Thème sombre */
-  --color-primary-dark: #100000;    /* Noir profond - Arrière-plans */
-  --color-accent: #e60b18;          /* Rouge vibrant - Accents */
-  --color-white: #ffffff;           /* Blanc pur - Texte principal */
-  
+  --color-primary-dark: #100000; /* Noir profond - Arrière-plans */
+  --color-accent: #e60b18; /* Rouge vibrant - Accents */
+  --color-white: #ffffff; /* Blanc pur - Texte principal */
+
   /* Couleurs dérivées pour les variantes */
   --color-primary-dark-50: rgba(16, 0, 0, 0.05);
   --color-primary-dark-100: rgba(16, 0, 0, 0.1);
@@ -17,7 +17,7 @@
   --color-primary-dark-700: rgba(16, 0, 0, 0.7);
   --color-primary-dark-800: rgba(16, 0, 0, 0.8);
   --color-primary-dark-900: rgba(16, 0, 0, 0.9);
-  
+
   --color-accent-50: rgba(230, 11, 24, 0.05);
   --color-accent-100: rgba(230, 11, 24, 0.1);
   --color-accent-200: rgba(230, 11, 24, 0.2);
@@ -28,7 +28,7 @@
   --color-accent-700: rgba(230, 11, 24, 0.7);
   --color-accent-800: rgba(230, 11, 24, 0.8);
   --color-accent-900: rgba(230, 11, 24, 0.9);
-  
+
   /* Couleurs neutres pour thème sombre */
   --color-gray-50: #2a2a2a;
   --color-gray-100: #3a3a3a;
@@ -47,7 +47,7 @@
   --color-primary: var(--color-primary-dark);
   --color-accent: var(--color-accent);
   --color-white: var(--color-white);
-  
+
   /* Échelle de couleurs pour primary */
   --color-primary-50: var(--color-primary-dark-50);
   --color-primary-100: var(--color-primary-dark-100);
@@ -59,7 +59,7 @@
   --color-primary-700: var(--color-primary-dark-700);
   --color-primary-800: var(--color-primary-dark-800);
   --color-primary-900: var(--color-primary-dark-900);
-  
+
   /* Échelle de couleurs pour accent */
   --color-accent-50: var(--color-accent-50);
   --color-accent-100: var(--color-accent-100);
@@ -71,13 +71,13 @@
   --color-accent-700: var(--color-accent-700);
   --color-accent-800: var(--color-accent-800);
   --color-accent-900: var(--color-accent-900);
-  
+
   /* Couleurs de base - Thème sombre */
-  --color-background: var(--color-primary-dark);    /* Fond noir */
-  --color-foreground: var(--color-white);           /* Texte blanc */
-  
+  --color-background: var(--color-primary-dark); /* Fond noir */
+  --color-foreground: var(--color-white); /* Texte blanc */
+
   /* Échelle gray adaptée pour thème sombre */
-  --color-gray-50: var(--color-gray-50);    /* Plus sombre = nombres plus bas */
+  --color-gray-50: var(--color-gray-50); /* Plus sombre = nombres plus bas */
   --color-gray-100: var(--color-gray-100);
   --color-gray-200: var(--color-gray-200);
   --color-gray-300: var(--color-gray-300);
@@ -86,27 +86,124 @@
   --color-gray-600: var(--color-gray-600);
   --color-gray-700: var(--color-gray-700);
   --color-gray-800: var(--color-gray-800);
-  --color-gray-900: var(--color-gray-900);  /* Blanc pour texte */
+  --color-gray-900: var(--color-gray-900); /* Blanc pour texte */
 }
 
 body {
-  background: var(--color-background);    /* Fond noir par défaut */
-  color: var(--color-foreground);         /* Texte blanc par défaut */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--color-background); /* Fond noir par défaut */
+  color: var(--color-foreground); /* Texte blanc par défaut */
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }
 
 /* Classes utilitaires personnalisées pour thème sombre */
-.bg-primary { background-color: var(--color-primary); }
-.bg-accent { background-color: var(--color-accent); }
-.text-primary { color: var(--color-primary); }
-.text-accent { color: var(--color-accent); }
-.border-primary { border-color: var(--color-primary); }
-.border-accent { border-color: var(--color-accent); }
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.bg-accent {
+  background-color: var(--color-accent);
+}
+.text-primary {
+  color: var(--color-primary);
+}
+.text-accent {
+  color: var(--color-accent);
+}
+.border-primary {
+  border-color: var(--color-primary);
+}
+.border-accent {
+  border-color: var(--color-accent);
+}
 
 /* Classes spécifiques pour le thème sombre */
-.bg-dark { background-color: var(--color-primary-dark); }
-.text-light { color: var(--color-white); }
-.card-dark { 
-  background-color: var(--color-gray-50); 
+.bg-dark {
+  background-color: var(--color-primary-dark);
+}
+.text-light {
+  color: var(--color-white);
+}
+.card-dark {
+  background-color: var(--color-gray-50);
   border: 1px solid var(--color-gray-200);
+}
+
+/* Animations personnalisées */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Carousel 3D avec perspective avancée */
+.carousel-3d-container {
+  transform-style: preserve-3d;
+}
+
+.carousel-3d-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  animation: carousel-3d-rotate 25s linear infinite;
+}
+
+.carousel-3d-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.carousel-item-content {
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+}
+
+/* Animation principale du carousel */
+@keyframes carousel-3d-rotate {
+  from {
+    transform: translate(-50%, -50%) rotateY(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotateY(-360deg);
+  }
+}
+
+/* Optimisations de performance */
+.carousel-3d-container * {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Responsive pour le carousel */
+@media (max-width: 768px) {
+  .carousel-3d-stage {
+    animation-duration: 30s; /* Plus lent sur mobile */
+  }
+}
+
+/* États de hover avancés */
+.carousel-item-content:hover {
+  filter: drop-shadow(0 25px 50px rgba(230, 11, 24, 0.3));
+}
+
+/* Gestion de la performance avec GPU */
+.carousel-3d-container,
+.carousel-3d-stage,
+.carousel-3d-item {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
