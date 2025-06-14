@@ -10,8 +10,9 @@ export default function ServicesSection() {
       description:
         'Formation spécialisée à ISART Digital avec maîtrise complète du pipeline 3D : modeling, shading, rigging, animation, rendering et compositing. Expertise technique approfondie pour donner vie à vos projets les plus ambitieux.',
       tags: ['3D Modeling', 'VFX', 'Compositing', 'Rendering'],
-      gradient: 'from-accent/20 to-accent/5',
-      hoverGradient: 'group-hover:from-accent/30 group-hover:to-accent/10',
+      gradient: 'from-[#ff0015]/20 to-[#ff0015]/5',
+      hoverGradient:
+        'group-hover:from-[#ff0015]/30 group-hover:to-[#ff0015]/10',
     },
     {
       id: 2,
@@ -41,15 +42,15 @@ export default function ServicesSection() {
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="bg-accent/10 absolute -left-10 top-10 h-20 w-20 rounded-full blur-3xl sm:-left-20 sm:top-20 sm:h-40 sm:w-40" />
+        <div className="absolute -left-10 top-10 h-20 w-20 rounded-full bg-[#ff0015]/10 blur-3xl sm:-left-20 sm:top-20 sm:h-40 sm:w-40" />
         <div className="absolute -right-10 bottom-10 h-20 w-20 rounded-full bg-white/5 blur-3xl sm:-right-20 sm:bottom-20 sm:h-40 sm:w-40" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-12 text-center sm:mb-16">
-          <div className="bg-accent/10 text-accent mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
-            <div className="bg-accent h-1.5 w-1.5 animate-pulse rounded-full sm:h-2 sm:w-2" />
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#ff0015]/10 px-3 py-1.5 text-xs font-medium text-[#ff0015] sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff0015] sm:h-2 sm:w-2" />
             Nos Expertises
           </div>
 
@@ -57,7 +58,7 @@ export default function ServicesSection() {
             className={`mb-4 text-3xl font-bold leading-tight ${COLOR_COMBINATIONS.page.text} sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl`}
           >
             Domaines de{' '}
-            <span className="from-accent to-accent-700 bg-gradient-to-r bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
               Création
             </span>
           </h2>
@@ -66,8 +67,10 @@ export default function ServicesSection() {
             className={`mx-auto max-w-3xl text-base leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-80 sm:text-lg md:text-xl`}
           >
             Découvrez l&apos;univers créatif de{' '}
-            <span className="text-accent font-semibold">Doens Production</span>,
-            où technique et artistique se rencontrent pour donner vie à vos
+            <span className="font-semibold text-[#ff0015]">
+              Doens Production
+            </span>
+            , où technique et artistique se rencontrent pour donner vie à vos
             projets.
           </p>
         </div>
@@ -77,7 +80,7 @@ export default function ServicesSection() {
           {services.map((service, index) => (
             <div
               key={service.id}
-              className={`group relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} hover:shadow-accent/10 p-6 shadow-2xl transition-all duration-500 hover:scale-105 sm:rounded-3xl sm:p-8`}
+              className={`group relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-6 shadow-2xl transition-all duration-500 hover:scale-105 hover:shadow-[#ff0015]/10 sm:rounded-3xl sm:p-8`}
               style={{
                 animationDelay: `${index * 150}ms`,
               }}
@@ -92,7 +95,7 @@ export default function ServicesSection() {
                 {/* Image container with advanced effects */}
                 <div className="relative mb-4 h-40 overflow-hidden rounded-xl sm:mb-6 sm:h-48 sm:rounded-2xl">
                   {/* Image background glow */}
-                  <div className="from-accent/20 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#ff0015]/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                   <Image
                     src={service.image}
@@ -105,7 +108,7 @@ export default function ServicesSection() {
 
                 {/* Service title */}
                 <h3
-                  className={`mb-3 text-xl font-bold leading-tight ${COLOR_COMBINATIONS.card.text} group-hover:text-accent transition-colors duration-300 sm:mb-4 sm:text-2xl`}
+                  className={`mb-3 text-xl font-bold leading-tight ${COLOR_COMBINATIONS.card.text} transition-colors duration-300 group-hover:text-[#ff0015] sm:mb-4 sm:text-2xl`}
                 >
                   {service.title}
                 </h3>
@@ -122,7 +125,7 @@ export default function ServicesSection() {
                   {service.tags.map((tag, tagIndex) => (
                     <span
                       key={tagIndex}
-                      className="group-hover:bg-accent/20 rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-white/80 backdrop-blur-sm transition-all duration-300 group-hover:text-white sm:px-3 sm:py-1"
+                      className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-white/80 backdrop-blur-sm transition-all duration-300 group-hover:bg-[#ff0015]/20 group-hover:text-white sm:px-3 sm:py-1"
                     >
                       {tag}
                     </span>
@@ -130,13 +133,15 @@ export default function ServicesSection() {
                 </div>
 
                 {/* Call to action */}
-                <button className="bg-accent hover:bg-accent-700 focus:ring-accent w-full rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 sm:rounded-2xl sm:px-6 sm:py-4 sm:text-base">
+                <button
+                  className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 sm:rounded-2xl sm:px-6 sm:py-4 sm:text-base ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
+                >
                   Découvrir ce domaine
                 </button>
               </div>
 
               {/* Bottom accent line */}
-              <div className="via-accent absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff0015] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
             </div>
           ))}
         </div>

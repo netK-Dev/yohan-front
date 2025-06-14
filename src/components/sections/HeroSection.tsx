@@ -1,52 +1,58 @@
 import Image from 'next/image';
+import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 export default function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 px-4 py-12 sm:py-16 lg:py-20">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="bg-accent/5 absolute -right-20 -top-20 h-40 w-40 rounded-full blur-3xl sm:-right-40 sm:-top-40 sm:h-80 sm:w-80" />
-        <div className="bg-accent/5 absolute -bottom-20 -left-20 h-40 w-40 rounded-full blur-3xl sm:-bottom-40 sm:-left-40 sm:h-80 sm:w-80" />
-      </div>
+    <section
+      className={`hero-section-mobile relative flex min-h-screen items-center justify-center ${COLOR_COMBINATIONS.gradients.primary} px-4 py-2 sm:py-12 md:py-16 lg:py-20`}
+    >
+      {/* Gradient de transition harmonieux entre les sections */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#000002]/90 via-[#000002]/50 to-[#000002]/90 backdrop-blur-[2px]" />
 
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Présentation textuelle */}
         <div className="space-y-6 sm:space-y-8 lg:order-1">
           <div className="space-y-4 sm:space-y-6">
-            <div className="bg-accent/10 text-accent inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium sm:px-4 sm:py-2 sm:text-sm">
-              <div className="bg-accent h-1.5 w-1.5 animate-pulse rounded-full sm:h-2 sm:w-2" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#ff0015]/10 px-3 py-1.5 text-xs font-medium text-[#ff0015] sm:px-4 sm:py-2 sm:text-sm">
+              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff0015] sm:h-2 sm:w-2" />
               Portfolio 3D & VFX
             </div>
 
-            <h1 className="text-3xl font-bold leading-tight text-black sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+            <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
               Créateur de{' '}
-              <span className="text-accent from-accent to-accent-700 block bg-gradient-to-r bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
                 Mondes Visuels
               </span>
             </h1>
 
-            <p className="text-lg font-light leading-relaxed text-black sm:text-xl md:text-2xl lg:text-3xl">
+            <p className="text-lg font-light leading-relaxed text-white sm:text-xl md:text-2xl lg:text-3xl">
               Spécialisé en{' '}
-              <span className="font-semibold text-black">3D/VFX</span>,{' '}
-              <span className="font-semibold text-black">Motion Design</span> et{' '}
-              <span className="font-semibold text-black">Courts Métrages</span>
+              <span className="font-semibold text-white">3D/VFX</span>,{' '}
+              <span className="font-semibold text-white">Motion Design</span> et{' '}
+              <span className="font-semibold text-white">Courts Métrages</span>
             </p>
           </div>
 
-          <p className="max-w-2xl text-base leading-relaxed text-black sm:text-lg lg:text-xl">
+          <p className="max-w-2xl text-base leading-relaxed text-white sm:text-lg lg:text-xl">
             Bienvenue dans l&apos;univers de{' '}
-            <span className="text-accent font-semibold">Doens Production</span>,
-            où la créativité rencontre la technologie pour donner vie à vos
+            <span className="font-semibold text-[#ff0015]">
+              Doens Production
+            </span>
+            , où la créativité rencontre la technologie pour donner vie à vos
             projets les plus ambitieux.
           </p>
 
           {/* Call to Action */}
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 lg:gap-6">
-            <button className="bg-accent hover:bg-accent-600 group relative transform overflow-hidden rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:px-8 sm:py-4 sm:text-base">
+            <button
+              className={`group relative transform overflow-hidden rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:px-8 sm:py-4 sm:text-base ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow}`}
+            >
               <span className="relative z-10">Découvrir mes créations</span>
-              <div className="from-accent-600 to-accent-800 absolute inset-0 bg-gradient-to-r opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#e6000c] to-[#cc0009] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </button>
-            <button className="hover:border-accent hover:text-accent hover:bg-accent/5 group rounded-2xl border-2 border-gray-500 px-6 py-3 text-sm font-semibold text-black transition-all duration-300 hover:shadow-lg sm:px-8 sm:py-4 sm:text-base">
+            <button
+              className={`group rounded-2xl border-2 border-white px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:border-[#ff0015] hover:bg-[#ff0015]/5 hover:text-[#ff0015] hover:shadow-lg sm:px-8 sm:py-4 sm:text-base`}
+            >
               <span className="flex items-center justify-center gap-2">
                 Me contacter
                 <svg
@@ -67,28 +73,28 @@ export default function HeroSection() {
           </div>
 
           {/* Statistics */}
-          <div className="flex flex-wrap justify-center gap-6 border-t border-gray-400 pt-6 sm:justify-start sm:gap-8 sm:pt-8">
+          <div className="flex flex-wrap justify-center gap-6 border-t border-gray-800 pt-6 sm:justify-start sm:gap-8 sm:pt-8">
             <div className="text-center">
-              <div className="text-accent text-2xl font-bold sm:text-3xl">
+              <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
                 50+
               </div>
-              <div className="text-xs font-medium text-black sm:text-sm">
+              <div className="text-xs font-medium text-white sm:text-sm">
                 Projets
               </div>
             </div>
             <div className="text-center">
-              <div className="text-accent text-2xl font-bold sm:text-3xl">
+              <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
                 5
               </div>
-              <div className="text-xs font-medium text-black sm:text-sm">
+              <div className="text-xs font-medium text-white sm:text-sm">
                 Années
               </div>
             </div>
             <div className="text-center">
-              <div className="text-accent text-2xl font-bold sm:text-3xl">
+              <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
                 100%
               </div>
-              <div className="text-xs font-medium text-black sm:text-sm">
+              <div className="text-xs font-medium text-white sm:text-sm">
                 Passion
               </div>
             </div>
@@ -176,10 +182,10 @@ function CircularSlider() {
                   {/* Image container avec effets avancés */}
                   <div className="relative h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56">
                     {/* Halo lumineux */}
-                    <div className="from-accent/20 to-accent/20 group-hover:from-accent/40 group-hover:to-accent/40 absolute inset-0 rounded-2xl bg-gradient-to-r via-transparent blur-xl transition-all duration-500" />
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#ff0015]/20 via-transparent to-[#ff0015]/20 blur-xl transition-all duration-500 group-hover:from-[#ff0015]/40 group-hover:to-[#ff0015]/40" />
 
                     {/* Container principal */}
-                    <div className="group-hover:shadow-accent/25 relative h-full w-full rounded-xl border border-white/20 bg-gradient-to-br from-gray-100 to-gray-300 p-2 shadow-2xl transition-all duration-500 sm:rounded-2xl sm:p-3">
+                    <div className="relative h-full w-full rounded-xl border border-white/5 bg-gradient-to-br from-[#000002] to-gray-950 p-2 shadow-2xl transition-all duration-500 group-hover:shadow-[#ff0015]/25 sm:rounded-2xl sm:p-3">
                       <div className="h-full w-full overflow-hidden rounded-lg bg-black/5 sm:rounded-xl">
                         <Image
                           src={model.src}
@@ -193,7 +199,7 @@ function CircularSlider() {
                         {/* Overlay avec catégorie */}
                         <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:rounded-xl">
                           <div className="absolute bottom-1 left-1 right-1 sm:bottom-2 sm:left-2 sm:right-2">
-                            <span className="bg-accent/80 rounded-full px-1.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm sm:px-2 sm:py-1">
+                            <span className="rounded-full bg-[#ff0015]/80 px-1.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm sm:px-2 sm:py-1">
                               {model.category}
                             </span>
                           </div>

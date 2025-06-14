@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
+import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 export default function VideoBanner() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -86,7 +87,7 @@ export default function VideoBanner() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full overflow-hidden bg-black"
+      className={`relative w-full overflow-hidden ${COLOR_COMBINATIONS.page.background}`}
     >
       {/* Container responsive plein écran pour la vidéo */}
       <div className="relative w-full">
@@ -108,8 +109,8 @@ export default function VideoBanner() {
               <div className="relative">
                 {/* Cercles animés - responsive */}
                 <div className="relative h-16 w-16 sm:h-20 sm:w-20">
-                  <div className="border-accent/20 absolute inset-0 rounded-full border-2 sm:border-4"></div>
-                  <div className="border-t-accent absolute inset-0 animate-spin rounded-full border-2 border-transparent sm:border-4"></div>
+                  <div className="absolute inset-0 rounded-full border-2 border-[#ff0015]/20 sm:border-4"></div>
+                  <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#ff0015] sm:border-4"></div>
                   <div
                     className="absolute inset-1 animate-spin rounded-full border border-transparent border-t-white/60 sm:inset-2 sm:border-2"
                     style={{
@@ -120,7 +121,7 @@ export default function VideoBanner() {
                 </div>
 
                 {/* Point central pulsant */}
-                <div className="bg-accent absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full sm:h-3 sm:w-3"></div>
+                <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-[#ff0015] sm:h-3 sm:w-3"></div>
               </div>
             </div>
           )}
@@ -130,7 +131,7 @@ export default function VideoBanner() {
             <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
               <button
                 onClick={handleManualPlay}
-                className="bg-accent hover:bg-accent-600 group relative flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 hover:scale-110 sm:h-20 sm:w-20"
+                className={`group relative flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 hover:scale-110 sm:h-20 sm:w-20 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover}`}
               >
                 <svg
                   className="ml-1 h-6 w-6 text-white transition-transform group-hover:scale-110 sm:h-8 sm:w-8"
@@ -144,9 +145,6 @@ export default function VideoBanner() {
           )}
         </div>
       </div>
-
-      {/* Gradient de transition vers la section suivante */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-gray-50 to-transparent" />
     </section>
   );
 }
