@@ -307,6 +307,261 @@ export default function TestPage() {
               </div>
             </div>
 
+            {/* NOUVELLE SECTION - Démonstration des boutons */}
+            <div className="space-y-8">
+              <div className="text-center">
+                <h3
+                  className={`text-2xl font-bold ${COLOR_COMBINATIONS.card.text} mb-4`}
+                >
+                  🎨 Collection de Boutons Modernes
+                </h3>
+                <p className={`${COLOR_COMBINATIONS.card.text} opacity-80`}>
+                  Boutons adaptés à votre charte graphique avec effets avancés
+                </p>
+              </div>
+
+              {/* Boutons de base avec vos couleurs */}
+              <div
+                className={`${COLOR_COMBINATIONS.section.background} rounded-xl p-6`}
+              >
+                <h4
+                  className={`text-lg font-semibold ${COLOR_COMBINATIONS.section.text} mb-4`}
+                >
+                  Variantes Principales
+                </h4>
+                <div className="flex flex-wrap justify-center gap-4">
+                  {/* Bouton Principal Rouge */}
+                  <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 hover:shadow-accent/40 relative inline-flex items-center justify-center overflow-hidden rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/20 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:scale-105 hover:before:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <span className="relative z-10">Bouton Principal</span>
+                  </button>
+
+                  {/* Bouton Secondaire */}
+                  <button className="hover:text-primary relative inline-flex items-center justify-center rounded-xl border-2 border-white bg-transparent px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <span className="relative z-10">Bouton Secondaire</span>
+                  </button>
+
+                  {/* Bouton Ghost */}
+                  <button className="relative inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/40 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <span className="relative z-10">Bouton Ghost</span>
+                  </button>
+
+                  {/* Bouton Glass */}
+                  <button className="hover:border-accent/50 focus:ring-accent/50 relative inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-black/25 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <span className="relative z-10">Bouton Glass</span>
+                  </button>
+
+                  {/* Bouton Gradient */}
+                  <button className="from-accent via-accent-600 to-accent-700 hover:from-accent-400 hover:via-accent-500 hover:to-accent-600 focus:ring-accent/50 shadow-accent/25 hover:shadow-accent/40 relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/20 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:scale-105 hover:before:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <span className="relative z-10">Bouton Gradient</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Tailles différentes */}
+              <div
+                className={`${COLOR_COMBINATIONS.section.background} rounded-xl p-6`}
+              >
+                <h4
+                  className={`text-lg font-semibold ${COLOR_COMBINATIONS.section.text} mb-4`}
+                >
+                  Différentes Tailles
+                </h4>
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 relative inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    Petit
+                  </button>
+                  <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 relative inline-flex items-center justify-center rounded-xl px-4 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    Moyen
+                  </button>
+                  <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 relative inline-flex items-center justify-center rounded-xl px-6 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    Grand
+                  </button>
+                  <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 relative inline-flex items-center justify-center rounded-2xl px-8 py-5 text-xl font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    Très Grand
+                  </button>
+                </div>
+              </div>
+
+              {/* Boutons avec icônes */}
+              <div
+                className={`${COLOR_COMBINATIONS.section.background} rounded-xl p-6`}
+              >
+                <h4
+                  className={`text-lg font-semibold ${COLOR_COMBINATIONS.section.text} mb-4`}
+                >
+                  Boutons avec Icônes
+                </h4>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 relative inline-flex items-center justify-center gap-3 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <span>Créer un projet</span>
+                  </button>
+                  <button className="hover:text-primary relative inline-flex items-center justify-center gap-3 rounded-xl border-2 border-white bg-transparent px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white">
+                    <span>Continuer</span>
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </button>
+                  <button className="hover:border-accent/50 relative inline-flex items-center justify-center gap-3 rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-black/25 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/20">
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    <span>Télécharger</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* États spéciaux */}
+              <div
+                className={`${COLOR_COMBINATIONS.section.background} rounded-xl p-6`}
+              >
+                <h4
+                  className={`text-lg font-semibold ${COLOR_COMBINATIONS.section.text} mb-4`}
+                >
+                  États Spéciaux
+                </h4>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <button className="bg-accent relative inline-flex cursor-not-allowed items-center justify-center gap-3 rounded-xl px-6 py-3 text-base font-semibold text-white opacity-75 transition-all duration-300">
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Chargement...</span>
+                  </button>
+                  <button
+                    className="relative inline-flex cursor-not-allowed items-center justify-center rounded-xl border-2 border-white bg-transparent px-6 py-3 text-base font-semibold text-white opacity-50 transition-all duration-300"
+                    disabled
+                  >
+                    <span>Désactivé</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Exemples pratiques dans votre contexte */}
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Call to Action */}
+                <div
+                  className={`${COLOR_COMBINATIONS.card.background} rounded-xl p-6 ${COLOR_COMBINATIONS.card.border} border`}
+                >
+                  <h4
+                    className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text} mb-4`}
+                  >
+                    Prêt à commencer ?
+                  </h4>
+                  <p
+                    className={`${COLOR_COMBINATIONS.card.text} mb-6 opacity-80`}
+                  >
+                    Transformez vos idées en créations visuelles exceptionnelles
+                  </p>
+                  <div className="flex gap-3">
+                    <button className="from-accent via-accent-600 to-accent-700 hover:from-accent-400 hover:via-accent-500 hover:to-accent-600 focus:ring-accent/50 shadow-accent/25 hover:shadow-accent/40 relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r px-6 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/20 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:scale-105 hover:before:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                      <span className="relative z-10">Demander un devis</span>
+                    </button>
+                    <button className="relative inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/40 hover:bg-white/10">
+                      <span className="relative z-10">En savoir plus</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Actions de portfolio */}
+                <div
+                  className={`${COLOR_COMBINATIONS.card.background} rounded-xl p-6 ${COLOR_COMBINATIONS.card.border} border`}
+                >
+                  <h4
+                    className={`text-xl font-semibold ${COLOR_COMBINATIONS.card.text} mb-4`}
+                  >
+                    Mes Réalisations
+                  </h4>
+                  <p
+                    className={`${COLOR_COMBINATIONS.card.text} mb-6 opacity-80`}
+                  >
+                    Découvrez mes derniers projets en 3D/VFX et Motion Design
+                  </p>
+                  <div className="flex gap-3">
+                    <button className="bg-accent hover:bg-accent-600 focus:ring-accent shadow-accent/25 relative inline-flex items-center justify-center gap-3 rounded-xl px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900">
+                      <span>Voir le portfolio</span>
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 8l4 4m0 0l-4 4m4-4H3"
+                        />
+                      </svg>
+                    </button>
+                    <button className="hover:text-primary relative inline-flex items-center justify-center gap-3 rounded-xl border-2 border-white bg-transparent px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white">
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      <span>Showreel</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Section pour tester le défilement */}
             <div className="space-y-4">
               <h3
