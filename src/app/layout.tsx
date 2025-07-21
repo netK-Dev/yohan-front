@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Yohan Front",
-  description: "Application frontend développée avec Next.js et Tailwind CSS",
+  title: 'Yohan Front',
+  description: 'Portfolio professionnel de Yohan Doens',
 };
 
 export default function RootLayout({
