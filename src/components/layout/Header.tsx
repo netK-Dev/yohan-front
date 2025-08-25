@@ -1,9 +1,23 @@
+'use client';
 // src/components/layout/Header.tsx
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export default function Header() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isRealisations =
+    pathname?.startsWith('/realisations') ||
+    pathname?.startsWith('/realisation');
+  const isHome = pathname === '/';
+  const isAbout = pathname?.startsWith('/about');
+  const isContact = pathname?.startsWith('/contact');
+  const category = searchParams?.get('category');
+  const is3DVfx = isRealisations && category === '3d-vfx';
+  const isMotion = isRealisations && category === 'motion-design';
+  const isCourt = isRealisations && category === 'court-metrage';
   return (
     <div className="fixed left-0 right-0 top-0 z-50 w-full bg-transparent px-2 py-2 sm:px-4 sm:py-4">
       {/* Container avec effet de halo extérieur */}
@@ -51,24 +65,46 @@ export default function Header() {
                 {/* Accueil */}
                 <Link
                   href="/"
-                  className="group relative text-base font-medium text-white transition-all duration-300 hover:text-[#ff0015] lg:text-lg"
+                  className={`group relative text-base font-medium transition-all duration-300 lg:text-lg ${
+                    isHome
+                      ? 'text-[#ff0015]'
+                      : 'text-white hover:text-[#ff0015]'
+                  }`}
                 >
                   Accueil
-                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-[#ff0015] transition-all duration-300 group-hover:w-full"></span>
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-[#ff0015] transition-all duration-300 ${
+                      isHome ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
                 </Link>
 
                 {/* À propos */}
                 <Link
                   href="/about"
-                  className="group relative text-base font-medium text-white transition-all duration-300 hover:text-[#ff0015] lg:text-lg"
+                  className={`group relative text-base font-medium transition-all duration-300 lg:text-lg ${
+                    isAbout
+                      ? 'text-[#ff0015]'
+                      : 'text-white hover:text-[#ff0015]'
+                  }`}
                 >
                   À propos
-                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-[#ff0015] transition-all duration-300 group-hover:w-full"></span>
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-[#ff0015] transition-all duration-300 ${
+                      isAbout ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
                 </Link>
 
                 {/* Réalisation avec menu déroulant */}
                 <div className="group relative">
-                  <button className="flex items-center space-x-1 text-base font-medium text-white transition-all duration-300 hover:text-[#ff0015] lg:text-lg">
+                  <button
+                    className={`flex items-center space-x-1 text-base font-medium transition-all duration-300 lg:text-lg ${
+                      isRealisations
+                        ? 'text-[#ff0015]'
+                        : 'text-white hover:text-[#ff0015]'
+                    }`}
+                  >
                     <span>Réalisation</span>
                     <svg
                       className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180"
@@ -96,20 +132,42 @@ export default function Header() {
                       <div className="relative rounded-xl bg-gradient-to-b from-gray-950 to-[#000002] shadow-2xl">
                         <div className="py-3">
                           <Link
-                            href="/realisation/3d-vfx"
-                            className="block px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-white hover:bg-opacity-10 hover:text-[#ff0015]"
+                            href="/realisations"
+                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                              isRealisations
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
+                          >
+                            Toutes les réalisations
+                          </Link>
+                          <Link
+                            href="/realisations?category=3d-vfx"
+                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                              is3DVfx
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
                           >
                             3D/VFX et Compositing
                           </Link>
                           <Link
-                            href="/realisation/motion-design"
-                            className="block px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-white hover:bg-opacity-10 hover:text-[#ff0015]"
+                            href="/realisations?category=motion-design"
+                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                              isMotion
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
                           >
                             Motion Design
                           </Link>
                           <Link
-                            href="/realisation/court-metrage"
-                            className="block px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-white hover:bg-opacity-10 hover:text-[#ff0015]"
+                            href="/realisations?category=court-metrage"
+                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                              isCourt
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
                           >
                             Court Métrage
                           </Link>
@@ -122,10 +180,18 @@ export default function Header() {
                 {/* Contact */}
                 <Link
                   href="/contact"
-                  className="group relative text-base font-medium text-white transition-all duration-300 hover:text-[#ff0015] lg:text-lg"
+                  className={`group relative text-base font-medium transition-all duration-300 lg:text-lg ${
+                    isContact
+                      ? 'text-[#ff0015]'
+                      : 'text-white hover:text-[#ff0015]'
+                  }`}
                 >
                   Contact
-                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-[#ff0015] transition-all duration-300 group-hover:w-full"></span>
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-[#ff0015] transition-all duration-300 ${
+                      isContact ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
                 </Link>
               </nav>
 

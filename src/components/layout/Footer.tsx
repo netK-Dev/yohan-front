@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 export default function Footer() {
@@ -69,7 +70,14 @@ export default function Footer() {
     <footer
       className={`relative ${COLOR_COMBINATIONS.page.background} border-t border-white/10`}
     >
-      {/* Background decorative elements */}
+      {/* Background Animated Grid */}
+      <AnimatedGridBackground
+        className="pointer-events-none absolute inset-0"
+        density={0.4}
+        speed={1}
+      />
+
+      {/* Background decorative elements (conservés) */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="bg-accent/5 absolute -left-40 bottom-0 h-80 w-80 rounded-full blur-3xl" />
         <div className="absolute -right-40 top-0 h-80 w-80 rounded-full bg-white/5 blur-3xl" />

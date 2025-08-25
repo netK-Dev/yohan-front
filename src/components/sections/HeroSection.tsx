@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 export default function HeroSection() {
@@ -44,12 +45,13 @@ export default function HeroSection() {
 
           {/* Call to Action */}
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 lg:gap-6">
-            <button
+            <Link
+              href="/realisations"
               className={`group relative transform overflow-hidden rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:px-8 sm:py-4 sm:text-base ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow}`}
             >
               <span className="relative z-10">Découvrir mes créations</span>
               <div className="absolute inset-0 bg-gradient-to-r from-[#e6000c] to-[#cc0009] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            </button>
+            </Link>
             <button
               className={`group rounded-2xl border-2 border-white px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:border-[#ff0015] hover:bg-[#ff0015]/5 hover:text-[#ff0015] hover:shadow-lg sm:px-8 sm:py-4 sm:text-base`}
             >
