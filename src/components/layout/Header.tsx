@@ -4,10 +4,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const isRealisations =
     pathname?.startsWith('/realisations') ||
     pathname?.startsWith('/realisation');
@@ -18,6 +20,18 @@ export default function Header() {
   const is3DVfx = isRealisations && category === '3d-vfx';
   const isMotion = isRealisations && category === 'motion-design';
   const isCourt = isRealisations && category === 'court-metrage';
+
+  // Empêcher le scroll du body quand le menu mobile est ouvert
+  useEffect(() => {
+    if (mobileOpen) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = previousOverflow;
+      };
+    }
+    return undefined;
+  }, [mobileOpen]);
   return (
     <div className="fixed left-0 right-0 top-0 z-50 w-full bg-transparent px-2 py-2 sm:px-4 sm:py-4">
       {/* Container avec effet de halo extérieur */}
@@ -200,25 +214,146 @@ export default function Header() {
                 <button
                   className="rounded-lg p-1.5 text-white transition-all duration-300 hover:bg-white hover:bg-opacity-10 hover:text-[#ff0015] sm:p-2"
                   aria-label="Menu mobile"
+                  aria-expanded={mobileOpen}
+                  aria-controls="mobile-menu-panel"
+                  onClick={() => setMobileOpen(prev => !prev)}
                 >
-                  <svg
-                    className="h-6 w-6 sm:h-7 sm:w-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
+                  {mobileOpen ? (
+                    <svg
+                      className="h-6 w-6 sm:h-7 sm:w-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-6 w-6 sm:h-7 sm:w-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
           </div>
         </header>
+      </div>
+      {/* Panneau de navigation mobile */}
+      <div
+        id="mobile-menu-panel"
+        className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        aria-hidden={!mobileOpen}
+      >
+        {/* Overlay */}
+        <div
+          className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setMobileOpen(false)}
+        />
+
+        {/* Drawer */}
+        <div
+          className={`absolute right-0 top-0 h-full w-72 transform rounded-l-xl bg-gradient-to-b from-[#000002] via-gray-950 to-[#000002] shadow-2xl transition-transform duration-300 sm:w-80 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        >
+          <div className="flex items-center justify-between px-5 py-4">
+            <div className="flex items-center space-x-2">
+              <div className="relative h-8 w-8">
+                <Image
+                  src="/img/logo_yohan.png"
+                  alt="Doens Production Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-white">Menu</span>
+            </div>
+            <button
+              className="rounded-lg p-2 text-white hover:bg-white/10"
+              aria-label="Fermer le menu"
+              onClick={() => setMobileOpen(false)}
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <nav className="mt-2 space-y-1 px-2 pb-6">
+            <Link
+              href="/"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isHome ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Accueil
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isAbout ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              À propos
+            </Link>
+            <Link
+              href="/realisations"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isRealisations && !category ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Toutes les réalisations
+            </Link>
+            <Link
+              href="/realisations?category=3d-vfx"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${is3DVfx ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              3D/VFX et Compositing
+            </Link>
+            <Link
+              href="/realisations?category=motion-design"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isMotion ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Motion Design
+            </Link>
+            <Link
+              href="/realisations?category=court-metrage"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isCourt ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Court Métrage
+            </Link>
+            <Link
+              href="/contact"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isContact ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Contact
+            </Link>
+          </nav>
+        </div>
       </div>
     </div>
   );

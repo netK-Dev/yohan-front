@@ -209,13 +209,13 @@ export default function RealisationsGallery() {
           {paginated.map((project, index) => (
             <article
               key={project.id}
-              className={`group relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-[#ff0015]/10 sm:p-6`}
+              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-[#ff0015]/10 sm:p-6`}
               style={{ animationDelay: `${index * 120}ms` }}
             >
               {/* Accent gradient */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#ff0015]/10 via-transparent to-white/5 opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
 
-              <div className="relative z-10">
+              <div className="relative z-10 flex h-full flex-col">
                 {/* Media */}
                 <div className="relative mb-4 h-44 overflow-hidden rounded-xl sm:mb-6 sm:h-56">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -248,7 +248,7 @@ export default function RealisationsGallery() {
                 </p>
 
                 {/* Tags */}
-                <div className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
+                <div className="mb-4 mt-auto flex flex-wrap gap-1.5 sm:gap-2">
                   {project.tags.map((tag, i) => (
                     <span
                       key={i}
