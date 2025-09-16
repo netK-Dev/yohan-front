@@ -1,5 +1,5 @@
 'use client';
-// src/components/layout/Header.tsx
+// src/components/layout/Header.tsx.
 
 import Link from 'next/link';
 import Image from 'next/image';
