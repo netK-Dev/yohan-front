@@ -1,8 +1,8 @@
 import Header from '@/components/layout/Header';
+import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import IntroBanner from '@/components/sections/IntroBanner';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
-import Image from 'next/image';
 
 export const metadata = {
   title: 'À propos | Doens Production',
@@ -13,7 +13,9 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <>
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       <main className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}>
         <IntroBanner
           title="Yohan Doens"
@@ -119,7 +121,7 @@ export default function AboutPage() {
                           Freelance – Doens Production
                         </span>
                         <span className="text-white/60">
-                          2020 – Aujourd'hui
+                          2020 – Aujourd&#39;hui
                         </span>
                       </div>
                       <p className="mt-2 text-white/80">

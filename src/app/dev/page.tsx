@@ -1,11 +1,14 @@
 import Header from '@/components/layout/Header';
+import { Suspense } from 'react';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 export default function TestPage() {
   return (
     <div className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}>
       {/* Affichage du Header */}
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       {/* Contenu de test pour voir le rendu - avec padding-top pour header fixé */}
       <main className="mx-auto max-w-7xl px-4 py-8 pt-36">
         <div

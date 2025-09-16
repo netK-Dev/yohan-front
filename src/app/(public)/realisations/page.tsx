@@ -3,6 +3,7 @@ import Footer from '@/components/layout/Footer';
 import RealisationsGallery from '@/components/sections/RealisationsGallery';
 import IntroBanner from '@/components/sections/IntroBanner';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import { Suspense } from 'react';
 
 export const metadata = {
   title: 'Réalisations | Doens Production',
@@ -13,14 +14,18 @@ export const metadata = {
 export default function RealisationsPage() {
   return (
     <>
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       <main className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}>
         <IntroBanner
           title="Réalisations"
           subtitle="Des projets qui allient exigence technique et direction artistique."
         />
 
-        <RealisationsGallery />
+        <Suspense fallback={null}>
+          <RealisationsGallery />
+        </Suspense>
       </main>
       <Footer />
     </>

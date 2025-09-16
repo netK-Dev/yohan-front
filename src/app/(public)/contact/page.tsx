@@ -1,4 +1,5 @@
 import Header from '@/components/layout/Header';
+import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import ContactForm from '@/components/forms/ContactForm';
 import IntroBanner from '@/components/sections/IntroBanner';
@@ -13,7 +14,9 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <>
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       <main className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}>
         <IntroBanner
           title="Entrons en contact"
@@ -86,7 +89,9 @@ export default function ContactPage() {
             >
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-[#ff0015]/10 to-transparent opacity-20" />
               <div className="relative z-10">
-                <ContactForm />
+                <Suspense fallback={null}>
+                  <ContactForm />
+                </Suspense>
               </div>
             </div>
           </div>

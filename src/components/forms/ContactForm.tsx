@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
@@ -61,7 +61,7 @@ export default function ContactForm() {
       setEmail('');
       setMessage('');
       setBudget('');
-    } catch (err) {
+    } catch {
       setState('error');
     }
   }
