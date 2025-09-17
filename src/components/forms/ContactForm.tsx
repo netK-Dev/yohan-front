@@ -1,5 +1,6 @@
 'use client';
 
+// import
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
