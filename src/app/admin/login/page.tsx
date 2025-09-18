@@ -5,19 +5,57 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import { signIn, useSession } from '@/lib/auth-client';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [mounted, setMounted] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const { data: session } = useSession();
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  React.useEffect(() => {
+    if (session?.user) {
+      router.push('/admin/dashboard');
+    }
+  }, [session, router]);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Auth fictive: redirige directement vers le dashboard
-    router.push('/admin/dashboard');
+    setLoading(true);
+    setError('');
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    try {
+      // Essayer de se connecter uniquement
+      const signInResult = await signIn.email({
+        email,
+        password,
+      });
+
+      if (signInResult.data?.user) {
+        router.push('/admin/dashboard');
+        return;
+      }
+
+      // Afficher l'erreur de connexion sans créer de compte
+      if (signInResult.error) {
+        setError(
+          'Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.'
+        );
+      }
+    } catch (err) {
+      setError('Erreur de connexion. Vérifiez vos identifiants.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (!mounted) {
@@ -51,6 +89,12 @@ export default function AdminLoginPage() {
             className="space-y-4"
             autoComplete="off"
           >
+            {error && (
+              <div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+                {error}
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor="email"
@@ -63,9 +107,10 @@ export default function AdminLoginPage() {
                 name="email"
                 type="email"
                 required
+                disabled={loading}
                 autoComplete="username"
-                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none ring-0 placeholder:text-white/40 focus:border-white/20"
-                placeholder="admin@example.com"
+                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none ring-0 placeholder:text-white/40 focus:border-white/20 disabled:opacity-50"
+                placeholder="admin@yohan.dev"
               />
             </div>
             <div>
@@ -80,17 +125,19 @@ export default function AdminLoginPage() {
                 name="password"
                 type="password"
                 required
+                disabled={loading}
                 autoComplete="current-password"
-                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none ring-0 placeholder:text-white/40 focus:border-white/20"
+                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none ring-0 placeholder:text-white/40 focus:border-white/20 disabled:opacity-50"
                 placeholder="••••••••"
               />
             </div>
 
             <button
               type="submit"
-              className={`mt-2 w-full rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
+              disabled={loading}
+              className={`mt-2 w-full rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              Se connecter
+              {loading ? 'Connexion...' : 'Se connecter'}
             </button>
           </form>
 

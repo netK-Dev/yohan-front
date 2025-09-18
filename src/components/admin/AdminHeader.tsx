@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import { signOut, useSession } from '@/lib/auth-client';
 
 type AdminHeaderProps = {
   className?: string;
@@ -12,10 +13,16 @@ type AdminHeaderProps = {
 
 export default function AdminHeader({ className }: AdminHeaderProps) {
   const router = useRouter();
+  const { data: session } = useSession();
 
-  function handleLogout() {
-    // Factice pour l'instant: retour vers la page de login
-    router.push('/admin/login');
+  async function handleLogout() {
+    try {
+      await signOut();
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Erreur de déconnexion:', error);
+      router.push('/admin/login');
+    }
   }
 
   return (
@@ -41,9 +48,16 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               height={36}
               className="h-9 w-9 object-contain"
             />
-            <span className="text-sm font-semibold tracking-wide text-white/90">
-              Admin
-            </span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold tracking-wide text-white/90">
+                Admin
+              </span>
+              {session?.user?.name && (
+                <span className="text-xs text-white/60">
+                  Connecté: {session.user.name}
+                </span>
+              )}
+            </div>
           </Link>
         </div>
 

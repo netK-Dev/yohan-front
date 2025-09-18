@@ -1,8 +1,11 @@
 'use client';
 
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import AdminHeader from '@/components/admin/AdminHeader';
+import { useSession } from '@/lib/auth-client';
 
 type Project = {
   id: string;
@@ -57,6 +60,32 @@ const CATEGORIES: Array<Project['category']> = [
 ];
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+
+  React.useEffect(() => {
+    if (!isPending && !session?.user) {
+      router.push('/admin/login');
+    }
+  }, [session, isPending, router]);
+
+  if (isPending) {
+    return (
+      <div
+        className={`relative min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text} flex items-center justify-center`}
+      >
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60"></div>
+          <p className="text-sm text-white/60">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session?.user) {
+    return null;
+  }
+
   return (
     <div
       className={`relative min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text}`}
