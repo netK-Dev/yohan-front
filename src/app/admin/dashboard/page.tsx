@@ -7,6 +7,7 @@ import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useSession } from '@/lib/auth-client';
+import AddButton from '@/components/ui/addButton';
 
 type Project = {
   id: string;
@@ -159,6 +160,15 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="mt-6 flex justify-center">
+                    <AddButton
+                      size="md"
+                      onClick={() =>
+                        console.log(`Ajouter un projet ${category}`)
+                      }
+                    />
                   </div>
                 </div>
               );
