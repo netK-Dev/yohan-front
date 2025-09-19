@@ -54,7 +54,7 @@ async function createUser() {
         id: userId,
         email,
         name,
-        emailVerified: true,
+        emailVerified: new Date(),
       },
     });
 
