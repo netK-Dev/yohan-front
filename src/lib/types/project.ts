@@ -1,8 +1,21 @@
 import { z } from 'zod';
 
 // Schema de validation Zod pour les projets
+// Catégories disponibles
+export const PROJECT_CATEGORIES = [
+  '3D/VFX et Compositing',
+  'Motion Design',
+  'Court Métrage',
+] as const;
+
+// Type utilitaire pour la catégorie
+export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
+
 export const ProjectSchema = z.object({
   title: z.string().min(1, 'Le titre est requis').max(100, 'Titre trop long'),
+  category: z.enum(PROJECT_CATEGORIES, {
+    errorMap: () => ({ message: 'Catégorie invalide' }),
+  }),
   date: z.string().min(1, 'La date est requise'),
   description: z
     .string()
@@ -32,6 +45,7 @@ export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
 export interface Project {
   id: string;
   title: string;
+  category: ProjectCategory;
   date: Date;
   description: string;
   image: string;

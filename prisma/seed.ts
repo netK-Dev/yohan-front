@@ -56,6 +56,7 @@ async function main() {
       create: {
         id: 'project-1',
         title: 'Intro FX Neon',
+        category: '3D/VFX et Compositing',
         date: new Date('2024-01-15'),
         description:
           "Création d'une intro avec des effets néon en 3D et VFX avancés",
@@ -70,6 +71,7 @@ async function main() {
       create: {
         id: 'project-2',
         title: 'Packshot Produit X',
+        category: 'Motion Design',
         date: new Date('2024-02-20'),
         description:
           'Motion design pour présentation produit avec animations fluides',
@@ -83,6 +85,7 @@ async function main() {
       create: {
         id: 'project-3',
         title: 'Court Métrage - Lueur',
+        category: 'Court Métrage',
         date: new Date('2024-03-10'),
         description:
           'Court métrage artistique avec direction photo et montage créatif',

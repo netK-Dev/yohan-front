@@ -6,6 +6,7 @@ import {
   CreateProjectInput,
   UpdateProjectInput,
   ProjectSchema,
+  PROJECT_CATEGORIES,
 } from '@/lib/types/project';
 import FileUploader from '@/components/ui/FileUploader';
 
@@ -26,6 +27,7 @@ export default function ProjectForm({
 }: ProjectFormProps) {
   const [formData, setFormData] = React.useState<CreateProjectInput>({
     title: initialData?.title || '',
+    category: initialData?.category || PROJECT_CATEGORIES[0],
     date: initialData?.date || new Date().toISOString().split('T')[0],
     description: initialData?.description || '',
     image: initialData?.image || '',
@@ -88,59 +90,86 @@ export default function ProjectForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Titre */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
-          Titre du projet *
-        </label>
-        <input
-          type="text"
-          value={formData.title}
-          onChange={e => handleChange('title', e.target.value)}
-          className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
-            errors.title
-              ? 'border-red-500 focus:border-red-400'
-              : 'border-white/10 focus:border-white/20'
-          }`}
-          placeholder="Ex: Intro FX Neon"
-          disabled={isLoading}
-        />
-        {errors.title && (
-          <p className="mt-1 text-xs text-red-400">{errors.title}</p>
-        )}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Titre, Catégorie et Date */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            Titre du projet *
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={e => handleChange('title', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.title
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="Ex: Intro FX Neon"
+            disabled={isLoading}
+          />
+          {errors.title && (
+            <p className="mt-1 text-xs text-red-400">{errors.title}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            Date du projet *
+          </label>
+          <input
+            type="date"
+            value={formData.date}
+            onChange={e => handleChange('date', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.date
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            disabled={isLoading}
+          />
+          {errors.date && (
+            <p className="mt-1 text-xs text-red-400">{errors.date}</p>
+          )}
+        </div>
       </div>
 
-      {/* Date */}
+      {/* Catégorie */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
-          Date du projet *
+        <label className="mb-1.5 block text-sm font-medium text-white/80">
+          Catégorie *
         </label>
-        <input
-          type="date"
-          value={formData.date}
-          onChange={e => handleChange('date', e.target.value)}
+        <select
+          value={formData.category}
+          onChange={e => handleChange('category', e.target.value)}
           className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
-            errors.date
+            errors.category
               ? 'border-red-500 focus:border-red-400'
               : 'border-white/10 focus:border-white/20'
           }`}
           disabled={isLoading}
-        />
-        {errors.date && (
-          <p className="mt-1 text-xs text-red-400">{errors.date}</p>
+        >
+          {PROJECT_CATEGORIES.map(category => (
+            <option key={category} value={category} className="bg-black">
+              {category}
+            </option>
+          ))}
+        </select>
+        {errors.category && (
+          <p className="mt-1 text-xs text-red-400">{errors.category}</p>
         )}
       </div>
 
       {/* Description */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
+        <label className="mb-1.5 block text-sm font-medium text-white/80">
           Description *
         </label>
         <textarea
           value={formData.description}
           onChange={e => handleChange('description', e.target.value)}
-          rows={4}
+          rows={3}
           className={`w-full resize-none rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
             errors.description
               ? 'border-red-500 focus:border-red-400'
@@ -156,13 +185,13 @@ export default function ProjectForm({
 
       {/* Image */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
+        <label className="mb-1.5 block text-sm font-medium text-white/80">
           Image principale *
         </label>
 
         {formData.image && !showImageUploader ? (
-          <div className="space-y-3">
-            <div className="relative h-32 w-full overflow-hidden rounded-md border border-white/10">
+          <div className="space-y-2">
+            <div className="relative h-24 w-full overflow-hidden rounded-md border border-white/10">
               <img
                 src={formData.image}
                 alt="Aperçu"
@@ -190,70 +219,70 @@ export default function ProjectForm({
         )}
       </div>
 
-      {/* Vidéo (optionnel) */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
-          URL de la vidéo
-        </label>
-        <input
-          type="url"
-          value={formData.video}
-          onChange={e => handleChange('video', e.target.value)}
-          className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
-            errors.video
-              ? 'border-red-500 focus:border-red-400'
-              : 'border-white/10 focus:border-white/20'
-          }`}
-          placeholder="https://..."
-          disabled={isLoading}
-        />
-        {errors.video && (
-          <p className="mt-1 text-xs text-red-400">{errors.video}</p>
-        )}
-      </div>
+      {/* Champs optionnels */}
+      <div className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            URL de la vidéo
+          </label>
+          <input
+            type="url"
+            value={formData.video}
+            onChange={e => handleChange('video', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.video
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="https://..."
+            disabled={isLoading}
+          />
+          {errors.video && (
+            <p className="mt-1 text-xs text-red-400">{errors.video}</p>
+          )}
+        </div>
 
-      {/* Compétences (optionnel) */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
-          Compétences utilisées
-        </label>
-        <input
-          type="text"
-          value={formData.skill}
-          onChange={e => handleChange('skill', e.target.value)}
-          className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
-            errors.skill
-              ? 'border-red-500 focus:border-red-400'
-              : 'border-white/10 focus:border-white/20'
-          }`}
-          placeholder="Ex: Blender, After Effects, Cinema 4D..."
-          disabled={isLoading}
-        />
-        {errors.skill && (
-          <p className="mt-1 text-xs text-red-400">{errors.skill}</p>
-        )}
-      </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            Compétences utilisées
+          </label>
+          <input
+            type="text"
+            value={formData.skill}
+            onChange={e => handleChange('skill', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.skill
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="Ex: Blender, After Effects, Cinema 4D..."
+            disabled={isLoading}
+          />
+          {errors.skill && (
+            <p className="mt-1 text-xs text-red-400">{errors.skill}</p>
+          )}
+        </div>
 
-      {/* Lien (optionnel) */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-white/80">
-          Lien du projet
-        </label>
-        <input
-          type="url"
-          value={formData.link}
-          onChange={e => handleChange('link', e.target.value)}
-          className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
-            errors.link
-              ? 'border-red-500 focus:border-red-400'
-              : 'border-white/10 focus:border-white/20'
-          }`}
-          placeholder="https://..."
-          disabled={isLoading}
-        />
-        {errors.link && (
-          <p className="mt-1 text-xs text-red-400">{errors.link}</p>
-        )}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            Lien du projet
+          </label>
+          <input
+            type="url"
+            value={formData.link}
+            onChange={e => handleChange('link', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.link
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="https://..."
+            disabled={isLoading}
+          />
+          {errors.link && (
+            <p className="mt-1 text-xs text-red-400">{errors.link}</p>
+          )}
+        </div>
       </div>
 
       {/* Actions */}

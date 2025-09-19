@@ -17,6 +17,7 @@ datasource db {
 model Project {
   id          String   @id @default(cuid())
   title       String
+  category    String
   date        DateTime
   description String   @db.Text
   image       String

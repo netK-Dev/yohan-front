@@ -15,6 +15,7 @@ import {
   UpdateProjectInput,
   Project,
 } from '@/lib/types/project';
+import { PROJECT_CATEGORIES } from '@/lib/types/project';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -86,6 +87,7 @@ export default function AdminDashboardPage() {
   const formatProjectForEdit = (project: Project): UpdateProjectInput => ({
     id: project.id,
     title: project.title,
+    category: project.category,
     date: new Date(project.date).toISOString().split('T')[0],
     description: project.description,
     image: project.image,
@@ -142,7 +144,7 @@ export default function AdminDashboardPage() {
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60"></div>
             </div>
           ) : (
-            <section className="space-y-6">
+            <section className="space-y-10">
               {projects.length === 0 ? (
                 <div className="rounded-xl border border-white/10 bg-black/30 p-8 text-center shadow-xl backdrop-blur">
                   <p className="text-white/60">Aucun projet pour le moment.</p>
@@ -154,51 +156,63 @@ export default function AdminDashboardPage() {
                   </button>
                 </div>
               ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {projects.map(project => (
-                    <div
-                      key={project.id}
-                      className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/30 shadow-xl backdrop-blur transition-all hover:border-white/20"
-                    >
-                      <div className="relative aspect-video overflow-hidden">
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                PROJECT_CATEGORIES.map(category => {
+                  const items = projects.filter(p => p.category === category);
+                  if (items.length === 0) return null;
+                  return (
+                    <div key={category} className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-semibold tracking-wide text-white/80">
+                          {category}
+                        </h2>
                       </div>
-
-                      <div className="p-4">
-                        <h3 className="mb-1 font-medium text-white/90">
-                          {project.title}
-                        </h3>
-                        <p className="mb-2 text-xs text-white/60">
-                          {new Date(project.date).toLocaleDateString('fr-FR')}
-                        </p>
-                        <p className="mb-4 line-clamp-2 text-xs text-white/70">
-                          {project.description}
-                        </p>
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => setEditingProject(project)}
-                            className={`flex-1 rounded-md px-3 py-1.5 text-xs ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {items.map(project => (
+                          <div
+                            key={project.id}
+                            className="group relative h-32 overflow-hidden rounded-lg border border-white/10 bg-black/30 shadow-lg backdrop-blur transition-colors hover:border-white/20"
                           >
-                            Éditer
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProject(project)}
-                            className="rounded-md border border-red-500/20 bg-red-600/20 px-3 py-1.5 text-xs text-red-400 transition hover:bg-red-600/30"
-                          >
-                            Supprimer
-                          </button>
-                        </div>
+                            <Image
+                              src={project.image}
+                              alt={project.title}
+                              fill
+                              className="object-cover opacity-60 transition-transform group-hover:scale-105"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
+
+                            <div className="relative flex h-full flex-col justify-between p-3">
+                              <div>
+                                <h3 className="line-clamp-1 text-sm font-medium text-white/90">
+                                  {project.title}
+                                </h3>
+                                <p className="text-[11px] text-white/60">
+                                  {new Date(project.date).toLocaleDateString(
+                                    'fr-FR'
+                                  )}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => setEditingProject(project)}
+                                  className={`rounded-md px-2 py-1 text-[11px] ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
+                                >
+                                  Éditer
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProject(project)}
+                                  className="rounded-md border border-red-500/20 bg-red-600/20 px-2 py-1 text-[11px] text-red-400 transition hover:bg-red-600/30"
+                                >
+                                  Supprimer
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })
               )}
             </section>
           )}
