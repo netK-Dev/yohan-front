@@ -1,0 +1,51 @@
+import { z } from 'zod';
+
+// Schema de validation Zod pour les projets
+export const ProjectSchema = z.object({
+  title: z.string().min(1, 'Le titre est requis').max(100, 'Titre trop long'),
+  date: z.string().min(1, 'La date est requise'),
+  description: z
+    .string()
+    .min(1, 'La description est requise')
+    .max(2000, 'Description trop longue'),
+  image: z.string().url("URL d'image invalide"),
+  video: z.string().url('URL de vidéo invalide').optional().or(z.literal('')),
+  skill: z
+    .string()
+    .max(200, 'Compétences trop longues')
+    .optional()
+    .or(z.literal('')),
+  link: z.string().url('URL de lien invalide').optional().or(z.literal('')),
+});
+
+export const CreateProjectSchema = ProjectSchema;
+
+export const UpdateProjectSchema = ProjectSchema.partial().extend({
+  id: z.string().cuid('ID invalide'),
+});
+
+// Types TypeScript dérivés des schémas
+export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
+export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
+
+// Type pour les projets complets (avec metadata Prisma)
+export interface Project {
+  id: string;
+  title: string;
+  date: Date;
+  description: string;
+  image: string;
+  video: string | null;
+  skill: string | null;
+  link: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Type pour les projets dans l'interface (dates en string)
+export interface ProjectUI
+  extends Omit<Project, 'date' | 'createdAt' | 'updatedAt'> {
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+}

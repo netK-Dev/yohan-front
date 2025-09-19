@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,37 @@ async function main() {
   });
 
   console.log('Utilisateur admin créé:', admin);
+
+  // Créer le compte d'authentification (provider credential) avec mot de passe hashé si absent
+  const existingCredential = await prisma.account.findFirst({
+    where: {
+      userId: admin.id,
+      providerId: 'credential',
+    },
+  });
+
+  if (!existingCredential) {
+    const password = process.env.SEED_ADMIN_PASSWORD || 'admin123';
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await prisma.account.create({
+      data: {
+        id:
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15),
+        accountId: admin.email, // identifiant du compte côté provider "credential"
+        providerId: 'credential',
+        userId: admin.id,
+        password: hashedPassword,
+      },
+    });
+
+    console.log(
+      `Compte d'authentification créé pour ${admin.email} (provider: credential)`
+    );
+  } else {
+    console.log('Compte credential déjà présent pour cet utilisateur.');
+  }
 
   // Créer quelques projets de test
   const projects = await Promise.all([
