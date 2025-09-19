@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -130,10 +131,11 @@ export default function AdminDashboardPage() {
                         className="relative overflow-hidden rounded-lg border border-white/10 p-4"
                       >
                         <div className="absolute inset-0">
-                          <img
+                          <Image
                             src={project.image}
                             alt=""
-                            className="h-full w-full object-cover opacity-60"
+                            fill
+                            className="object-cover opacity-60"
                           />
                           <div className="absolute inset-0 bg-black/40" />
                         </div>

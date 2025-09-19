@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
           'Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.'
         );
       }
-    } catch (err) {
+    } catch {
       setError('Erreur de connexion. Vérifiez vos identifiants.');
     } finally {
       setLoading(false);
