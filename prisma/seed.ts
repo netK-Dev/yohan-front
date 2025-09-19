@@ -9,9 +9,10 @@ async function main() {
     where: { email: 'admin@yohan.dev' },
     update: {},
     create: {
+      id: 'admin-user-id',
       email: 'admin@yohan.dev',
       name: 'Admin Yohan',
-      emailVerified: new Date(),
+      emailVerified: true,
     },
   });
 

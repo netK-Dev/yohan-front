@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth-server';
 import { CreateProjectSchema } from '@/lib/types/project';
 import prisma from '@/lib/prisma';
@@ -40,13 +40,16 @@ export const POST = withAuth(async request => {
     });
 
     return NextResponse.json(project, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la création du projet:', error);
 
     // Erreur de validation Zod
-    if (error.name === 'ZodError') {
+    if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { error: 'Données invalides', details: error.errors },
+        {
+          error: 'Données invalides',
+          details: (error as unknown as { errors: unknown }).errors,
+        },
         { status: 400 }
       );
     }

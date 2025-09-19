@@ -33,8 +33,8 @@ export default function FileUploader({
     try {
       const { url, pathname } = await uploadToBlob(file);
       onUploaded?.(url, pathname);
-    } catch (e) {
-      alert("Échec de l'upload");
+      } catch {
+        alert("Échec de l'upload");
     } finally {
       setLoading(false);
       setDragging(false);
@@ -52,11 +52,8 @@ export default function FileUploader({
         e.preventDefault();
         setDragging(true);
       }}
-      onDragLeave={e => {
-        // Vérifier si on quitte vraiment la zone de drop
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-          setDragging(false);
-        }
+      onDragLeave={() => {
+        setDragging(false);
       }}
       onDrop={e => {
         e.preventDefault();

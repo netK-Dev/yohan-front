@@ -26,8 +26,8 @@ export function useProjects() {
 
       const data = await response.json();
       setProjects(data);
-    } catch (err: any) {
-      setError(err.message || 'Erreur inconnue');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +54,8 @@ export function useProjects() {
         const newProject = await response.json();
         setProjects(prev => [newProject, ...prev]);
         return newProject;
-      } catch (err: any) {
-        setError(err.message || 'Erreur lors de la création');
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la création');
         throw err;
       } finally {
         setIsLoading(false);
@@ -88,8 +88,8 @@ export function useProjects() {
         const updatedProject = await response.json();
         setProjects(prev => prev.map(p => (p.id === id ? updatedProject : p)));
         return updatedProject;
-      } catch (err: any) {
-        setError(err.message || 'Erreur lors de la mise à jour');
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
         throw err;
       } finally {
         setIsLoading(false);
@@ -114,8 +114,8 @@ export function useProjects() {
       }
 
       setProjects(prev => prev.filter(p => p.id !== id));
-    } catch (err: any) {
-      setError(err.message || 'Erreur lors de la suppression');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
       throw err;
     } finally {
       setIsLoading(false);

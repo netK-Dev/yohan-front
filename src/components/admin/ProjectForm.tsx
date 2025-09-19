@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import {
   CreateProjectInput,
@@ -54,13 +55,17 @@ export default function ProjectForm({
       ProjectSchema.parse(formData);
       setErrors({});
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       const fieldErrors: Record<string, string> = {};
-      error.errors?.forEach((err: any) => {
-        if (err.path?.[0]) {
-          fieldErrors[err.path[0]] = err.message;
-        }
-      });
+      if (error && typeof error === 'object' && 'errors' in error) {
+        (error.errors as Array<{ path?: string[]; message?: string }>)?.forEach(
+          err => {
+            if (err.path?.[0]) {
+              fieldErrors[err.path[0]] = err.message || 'Erreur de validation';
+            }
+          }
+        );
+      }
       setErrors(fieldErrors);
       return false;
     }
@@ -192,10 +197,12 @@ export default function ProjectForm({
         {formData.image && !showImageUploader ? (
           <div className="space-y-2">
             <div className="relative h-24 w-full overflow-hidden rounded-md border border-white/10">
-              <img
+              <Image
                 src={formData.image}
                 alt="Aperçu"
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
               />
             </div>
             <button
@@ -203,7 +210,7 @@ export default function ProjectForm({
               onClick={() => setShowImageUploader(true)}
               className="text-xs text-white/60 underline hover:text-white/80"
             >
-              Changer l'image
+              Changer l&apos;image
             </button>
           </div>
         ) : (

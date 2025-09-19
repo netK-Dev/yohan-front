@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ url: blob.url, pathname: blob.pathname });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Upload échoué' }, { status: 500 });
   }
 }

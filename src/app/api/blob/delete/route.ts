@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     await del(pathname);
     return NextResponse.json({ ok: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Suppression échouée' }, { status: 500 });
   }
 }

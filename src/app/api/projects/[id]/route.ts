@@ -6,11 +6,12 @@ import prisma from '@/lib/prisma';
 // GET /api/projects/[id] - Récupérer un projet spécifique (public)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!project) {
@@ -26,19 +27,20 @@ export async function GET(
 
 // PUT /api/projects/[id] - Mettre à jour un projet (admin only)
 export const PUT = withAuth(
-  async (request, session, { params }: { params: { id: string } }) => {
+  async (request, session, { params }: { params: Promise<{ id: string }> }) => {
     try {
+      const { id } = await params;
       const body = await request.json();
 
       // Validation avec Zod
       const validatedData = UpdateProjectSchema.parse({
         ...body,
-        id: params.id,
+        id,
       });
 
       // Vérifier que le projet existe
       const existingProject = await prisma.project.findUnique({
-        where: { id: params.id },
+        where: { id },
       });
 
       if (!existingProject) {
@@ -48,33 +50,37 @@ export const PUT = withAuth(
         );
       }
 
-      // Préparer les données pour la mise à jour
-      const updateData: any = { ...validatedData };
-      delete updateData.id; // Retirer l'ID des données à mettre à jour
+      // Préparer les données pour la mise à jour (exclure l'ID)
+      const updateData = { ...validatedData };
+      delete (updateData as { id?: string }).id;
 
       // Conversion de la date si fournie
+      const finalUpdateData: Record<string, unknown> = { ...updateData };
       if (updateData.date) {
-        updateData.date = new Date(updateData.date);
+        finalUpdateData.date = new Date(updateData.date);
       }
 
       // Nettoyer les champs optionnels
-      if (updateData.video === '') updateData.video = null;
-      if (updateData.skill === '') updateData.skill = null;
-      if (updateData.link === '') updateData.link = null;
+      if (updateData.video === '') finalUpdateData.video = null;
+      if (updateData.skill === '') finalUpdateData.skill = null;
+      if (updateData.link === '') finalUpdateData.link = null;
 
       const project = await prisma.project.update({
-        where: { id: params.id },
-        data: updateData,
+        where: { id },
+        data: finalUpdateData,
       });
 
       return NextResponse.json(project);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors de la mise à jour du projet:', error);
 
       // Erreur de validation Zod
-      if (error.name === 'ZodError') {
+      if (error instanceof Error && error.name === 'ZodError') {
         return NextResponse.json(
-          { error: 'Données invalides', details: error.errors },
+          {
+            error: 'Données invalides',
+            details: (error as unknown as { errors: unknown }).errors,
+          },
           { status: 400 }
         );
       }
@@ -89,11 +95,12 @@ export const PUT = withAuth(
 
 // DELETE /api/projects/[id] - Supprimer un projet (admin only)
 export const DELETE = withAuth(
-  async (request, session, { params }: { params: { id: string } }) => {
+  async (request, session, { params }: { params: Promise<{ id: string }> }) => {
     try {
+      const { id } = await params;
       // Vérifier que le projet existe
       const existingProject = await prisma.project.findUnique({
-        where: { id: params.id },
+        where: { id },
       });
 
       if (!existingProject) {
@@ -104,7 +111,7 @@ export const DELETE = withAuth(
       }
 
       await prisma.project.delete({
-        where: { id: params.id },
+        where: { id },
       });
 
       return NextResponse.json({ success: true });
