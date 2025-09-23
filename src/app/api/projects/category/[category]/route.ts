@@ -13,7 +13,7 @@ export async function GET(
       orderBy: { date: 'desc' },
     });
     return NextResponse.json(projects);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }

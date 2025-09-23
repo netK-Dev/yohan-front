@@ -67,7 +67,7 @@ export const PUT = withAuth(
         Array.isArray(updateData.images) === false &&
         updateData.images !== undefined
       ) {
-        delete (finalUpdateData as any).images; // sécuriser si mauvais type
+        delete (finalUpdateData as Record<string, unknown>).images; // sécuriser si mauvais type
       }
       if (updateData.videoFile === '') finalUpdateData.videoFile = null;
       if (updateData.skill === '') finalUpdateData.skill = null;
