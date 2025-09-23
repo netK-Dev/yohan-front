@@ -61,7 +61,7 @@ async function main() {
         date: new Date('2024-01-15'),
         description:
           "Création d'une intro avec des effets néon en 3D et VFX avancés",
-        image: '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp',
+        images: ['/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp'],
         skill: '3D, VFX, After Effects',
         link: 'https://example.com/neon-fx',
       },
@@ -76,7 +76,7 @@ async function main() {
         date: new Date('2024-02-20'),
         description:
           'Motion design pour présentation produit avec animations fluides',
-        image: '/img/services/basement-doens-yohan-combo-07.webp',
+        images: ['/img/services/basement-doens-yohan-combo-07.webp'],
         skill: 'Motion Design, Cinema 4D',
       },
     }),
@@ -90,7 +90,7 @@ async function main() {
         date: new Date('2024-03-10'),
         description:
           'Court métrage artistique avec direction photo et montage créatif',
-        image: '/img/services/Hnet-image.webp',
+        images: ['/img/services/Hnet-image.webp'],
         video: 'https://example.com/lueur-trailer.mp4',
         skill: 'Réalisation, Montage, Color Grading',
         link: 'https://example.com/lueur',
