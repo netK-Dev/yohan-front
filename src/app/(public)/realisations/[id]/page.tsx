@@ -2,6 +2,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import { parseSkills } from '@/lib/utils/skills';
 import { headers } from 'next/headers';
 
 async function fetchProject(id: string) {
@@ -139,16 +140,16 @@ export default async function ProjectDetailPage({
                   Compétences utilisées
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {project.skill
-                    .split(',')
-                    .map((skill: string, index: number) => (
+                  {parseSkills(project.skill).map(
+                    (skill: string, index: number) => (
                       <span
                         key={index}
                         className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70"
                       >
-                        {skill.trim()}
+                        {skill}
                       </span>
-                    ))}
+                    )
+                  )}
                 </div>
               </div>
             )}

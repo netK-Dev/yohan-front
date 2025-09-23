@@ -6,6 +6,7 @@ import { COLOR_COMBINATIONS } from '@/lib/colors';
 import Pagination from '@/components/ui/Pagination';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { parseSkills } from '@/lib/utils/skills';
 
 type ProjectCategory = '3d-vfx' | 'motion-design' | 'court-metrage';
 
@@ -45,13 +46,7 @@ function mapDbCategoryToKey(dbCategory: string): ProjectCategory {
 
 // Transforme un projet DB en item UI
 function toProjectItem(p: DbProject): ProjectItem {
-  const tags =
-    typeof p.skill === 'string'
-      ? p.skill
-          .split(',')
-          .map((s: string) => s.trim())
-          .filter((s: string) => s)
-      : [];
+  const tags = parseSkills(p.skill || '');
   // utiliser la première image de la galerie comme couverture
   const cover = p.images && p.images.length > 0 ? p.images[0] : '';
   return {
