@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import ImageSlider from '@/components/ui/ImageSlider';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { headers } from 'next/headers';
 
@@ -20,6 +20,29 @@ async function fetchProject(id: string) {
   return res.json();
 }
 
+function getExternalVideoEmbed(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace('www.', '');
+    if (host.includes('youtube.com')) {
+      const id = u.searchParams.get('v');
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (host.includes('youtu.be')) {
+      const id = u.pathname.replace('/', '');
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (host.includes('vimeo.com')) {
+      const id = u.pathname.split('/').filter(Boolean)[0];
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -27,6 +50,7 @@ export default async function ProjectDetailPage({
 }) {
   const { id } = await params;
   const project = await fetchProject(id);
+  const externalEmbed = getExternalVideoEmbed(project?.video);
 
   if (!project) {
     return (
@@ -53,43 +77,92 @@ export default async function ProjectDetailPage({
               {new Date(project.date).toLocaleDateString('fr-FR')}
             </p>
 
-            <div className="relative mb-6 h-64 overflow-hidden rounded-xl sm:h-96">
-              <Image
-                src={project.image}
-                alt={project.title}
-                fill
-                className="object-cover"
-                sizes="100vw"
-                priority
-              />
-              <div className="absolute left-4 top-4 rounded-full bg-[#ff0015]/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
+            {/* Badge catégorie */}
+            <div className="mb-6 flex">
+              <span className="rounded-full bg-[#ff0015]/80 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm">
                 {project.category}
-              </div>
+              </span>
             </div>
 
-            <div className="prose prose-invert max-w-none">
+            {/* Description */}
+            <div className="prose prose-invert mb-8 max-w-none">
               <p className="text-white/80">{project.description}</p>
             </div>
 
+            {/* Galerie d'images */}
+            {project.images && project.images.length > 0 && (
+              <ImageSlider images={project.images} title={project.title} />
+            )}
+
+            {/* Vidéo uploadée */}
+            {project.videoFile && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
+                <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
+                  <video
+                    controls
+                    className="h-full w-full object-cover"
+                    poster={
+                      project.images && project.images[0]
+                        ? project.images[0]
+                        : undefined
+                    }
+                  >
+                    <source src={project.videoFile} type="video/mp4" />
+                    <source src={project.videoFile} type="video/webm" />
+                    Votre navigateur ne supporte pas la lecture vidéo.
+                  </video>
+                </div>
+              </div>
+            )}
+
+            {/* Vidéo externe (YouTube/Vimeo) */}
+            {externalEmbed && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
+                <div className="relative aspect-video overflow-hidden rounded-lg">
+                  <iframe
+                    src={externalEmbed}
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Video player"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Compétences */}
+            {project.skill && (
+              <div className="mb-6">
+                <h3 className="mb-2 text-lg font-medium text-white">
+                  Compétences utilisées
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {project.skill
+                    .split(',')
+                    .map((skill: string, index: number) => (
+                      <span
+                        key={index}
+                        className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70"
+                      >
+                        {skill.trim()}
+                      </span>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Lien vers le projet (si fourni) */}
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {project.video ? (
-                <a
-                  href={project.video}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/80 hover:bg-white/10"
-                >
-                  Voir la vidéo
-                </a>
-              ) : null}
               {project.link ? (
                 <a
                   href={project.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/80 hover:bg-white/10"
+                  className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/80 transition hover:bg-white/10"
                 >
-                  Lien du projet
+                  🔗 Lien du projet
                 </a>
               ) : null}
             </div>

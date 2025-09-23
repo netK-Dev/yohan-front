@@ -14,6 +14,7 @@ export const POST = withAuth(async request => {
       ...validated,
       date: new Date(validated.date),
       video: validated.video || null,
+      videoFile: validated.videoFile || null,
       skill: validated.skill || null,
       link: validated.link || null,
     };

@@ -23,7 +23,7 @@ type DbProject = {
   id: string | number;
   title: string;
   category?: string | null;
-  image: string;
+  images: string[];
   description: string;
   skill?: string | null;
 };
@@ -52,11 +52,13 @@ function toProjectItem(p: DbProject): ProjectItem {
           .map((s: string) => s.trim())
           .filter((s: string) => s)
       : [];
+  // utiliser la première image de la galerie comme couverture
+  const cover = p.images && p.images.length > 0 ? p.images[0] : '';
   return {
     id: String(p.id),
     title: p.title,
     category: mapDbCategoryToKey(p.category || ''),
-    image: p.image,
+    image: cover,
     description: p.description,
     tags,
   };
@@ -86,7 +88,6 @@ export default function RealisationsGallery() {
           setProjects(Array.isArray(data) ? data.map(toProjectItem) : []);
       } catch (e) {
         if (!cancelled) setProjects([]);
-        // eslint-disable-next-line no-console
         console.error('Erreur chargement projets:', e);
       } finally {
         if (!cancelled) setLoading(false);
@@ -229,7 +230,7 @@ export default function RealisationsGallery() {
           ).map((project, index) => (
             <article
               key={project.id}
-              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-[#ff0015]/10 sm:p-6`}
+              className={`group relative flex h-full min-h-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-[#ff0015]/10 sm:p-6`}
               style={{ animationDelay: `${index * 120}ms` }}
             >
               {/* Accent gradient */}
@@ -237,7 +238,7 @@ export default function RealisationsGallery() {
 
               <div className="relative z-10 flex h-full flex-col">
                 {/* Media */}
-                <div className="relative mb-4 h-44 overflow-hidden rounded-xl sm:mb-6 sm:h-56">
+                <div className="relative mb-4 h-48 overflow-hidden rounded-xl sm:mb-6 sm:h-56">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                   {loading ? (
                     <div className="h-full w-full animate-pulse bg-white/5" />
@@ -261,18 +262,13 @@ export default function RealisationsGallery() {
 
                 {/* Titre */}
                 <h3
-                  className={`mb-2 text-lg font-bold sm:text-xl ${COLOR_COMBINATIONS.card.text}`}
+                  className={`mb-4 text-lg font-bold sm:text-xl ${COLOR_COMBINATIONS.card.text}`}
                 >
                   {project.title}
                 </h3>
-                <p
-                  className={`mb-4 text-sm opacity-80 ${COLOR_COMBINATIONS.card.text}`}
-                >
-                  {project.description}
-                </p>
 
                 {/* Tags */}
-                <div className="mb-4 mt-auto flex flex-wrap gap-1.5 sm:gap-2">
+                <div className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
                   {project.tags.map((tag, i) => (
                     <span
                       key={i}
@@ -283,13 +279,15 @@ export default function RealisationsGallery() {
                   ))}
                 </div>
 
-                {/* CTA */}
-                <Link
-                  href={`/realisations/${project.id}`}
-                  className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
-                >
-                  Voir le projet
-                </Link>
+                {/* CTA - poussé vers le bas */}
+                <div className="mt-auto">
+                  <Link
+                    href={`/realisations/${project.id}`}
+                    className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
+                  >
+                    Voir le projet
+                  </Link>
+                </div>
               </div>
 
               {/* Ligne d’accent bas */}

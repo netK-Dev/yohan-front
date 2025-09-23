@@ -21,8 +21,13 @@ export const ProjectSchema = z.object({
     .string()
     .min(1, 'La description est requise')
     .max(2000, 'Description trop longue'),
-  image: z.string().url("URL d'image invalide"),
+  images: z.array(z.string().url()).min(1, 'Au moins une image est requise'),
   video: z.string().url('URL de vidéo invalide').optional().or(z.literal('')),
+  videoFile: z
+    .string()
+    .url('URL de vidéo invalide')
+    .optional()
+    .or(z.literal('')),
   skill: z
     .string()
     .max(200, 'Compétences trop longues')
@@ -48,8 +53,9 @@ export interface Project {
   category: ProjectCategory;
   date: Date;
   description: string;
-  image: string;
+  images: string[];
   video: string | null;
+  videoFile: string | null;
   skill: string | null;
   link: string | null;
   createdAt: Date;

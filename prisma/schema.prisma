@@ -77,11 +77,15 @@ model Verification {
 model Project {
   id          String   @id @default(cuid())
   title       String
+  /// Catégorie lisible (ex: "3D/VFX et Compositing", "Motion Design", ...)
   category    String
   date        DateTime
   description String   @db.Text
-  image       String
+  /// Galerie d'images (la première sera utilisée comme couverture)
+  images      String[] @default([])
   video       String?
+  /// Fichier vidéo uploadé (URL Blob)
+  videoFile   String?
   skill       String?
   link        String?
   createdAt   DateTime @default(now())

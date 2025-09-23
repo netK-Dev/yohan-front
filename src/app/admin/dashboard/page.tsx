@@ -90,8 +90,9 @@ export default function AdminDashboardPage() {
     category: project.category,
     date: new Date(project.date).toISOString().split('T')[0],
     description: project.description,
-    image: project.image,
+    images: project.images,
     video: project.video || '',
+    videoFile: project.videoFile || '',
     skill: project.skill || '',
     link: project.link || '',
   });
@@ -173,7 +174,7 @@ export default function AdminDashboardPage() {
                             className="group relative h-32 overflow-hidden rounded-lg border border-white/10 bg-black/30 shadow-lg backdrop-blur transition-colors hover:border-white/20"
                           >
                             <Image
-                              src={project.image}
+                              src={project.images[0] || ''}
                               alt={project.title}
                               fill
                               className="object-cover opacity-60 transition-transform group-hover:scale-105"

@@ -31,18 +31,21 @@ export default function ProjectForm({
     category: initialData?.category || PROJECT_CATEGORIES[0],
     date: initialData?.date || new Date().toISOString().split('T')[0],
     description: initialData?.description || '',
-    image: initialData?.image || '',
+    images: initialData?.images || [],
     video: initialData?.video || '',
+    videoFile: initialData?.videoFile || '',
     skill: initialData?.skill || '',
     link: initialData?.link || '',
   });
 
   const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [showImageUploader, setShowImageUploader] = React.useState(
-    !formData.image
-  );
+  const [showGalleryUploader, setShowGalleryUploader] = React.useState(false);
+  const [showVideoUploader, setShowVideoUploader] = React.useState(false);
 
-  const handleChange = (field: keyof CreateProjectInput, value: string) => {
+  const handleChange = (
+    field: keyof CreateProjectInput,
+    value: string | string[]
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Effacer l'erreur du champ modifié
     if (errors[field]) {
@@ -89,9 +92,22 @@ export default function ProjectForm({
     }
   };
 
-  const handleImageUploaded = (url: string) => {
-    handleChange('image', url);
-    setShowImageUploader(false);
+  const handleGalleryUploaded = (
+    files: Array<{ url: string; pathname: string }>
+  ) => {
+    const newImages = files.map(f => f.url);
+    handleChange('images', [...formData.images, ...newImages]);
+    setShowGalleryUploader(false);
+  };
+
+  const handleVideoUploaded = (url: string) => {
+    handleChange('videoFile', url);
+    setShowVideoUploader(false);
+  };
+
+  const removeGalleryImage = (index: number) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    handleChange('images', newImages);
   };
 
   return (
@@ -188,50 +204,81 @@ export default function ProjectForm({
         )}
       </div>
 
-      {/* Image */}
+      {/* Galerie d'images */}
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-white/80">
-          Image principale *
-        </label>
+        <div className="mb-1.5 flex items-center gap-2">
+          <label className="text-sm font-medium text-white/80">
+            Images du projet *
+          </label>
+        </div>
 
-        {formData.image && !showImageUploader ? (
-          <div className="space-y-2">
-            <div className="relative h-24 w-full overflow-hidden rounded-md border border-white/10">
-              <Image
-                src={formData.image}
-                alt="Aperçu"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 400px"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowImageUploader(true)}
-              className="text-xs text-white/60 underline hover:text-white/80"
-            >
-              Changer l&apos;image
-            </button>
+        {formData.images.length > 0 && (
+          <div className="mb-3 grid grid-cols-3 gap-2">
+            {formData.images.map((imageUrl, index) => (
+              <div key={index} className="group relative">
+                <div className="relative h-20 w-full overflow-hidden rounded-md border border-white/10">
+                  <Image
+                    src={imageUrl}
+                    alt={`Galerie ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="150px"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeGalleryImage(index)}
+                  className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white opacity-0 transition group-hover:opacity-100"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
-        ) : (
-          <FileUploader
-            accept="image/*"
-            maxSizeMb={10}
-            onUploaded={handleImageUploaded}
-          />
         )}
 
-        {errors.image && (
-          <p className="mt-1 text-xs text-red-400">{errors.image}</p>
+        <button
+          type="button"
+          onClick={() => setShowGalleryUploader(true)}
+          className="w-full rounded-md border border-dashed border-white/20 bg-black/20 px-4 py-3 text-sm text-white/60 transition hover:border-white/40 hover:text-white/80"
+        >
+          + Ajouter des images
+        </button>
+
+        {showGalleryUploader && (
+          <div className="mt-3">
+            <FileUploader
+              accept="image/*"
+              maxSizeMb={10}
+              multiple={true}
+              onMultipleUploaded={handleGalleryUploaded}
+            />
+            <button
+              type="button"
+              onClick={() => setShowGalleryUploader(false)}
+              className="mt-2 text-xs text-white/60 underline hover:text-white/80"
+            >
+              Annuler
+            </button>
+          </div>
+        )}
+
+        {errors.images && (
+          <p className="mt-1 text-xs text-red-400">{errors.images}</p>
         )}
       </div>
 
       {/* Champs optionnels */}
       <div className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">
-            URL de la vidéo
-          </label>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              URL de la vidéo
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
           <input
             type="url"
             value={formData.video}
@@ -250,9 +297,78 @@ export default function ProjectForm({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">
-            Compétences utilisées
-          </label>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Upload vidéo
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
+
+          {formData.videoFile && !showVideoUploader ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2">
+                <svg
+                  className="h-4 w-4 text-white/60"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM8 8a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm1 4a1 1 0 100 2h2a1 1 0 100-2H9z" />
+                </svg>
+                <span className="text-sm text-white/70">Vidéo uploadée</span>
+                <a
+                  href={formData.videoFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-400 hover:text-blue-300"
+                >
+                  Voir
+                </a>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowVideoUploader(true)}
+                className="text-xs text-white/60 underline hover:text-white/80"
+              >
+                Changer la vidéo
+              </button>
+            </div>
+          ) : showVideoUploader ? (
+            <div>
+              <FileUploader
+                accept="video/*"
+                maxSizeMb={50}
+                onUploaded={handleVideoUploaded}
+              />
+              <button
+                type="button"
+                onClick={() => setShowVideoUploader(false)}
+                className="mt-2 text-xs text-white/60 underline hover:text-white/80"
+              >
+                Annuler
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowVideoUploader(true)}
+              className="w-full rounded-md border border-dashed border-white/20 bg-black/20 px-4 py-3 text-sm text-white/60 transition hover:border-white/40 hover:text-white/80"
+            >
+              + Uploader une vidéo
+            </button>
+          )}
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Compétences utilisées
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
           <input
             type="text"
             value={formData.skill}
@@ -271,9 +387,14 @@ export default function ProjectForm({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">
-            Lien du projet
-          </label>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Lien du projet
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
           <input
             type="url"
             value={formData.link}

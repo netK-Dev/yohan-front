@@ -5,14 +5,20 @@ import { uploadToBlob } from '@/lib/blob';
 
 interface FileUploaderProps {
   onUploaded?: (url: string, pathname: string) => void;
+  onMultipleUploaded?: (
+    files: Array<{ url: string; pathname: string }>
+  ) => void;
   accept?: string;
   maxSizeMb?: number;
+  multiple?: boolean;
 }
 
 export default function FileUploader({
   onUploaded,
+  onMultipleUploaded,
   accept = 'image/*',
   maxSizeMb = 10,
+  multiple = false,
 }: FileUploaderProps) {
   const [isDragging, setDragging] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
@@ -24,17 +30,27 @@ export default function FileUploader({
 
   async function handleFiles(files: FileList | null) {
     if (!files || !files[0]) return;
-    const file = files[0];
-    if (file.size > maxSizeMb * 1024 * 1024) {
-      alert(`Fichier trop volumineux (max ${maxSizeMb}MB)`);
-      return;
-    }
     setLoading(true);
     try {
-      const { url, pathname } = await uploadToBlob(file);
-      onUploaded?.(url, pathname);
-      } catch {
-        alert("Échec de l'upload");
+      if (multiple) {
+        const uploaded: Array<{ url: string; pathname: string }> = [];
+        for (const file of Array.from(files)) {
+          if (file.size > maxSizeMb * 1024 * 1024) continue;
+          const { url, pathname } = await uploadToBlob(file);
+          uploaded.push({ url, pathname });
+        }
+        if (uploaded.length) onMultipleUploaded?.(uploaded);
+      } else {
+        const file = files[0];
+        if (file.size > maxSizeMb * 1024 * 1024) {
+          alert(`Fichier trop volumineux (max ${maxSizeMb}MB)`);
+          return;
+        }
+        const { url, pathname } = await uploadToBlob(file);
+        onUploaded?.(url, pathname);
+      }
+    } catch {
+      alert("Échec de l'upload");
     } finally {
       setLoading(false);
       setDragging(false);
@@ -64,6 +80,7 @@ export default function FileUploader({
         ref={inputRef}
         type="file"
         accept={accept}
+        multiple={multiple}
         className="hidden"
         onChange={e => handleFiles(e.target.files)}
       />

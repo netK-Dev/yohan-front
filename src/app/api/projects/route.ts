@@ -31,6 +31,7 @@ export const POST = withAuth(async request => {
       date: new Date(validatedData.date),
       // Nettoyer les champs optionnels vides
       video: validatedData.video || null,
+      videoFile: validatedData.videoFile || null,
       skill: validatedData.skill || null,
       link: validatedData.link || null,
     };
