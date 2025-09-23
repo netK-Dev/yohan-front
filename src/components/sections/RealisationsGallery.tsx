@@ -5,16 +5,27 @@ import Image from 'next/image';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import Pagination from '@/components/ui/Pagination';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 type ProjectCategory = '3d-vfx' | 'motion-design' | 'court-metrage';
 
 type ProjectItem = {
-  id: number;
+  id: string;
   title: string;
   category: ProjectCategory;
   image: string;
   description: string;
   tags: string[];
+};
+
+// Type du projet renvoyé par l'API/DB
+type DbProject = {
+  id: string | number;
+  title: string;
+  category?: string | null;
+  image: string;
+  description: string;
+  skill?: string | null;
 };
 
 const CATEGORIES: Array<{ key: 'all' | ProjectCategory; label: string }> = [
@@ -24,73 +35,72 @@ const CATEGORIES: Array<{ key: 'all' | ProjectCategory; label: string }> = [
   { key: 'court-metrage', label: 'Court Métrage' },
 ];
 
-const PROJECTS: ProjectItem[] = [
-  {
-    id: 1,
-    title: 'Basement – Packshot FX',
-    category: '3d-vfx',
-    image: '/img/services/basement-doens-yohan-combo-07.webp',
-    description:
-      'Compositing et éclairage avancé pour un rendu produit photo-réaliste.',
-    tags: ['Compositing', 'Lighting', 'Rendering'],
-  },
-  {
-    id: 2,
-    title: 'Hnet – Identité animée',
-    category: 'motion-design',
-    image: '/img/services/Hnet-image.webp',
-    description:
-      'Animation de logo et système graphique pour une marque digitale.',
-    tags: ['Branding', 'After Effects', 'Illustration'],
-  },
-  {
-    id: 3,
-    title: 'Storyboard – Court Poétique',
-    category: 'court-metrage',
-    image: '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp',
-    description:
-      'Direction et montage d’un récit court mêlant émotion et esthétique.',
-    tags: ['Réalisation', 'Montage', 'Storytelling'],
-  },
-  {
-    id: 4,
-    title: 'Particles – Micro FX',
-    category: '3d-vfx',
-    image: '/img/services/basement-doens-yohan-combo-07.webp',
-    description: 'Expérimentation de particules et shader procédural pour VFX.',
-    tags: ['FX', 'Shaders', 'Procedural'],
-  },
-  {
-    id: 5,
-    title: 'Kinetic Type – Spot court',
-    category: 'motion-design',
-    image: '/img/services/Hnet-image.webp',
-    description: 'Typographie cinétique rythmée pour un teaser social.',
-    tags: ['Typo', 'Motion', 'Teaser'],
-  },
-  {
-    id: 6,
-    title: 'Séquence atmosphérique',
-    category: 'court-metrage',
-    image: '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp',
-    description: 'Recherche d’ambiance et d’échelle par la mise en scène.',
-    tags: ['Ambiance', 'Cadrage', 'Lumière'],
-  },
-];
+// Map catégorie DB -> clé UI
+function mapDbCategoryToKey(dbCategory: string): ProjectCategory {
+  const c = dbCategory.toLowerCase();
+  if (c.includes('motion')) return 'motion-design';
+  if (c.includes('court')) return 'court-metrage';
+  return '3d-vfx';
+}
+
+// Transforme un projet DB en item UI
+function toProjectItem(p: DbProject): ProjectItem {
+  const tags =
+    typeof p.skill === 'string'
+      ? p.skill
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter((s: string) => s)
+      : [];
+  return {
+    id: String(p.id),
+    title: p.title,
+    category: mapDbCategoryToKey(p.category || ''),
+    image: p.image,
+    description: p.description,
+    tags,
+  };
+}
 
 export default function RealisationsGallery() {
   const [active, setActive] =
     useState<(typeof CATEGORIES)[number]['key']>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 15;
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
+  // Charger les projets depuis l'API
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/projects');
+        if (!res.ok) throw new Error('Erreur chargement projets');
+        const data = await res.json();
+        if (!cancelled)
+          setProjects(Array.isArray(data) ? data.map(toProjectItem) : []);
+      } catch (e) {
+        if (!cancelled) setProjects([]);
+        // eslint-disable-next-line no-console
+        console.error('Erreur chargement projets:', e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const filtered = useMemo(() => {
-    if (active === 'all') return PROJECTS;
-    return PROJECTS.filter(p => p.category === active);
-  }, [active]);
+    if (active === 'all') return projects;
+    return projects.filter(p => p.category === active);
+  }, [active, projects]);
 
   // Réinitialiser la page lors d'un changement de filtre
   useEffect(() => {
@@ -206,7 +216,17 @@ export default function RealisationsGallery() {
 
         {/* Grille de cartes */}
         <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-          {paginated.map((project, index) => (
+          {(loading
+            ? Array.from({ length: 6 }).map((_, index) => ({
+                id: `skeleton-${index}`,
+                title: '',
+                category: '3d-vfx',
+                image: '',
+                description: '',
+                tags: [],
+              }))
+            : paginated
+          ).map((project, index) => (
             <article
               key={project.id}
               className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-[#ff0015]/10 sm:p-6`}
@@ -219,14 +239,18 @@ export default function RealisationsGallery() {
                 {/* Media */}
                 <div className="relative mb-4 h-44 overflow-hidden rounded-xl sm:mb-6 sm:h-56">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    priority={index < 3}
-                  />
+                  {loading ? (
+                    <div className="h-full w-full animate-pulse bg-white/5" />
+                  ) : (
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={index < 3}
+                    />
+                  )}
                   {/* Badge catégorie */}
                   <div className="absolute left-2 top-2 flex gap-2">
                     <span className="rounded-full bg-[#ff0015]/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
@@ -260,11 +284,12 @@ export default function RealisationsGallery() {
                 </div>
 
                 {/* CTA */}
-                <button
-                  className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
+                <Link
+                  href={`/realisations/${project.id}`}
+                  className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
                 >
                   Voir le projet
-                </button>
+                </Link>
               </div>
 
               {/* Ligne d’accent bas */}
@@ -285,7 +310,7 @@ export default function RealisationsGallery() {
   );
 }
 
-function labelFromCategory(category: ProjectCategory): string {
+function labelFromCategory(category: string): string {
   if (category === '3d-vfx') return '3D/VFX';
   if (category === 'motion-design') return 'Motion Design';
   return 'Court Métrage';
