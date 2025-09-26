@@ -91,5 +91,5 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("projects")
+  @@map("projects_v2")
 }

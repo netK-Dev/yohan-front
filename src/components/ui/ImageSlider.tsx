@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import SafeImage from './SafeImage';
 
 interface ImageSliderProps {
   images: string[];
@@ -34,7 +34,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
       <div className="relative">
         {/* Image principale */}
         <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
-          <Image
+          <SafeImage
             src={images[currentIndex]}
             alt={`${title} - Image ${currentIndex + 1}`}
             fill
@@ -109,7 +109,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
                     : 'opacity-60 hover:opacity-80'
                 }`}
               >
-                <Image
+                <SafeImage
                   src={imageUrl}
                   alt={`Vignette ${index + 1}`}
                   fill

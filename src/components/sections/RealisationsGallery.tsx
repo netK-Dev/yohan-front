@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import SafeImage from '../ui/SafeImage';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import Pagination from '@/components/ui/Pagination';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -238,7 +238,7 @@ export default function RealisationsGallery() {
                   {loading ? (
                     <div className="h-full w-full animate-pulse bg-white/5" />
                   ) : (
-                    <Image
+                    <SafeImage
                       src={project.image}
                       alt={project.title}
                       fill
