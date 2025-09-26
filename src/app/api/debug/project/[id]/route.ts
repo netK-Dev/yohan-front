@@ -8,24 +8,23 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const projectId = parseInt(id, 10);
     
     console.log(`🔍 [DEBUG] Analyzing project ID: "${id}"`);
-    console.log(`📏 [DEBUG] ID length: ${id.length}`);
-    console.log(`🔤 [DEBUG] ID type: ${typeof id}`);
+    console.log(`📏 [DEBUG] ID parsed as: ${projectId}`);
+    console.log(`🔤 [DEBUG] ID type: ${typeof projectId}`);
+    
+    if (isNaN(projectId)) {
+      return NextResponse.json({
+        searchedId: id,
+        exactMatch: 'INVALID_ID_FORMAT',
+        message: 'ID is not a valid number.',
+      }, { status: 400 });
+    }
     
     // Chercher le projet exact
     const exactProject = await prisma.project.findUnique({
-      where: { id },
-    });
-
-    // Chercher des projets similaires
-    const similarProjects = await prisma.project.findMany({
-      where: {
-        id: {
-          contains: id.substring(0, 5), // Premiers 5 caractères
-        },
-      },
-      select: { id: true, title: true }
+      where: { id: projectId },
     });
 
     // Lister tous les projets pour comparaison
@@ -36,10 +35,9 @@ export async function GET(
 
     return NextResponse.json({
       searchedId: id,
-      idLength: id.length,
+      parsedId: projectId,
       exactMatch: exactProject ? 'FOUND' : 'NOT_FOUND',
       project: exactProject,
-      similarProjects,
       allProjectsInDb: allProjects,
       environment: process.env.NODE_ENV,
     });

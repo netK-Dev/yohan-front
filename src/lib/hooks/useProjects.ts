@@ -67,7 +67,7 @@ export function useProjects() {
   // Mettre à jour un projet
   const updateProject = React.useCallback(
     async (
-      id: string,
+      id: number,
       projectData: Partial<UpdateProjectInput>
     ): Promise<Project> => {
       setIsLoading(true);
@@ -99,7 +99,7 @@ export function useProjects() {
   );
 
   // Supprimer un projet
-  const deleteProject = React.useCallback(async (id: string): Promise<void> => {
+  const deleteProject = React.useCallback(async (id: number): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
