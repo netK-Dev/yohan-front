@@ -11,17 +11,33 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    console.log(`🔍 [API] Recherche du projet avec ID: ${id}`);
+    
+    // Test de connection DB d'abord
+    const projectCount = await prisma.project.count();
+    console.log(`📊 [API] Nombre total de projets en DB: ${projectCount}`);
+    
     const project = await prisma.project.findUnique({
       where: { id },
     });
 
     if (!project) {
+      console.log(`❌ [API] Projet ${id} non trouvé en DB`);
+      
+      // Lister quelques projets pour debug
+      const someProjects = await prisma.project.findMany({
+        take: 3,
+        select: { id: true, title: true }
+      });
+      console.log(`🗂️ [API] Exemples de projets en DB:`, someProjects);
+      
       return NextResponse.json({ error: 'Projet non trouvé' }, { status: 404 });
     }
 
+    console.log(`✅ [API] Projet ${id} trouvé: ${project.title}`);
     return NextResponse.json(project);
   } catch (error) {
-    console.error('Erreur lors de la récupération du projet:', error);
+    console.error('❌ [API] Erreur lors de la récupération du projet:', error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
