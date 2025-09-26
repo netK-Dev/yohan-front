@@ -122,10 +122,10 @@ export function useProjects() {
     }
   }, []);
 
-  // Charger les projets au montage
+  // Charger les projets au montage (une seule fois)
   React.useEffect(() => {
     fetchProjects();
-  }, [fetchProjects]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     projects,

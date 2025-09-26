@@ -70,28 +70,39 @@ export default function RealisationsGallery() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Charger les projets depuis l'API
+  // Charger les projets depuis l'API (optimisé - une seule fois)
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    
+    const loadProjects = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/projects');
+        const res = await fetch('/api/projects', {
+          // Cache pour éviter les re-fetches inutiles
+          cache: 'force-cache',
+          next: { revalidate: 300 }, // 5 minutes
+        });
+        
         if (!res.ok) throw new Error('Erreur chargement projets');
         const data = await res.json();
-        if (!cancelled)
+        
+        if (!cancelled) {
           setProjects(Array.isArray(data) ? data.map(toProjectItem) : []);
+        }
       } catch (e) {
         if (!cancelled) setProjects([]);
         console.error('Erreur chargement projets:', e);
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    };
+
+    loadProjects();
+    
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // Pas de dépendances pour éviter les re-renders
 
   const filtered = useMemo(() => {
     if (active === 'all') return projects;

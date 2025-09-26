@@ -14,8 +14,9 @@ async function fetchProject(id: string) {
   
   try {
     const res = await fetch(`${baseURL}/api/projects/${id}`, {
-      cache: 'no-store',
-      next: { revalidate: 0 },
+      // Cache optimisé pour les performances
+      cache: 'force-cache',
+      next: { revalidate: 300 }, // 5 minutes
     });
     
     console.log(`🔍 [DEBUG] Response status: ${res.status}`);

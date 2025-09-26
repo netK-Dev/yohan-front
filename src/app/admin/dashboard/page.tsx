@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -173,7 +173,7 @@ export default function AdminDashboardPage() {
                             key={project.id}
                             className="group relative h-32 overflow-hidden rounded-lg border border-white/10 bg-black/30 shadow-lg backdrop-blur transition-colors hover:border-white/20"
                           >
-                            <Image
+                            <SafeImage
                               src={project.images[0] || ''}
                               alt={project.title}
                               fill

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import {
   CreateProjectInput,
@@ -217,7 +217,7 @@ export default function ProjectForm({
             {formData.images.map((imageUrl, index) => (
               <div key={index} className="group relative">
                 <div className="relative h-20 w-full overflow-hidden rounded-md border border-white/10">
-                  <Image
+                  <SafeImage
                     src={imageUrl}
                     alt={`Galerie ${index + 1}`}
                     fill
