@@ -11,14 +11,21 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    console.log(`🔍 [API] Searching for project with ID: ${id}`);
+    const projectId = parseInt(id, 10);
+
+    if (isNaN(projectId)) {
+      console.log(`❌ [API] Invalid ID format: ${id}`);
+      return NextResponse.json({ error: 'ID invalide' }, { status: 400 });
+    }
+
+    console.log(`🔍 [API] Searching for project with ID: ${projectId}`);
 
     const project = await prisma.project.findUnique({
-      where: { id },
+      where: { id: projectId },
     });
 
     if (!project) {
-      console.log(`❌ [API] Project not found for ID: ${id}`);
+      console.log(`❌ [API] Project not found for ID: ${projectId}`);
       // Vérifions tous les projets existants pour debug
       const allProjects = await prisma.project.findMany({
         select: { id: true, title: true },
@@ -40,17 +47,23 @@ export const PUT = withAuth(
   async (request, session, { params }: { params: Promise<{ id: string }> }) => {
     try {
       const { id } = await params;
+      const projectId = parseInt(id, 10);
+
+      if (isNaN(projectId)) {
+        return NextResponse.json({ error: 'ID invalide' }, { status: 400 });
+      }
+
       const body = await request.json();
 
       // Validation avec Zod
       const validatedData = UpdateProjectSchema.parse({
         ...body,
-        id,
+        id: projectId,
       });
 
       // Vérifier que le projet existe
       const existingProject = await prisma.project.findUnique({
-        where: { id },
+        where: { id: projectId },
       });
 
       if (!existingProject) {
@@ -62,7 +75,7 @@ export const PUT = withAuth(
 
       // Préparer les données pour la mise à jour (exclure l'ID)
       const updateData = { ...validatedData };
-      delete (updateData as { id?: string }).id;
+      delete (updateData as { id?: number }).id;
 
       // Conversion de la date si fournie
       const finalUpdateData: Record<string, unknown> = { ...updateData };
@@ -104,7 +117,7 @@ export const PUT = withAuth(
       }
 
       const project = await prisma.project.update({
-        where: { id },
+        where: { id: projectId },
         data: finalUpdateData,
       });
 
@@ -146,9 +159,15 @@ export const DELETE = withAuth(
   async (request, session, { params }: { params: Promise<{ id: string }> }) => {
     try {
       const { id } = await params;
+      const projectId = parseInt(id, 10);
+
+      if (isNaN(projectId)) {
+        return NextResponse.json({ error: 'ID invalide' }, { status: 400 });
+      }
+
       // Vérifier que le projet existe
       const existingProject = await prisma.project.findUnique({
-        where: { id },
+        where: { id: projectId },
       });
 
       if (!existingProject) {
@@ -169,7 +188,7 @@ export const DELETE = withAuth(
 
       // Supprimer le projet de la DB
       await prisma.project.delete({
-        where: { id },
+        where: { id: projectId },
       });
 
       // Supprimer les fichiers Blob (en arrière-plan, non bloquant)

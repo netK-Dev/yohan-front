@@ -75,7 +75,7 @@ model Verification {
 // Project model
 
 model Project {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   title       String
   /// Catégorie lisible (ex: "3D/VFX et Compositing", "Motion Design", ...)
   category    String

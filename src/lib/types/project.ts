@@ -39,7 +39,7 @@ export const ProjectSchema = z.object({
 export const CreateProjectSchema = ProjectSchema;
 
 export const UpdateProjectSchema = ProjectSchema.partial().extend({
-  id: z.string().cuid('ID invalide'),
+  id: z.number().int().positive('ID invalide'),
 });
 
 // Types TypeScript dérivés des schémas
@@ -48,7 +48,7 @@ export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
 
 // Type pour les projets complets (avec metadata Prisma)
 export interface Project {
-  id: string;
+  id: number;
   title: string;
   category: ProjectCategory;
   date: Date;
