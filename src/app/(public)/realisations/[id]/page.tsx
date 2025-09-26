@@ -3,35 +3,60 @@ import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
+import prisma from '@/lib/prisma';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 async function fetchProject(id: string) {
-  // En production, utilise directement la route API sans construction d'URL complexe
-  const baseURL = process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : 'http://localhost:3000';
-
-  console.log(`🔍 [DEBUG] Fetching project ${id} from: ${baseURL}/api/projects/${id}`);
-  
   try {
-    const res = await fetch(`${baseURL}/api/projects/${id}`, {
-      // Cache optimisé pour les performances
-      cache: 'force-cache',
-      next: { revalidate: 300 }, // 5 minutes
-    });
-    
-    console.log(`🔍 [DEBUG] Response status: ${res.status}`);
-    
-    if (!res.ok) {
-      console.error(`❌ [ERROR] Failed to fetch project ${id}: ${res.status} ${res.statusText}`);
+    const projectId = parseInt(id, 10);
+
+    if (isNaN(projectId)) {
+      console.log(`❌ [DEBUG] Invalid ID format: ${id}`);
       return null;
     }
-    
-    const data = await res.json();
-    console.log(`✅ [DEBUG] Project ${id} fetched successfully`);
-    return data;
+
+    console.log(`🔍 [DEBUG] Searching for project with ID: ${projectId}`);
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      console.log(`❌ [DEBUG] Project not found for ID: ${projectId}`);
+      // Vérifions tous les projets existants pour debug
+      const allProjects = await prisma.project.findMany({
+        select: { id: true, title: true },
+      });
+      console.log(`📋 [DEBUG] Available projects:`, allProjects);
+      return null;
+    }
+
+    console.log(`✅ [DEBUG] Project found: ${project.title}`);
+    return project;
   } catch (error) {
-    console.error(`❌ [ERROR] Fetch error for project ${id}:`, error);
+    console.error(`❌ [DEBUG] Error fetching project:`, error);
     return null;
+  }
+}
+
+// Génération statique des pages pour tous les projets existants
+export async function generateStaticParams() {
+  try {
+    const projects = await prisma.project.findMany({
+      select: { id: true },
+    });
+
+    console.log(
+      `🔧 [STATIC] Generating static params for ${projects.length} projects`
+    );
+
+    return projects.map(project => ({
+      id: project.id.toString(),
+    }));
+  } catch (error) {
+    console.error('❌ [STATIC] Error generating static params:', error);
+    return [];
   }
 }
 
@@ -58,32 +83,35 @@ function getExternalVideoEmbed(url: string | null | undefined): string | null {
   }
 }
 
+// Configuration pour ISR - revalidation toutes les 5 minutes
+export const revalidate = 300;
+
 export default async function ProjectDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  console.log(
+    `🔍 [PAGE] Received ID from params: "${id}" (type: ${typeof id})`
+  );
+
   const project = await fetchProject(id);
-  const externalEmbed = getExternalVideoEmbed(project?.video);
 
   if (!project) {
-    return (
-      <>
-        <Header />
-        <main
-          className={`min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text} flex items-center justify-center`}
-        >
-          <p className="text-white/70">Projet introuvable.</p>
-        </main>
-        <Footer />
-      </>
+    console.log(
+      `❌ [PAGE] Project not found, calling notFound() for ID: ${id}`
     );
+    notFound();
   }
+
+  const externalEmbed = getExternalVideoEmbed(project?.video);
 
   return (
     <>
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       <main
         className={`min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text}`}
       >
