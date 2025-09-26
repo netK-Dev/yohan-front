@@ -8,17 +8,41 @@ import { headers } from 'next/headers';
 async function fetchProject(id: string) {
   const h = await headers();
   const host = h.get('x-forwarded-host') ?? h.get('host');
-  const proto = h.get('x-forwarded-proto') ?? 'http';
-  const baseURL =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (host ? `${proto}://${host}` : 'http://localhost:3000');
+  const proto = h.get('x-forwarded-proto') ?? 'https';
+  
+  // Construction de baseURL plus robuste pour Vercel
+  let baseURL = process.env.NEXT_PUBLIC_APP_URL;
+  
+  if (!baseURL) {
+    if (host) {
+      baseURL = `${proto}://${host}`;
+    } else {
+      baseURL = 'http://localhost:3000';
+    }
+  }
 
-  const res = await fetch(`${baseURL}/api/projects/${id}`, {
-    cache: 'no-store',
-    next: { revalidate: 0 },
-  });
-  if (!res.ok) return null;
-  return res.json();
+  console.log(`🔍 [DEBUG] Fetching project ${id} from: ${baseURL}/api/projects/${id}`);
+  
+  try {
+    const res = await fetch(`${baseURL}/api/projects/${id}`, {
+      cache: 'no-store',
+      next: { revalidate: 0 },
+    });
+    
+    console.log(`🔍 [DEBUG] Response status: ${res.status}`);
+    
+    if (!res.ok) {
+      console.error(`❌ [ERROR] Failed to fetch project ${id}: ${res.status} ${res.statusText}`);
+      return null;
+    }
+    
+    const data = await res.json();
+    console.log(`✅ [DEBUG] Project ${id} fetched successfully`);
+    return data;
+  } catch (error) {
+    console.error(`❌ [ERROR] Fetch error for project ${id}:`, error);
+    return null;
+  }
 }
 
 function getExternalVideoEmbed(url: string | null | undefined): string | null {
