@@ -12,7 +12,7 @@ export async function GET(
   try {
     const { id } = await params;
     console.log(`🔍 [API] Searching for project with ID: ${id}`);
-    
+
     const project = await prisma.project.findUnique({
       where: { id },
     });
@@ -21,7 +21,7 @@ export async function GET(
       console.log(`❌ [API] Project not found for ID: ${id}`);
       // Vérifions tous les projets existants pour debug
       const allProjects = await prisma.project.findMany({
-        select: { id: true, title: true }
+        select: { id: true, title: true },
       });
       console.log(`📋 [API] Available projects:`, allProjects);
       return NextResponse.json({ error: 'Projet non trouvé' }, { status: 404 });

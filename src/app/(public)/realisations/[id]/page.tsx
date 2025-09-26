@@ -3,23 +3,12 @@ import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
-import { headers } from 'next/headers';
 
 async function fetchProject(id: string) {
-  const h = await headers();
-  const host = h.get('x-forwarded-host') ?? h.get('host');
-  const proto = h.get('x-forwarded-proto') ?? 'https';
-  
-  // Construction de baseURL plus robuste pour Vercel
-  let baseURL = process.env.NEXT_PUBLIC_APP_URL;
-  
-  if (!baseURL) {
-    if (host) {
-      baseURL = `${proto}://${host}`;
-    } else {
-      baseURL = 'http://localhost:3000';
-    }
-  }
+  // En production, utilise directement la route API sans construction d'URL complexe
+  const baseURL = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : 'http://localhost:3000';
 
   console.log(`🔍 [DEBUG] Fetching project ${id} from: ${baseURL}/api/projects/${id}`);
   
@@ -79,11 +68,15 @@ export default async function ProjectDetailPage({
 
   if (!project) {
     return (
-      <main
-        className={`min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text} flex items-center justify-center`}
-      >
-        <p className="text-white/70">Projet introuvable.</p>
-      </main>
+      <>
+        <Header />
+        <main
+          className={`min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text} flex items-center justify-center`}
+        >
+          <p className="text-white/70">Projet introuvable.</p>
+        </main>
+        <Footer />
+      </>
     );
   }
 

@@ -277,7 +277,7 @@ export default function RealisationsGallery() {
                 {/* CTA - poussé vers le bas */}
                 <div className="mt-auto">
                   <Link
-                    href={`/project/${project.id}`}
+                    href={`/realisations/${project.id}`}
                     className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
                   >
                     Voir le projet
