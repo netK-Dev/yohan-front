@@ -14,12 +14,20 @@ export async function uploadToBlob(
 }
 
 export async function deleteFromBlob(pathname: string): Promise<void> {
-  const res = await fetch('/api/blob/delete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ pathname }),
-  });
-  if (!res.ok) throw new Error('Échec suppression');
+  // Utiliser l'API Vercel Blob directement au lieu d'un fetch interne
+  const { del } = await import('@vercel/blob');
+
+  try {
+    // Construire l'URL complète si c'est juste un pathname
+    const blobUrl = pathname.startsWith('http')
+      ? pathname
+      : `https://blob.vercel-storage.com${pathname}`;
+
+    await del(blobUrl);
+  } catch (error) {
+    console.warn(`Échec suppression blob ${pathname}:`, error);
+    // Ne pas faire échouer l'opération pour des problèmes de nettoyage
+  }
 }
 
 // Extraire le pathname d'une URL Blob Vercel
