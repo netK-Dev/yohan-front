@@ -1,12 +1,26 @@
 import Image from 'next/image';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import Link from 'next/link';
 
 export default function ServicesSection() {
-  const services = [
+  type ServiceCategory = '3d-vfx' | 'motion-design' | 'court-metrage';
+  type ServiceItem = {
+    id: number;
+    title: string;
+    image: string;
+    description: string;
+    tags: string[];
+    gradient: string;
+    hoverGradient: string;
+    category: ServiceCategory;
+  };
+
+  const services: ServiceItem[] = [
     {
       id: 1,
       title: '3D/VFX et Compositing',
       image: '/img/services/basement-doens-yohan-combo-07.webp',
+      category: '3d-vfx',
       description:
         'Formation spécialisée à ISART Digital avec maîtrise complète du pipeline 3D : modeling, shading, rigging, animation, rendering et compositing. Expertise technique approfondie pour donner vie à vos projets les plus ambitieux.',
       tags: ['3D Modeling', 'VFX', 'Compositing', 'Rendering'],
@@ -18,6 +32,7 @@ export default function ServicesSection() {
       id: 2,
       title: 'Motion Design',
       image: '/img/services/Hnet-image.webp',
+      category: 'motion-design',
       description:
         'Création graphique animée avec maîtrise experte d&apos;Illustrator, Photoshop et After Effects. Développement continu de styles variés et d&apos;approches innovantes pour des visuels percutants et mémorables.',
       tags: ['After Effects', 'Illustration', 'Animation', 'Branding'],
@@ -28,6 +43,7 @@ export default function ServicesSection() {
       id: 3,
       title: 'Court Métrage',
       image: '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp',
+      category: 'court-metrage',
       description:
         'Expertise complète en production audiovisuelle : réalisation, développement scénaristique et montage créatif. Transformation d&apos;idées en récits visuels captivants avec une approche artistique et technique maîtrisée.',
       tags: ['Réalisation', 'Scénario', 'Montage', 'Storytelling'],
@@ -132,12 +148,33 @@ export default function ServicesSection() {
                   ))}
                 </div>
 
-                {/* Call to action */}
-                <button
-                  className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 sm:rounded-2xl sm:px-6 sm:py-4 sm:text-base ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
-                >
-                  Découvrir ce domaine
-                </button>
+                {/* Call to action - full width, edge-to-edge, modern style */}
+                <div className="-mx-6 mt-6 border-t border-white/10 sm:-mx-8">
+                  <Link
+                    href={`/realisations?category=${service.category}`}
+                    aria-label={`Découvrir le domaine ${service.title}`}
+                    className="group relative block w-full overflow-hidden rounded-b-2xl rounded-t-none bg-gradient-to-r from-[#ff1a2a] via-[#ff3340] to-[#e6000c] px-6 py-4 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#ff0015]/50 sm:rounded-b-3xl sm:py-5 sm:text-base"
+                  >
+                    <span className="relative z-10 inline-flex items-center justify-center gap-2">
+                      <span>Découvrir ce domaine</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="h-4 w-4 translate-x-0 transition-transform duration-300 group-hover:translate-x-1 sm:h-5 sm:w-5"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M3.75 12a.75.75 0 01.75-.75h12.69l-4.22-4.22a.75.75 0 111.06-1.06l5.5 5.5a.75.75 0 010 1.06l-5.5 5.5a.75.75 0 11-1.06-1.06l4.22-4.22H4.5a.75.75 0 01-.75-.75z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                    {/* Shine effect */}
+                    <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-all duration-700 group-hover:translate-x-full group-hover:opacity-100" />
+                  </Link>
+                </div>
               </div>
 
               {/* Bottom accent line */}
