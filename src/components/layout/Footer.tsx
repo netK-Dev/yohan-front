@@ -8,22 +8,16 @@ import { COLOR_COMBINATIONS } from '@/lib/colors';
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerSections = {
+  const navigation = {
     services: [
-      { name: '3D/VFX et Compositing', href: '/realisation/3d-vfx' },
-      { name: 'Motion Design', href: '/realisation/motion-design' },
-      { name: 'Court Métrage', href: '/realisation/court-metrage' },
+      { name: '3D/VFX', href: '/realisations?category=3d-vfx' },
+      { name: 'Motion Design', href: '/realisations?category=motion-design' },
+      { name: 'Court Métrage', href: '/realisations?category=court-metrage' },
     ],
-    company: [
+    pages: [
       { name: 'À propos', href: '/about' },
-      { name: 'Portfolio', href: '/projects' },
+      { name: 'Réalisations', href: '/realisations' },
       { name: 'Contact', href: '/contact' },
-      { name: 'Devis gratuit', href: '/contact?type=quote' },
-    ],
-    legal: [
-      { name: 'Mentions légales', href: '/mentions-legales' },
-      { name: 'Politique de confidentialité', href: '/privacy' },
-      { name: 'Conditions générales', href: '/terms' },
     ],
     social: [
       {
@@ -54,15 +48,6 @@ export default function Footer() {
           </svg>
         ),
       },
-      {
-        name: 'Behance',
-        href: '#',
-        icon: (
-          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M22 7h-7v-2h7v2zm1.726 10c-.442 1.297-2.029 2-5.101 2-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h7.686c-.48-3.593-3.784-3.358-4.613-.207-.374.665-.753 1.47-.609 2.207H14.314c-.05-2 2.029-2 2.029-2zm-10.726 4h7.686c-.48-3.593-3.784-3.358-4.613-.207-.374.665-.753 1.47-.609 2.207H6.314c-.05-2 2.029-2 2.029-2z" />
-          </svg>
-        ),
-      },
     ],
   };
 
@@ -77,261 +62,129 @@ export default function Footer() {
         speed={1}
       />
 
-      {/* Background decorative elements (conservés) */}
+      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="bg-accent/5 absolute -left-40 bottom-0 h-80 w-80 rounded-full blur-3xl" />
-        <div className="absolute -right-40 top-0 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-[#ff0015]/5 blur-3xl" />
+        <div className="bg-white/3 absolute -right-32 bottom-0 h-64 w-64 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        {/* Main footer content */}
-        <div className="grid gap-12 lg:grid-cols-12">
-          {/* Brand section */}
-          <div className="lg:col-span-4">
-            <Link href="/" className="group flex items-center space-x-4">
-              <div className="relative h-12 w-12 flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+        {/* Main Footer Content - Horizontal Layout */}
+        <div className="grid gap-12 lg:grid-cols-4 lg:gap-8">
+          {/* Brand */}
+          <div className="lg:col-span-1">
+            <Link
+              href="/"
+              className="group mb-6 inline-flex items-center gap-3"
+            >
+              <div className="relative h-10 w-10 transition-transform duration-300 group-hover:scale-110">
                 <Image
                   src="/img/logo_yohan.png"
-                  alt="Doens Production Logo"
+                  alt="Doens Production"
                   fill
                   className="object-contain"
                 />
               </div>
-              <div className="flex flex-col">
-                <h3 className="text-accent group-hover:text-accent-400 text-2xl font-bold transition-colors duration-300">
+              <div>
+                <div className="text-xl font-bold text-[#ff0015] transition-colors group-hover:text-[#ff3340]">
                   Doens
-                </h3>
-                <span className="text-lg font-light text-white/90">
-                  Production
-                </span>
+                </div>
+                <div className="text-sm text-white/70">Production</div>
               </div>
             </Link>
-
             <p
-              className={`mt-6 max-w-md text-base leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-80`}
+              className={`text-sm leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-70`}
             >
-              Spécialiste en <strong className="text-accent">3D/VFX</strong>,{' '}
-              <strong className="text-accent">Motion Design</strong> et{' '}
-              <strong className="text-accent">Courts Métrages</strong>.
-              Transformons vos idées en créations visuelles exceptionnelles.
+              Créateur visuel spécialisé en 3D/VFX, Motion Design et Courts
+              Métrages.
             </p>
-
-            {/* Contact info */}
-            <div className="mt-8 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="bg-accent/20 flex h-8 w-8 items-center justify-center rounded-full">
-                  <svg
-                    className="text-accent h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <span className={`${COLOR_COMBINATIONS.page.text} opacity-80`}>
-                  contact@doensproduction.com
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="bg-accent/20 flex h-8 w-8 items-center justify-center rounded-full">
-                  <svg
-                    className="text-accent h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <span className={`${COLOR_COMBINATIONS.page.text} opacity-80`}>
-                  France
-                </span>
-              </div>
-            </div>
           </div>
 
-          {/* Navigation sections */}
-          <div className="grid gap-8 sm:grid-cols-2 lg:col-span-6 lg:grid-cols-3">
-            {/* Services */}
-            <div>
-              <h4
-                className={`mb-6 text-lg font-semibold ${COLOR_COMBINATIONS.page.text}`}
-              >
-                Nos Services
-              </h4>
-              <ul className="space-y-3">
-                {footerSections.services.map(service => (
-                  <li key={service.name}>
-                    <Link
-                      href={service.href}
-                      className={`${COLOR_COMBINATIONS.page.text} hover:text-accent opacity-80 transition-all duration-300 hover:opacity-100`}
-                    >
-                      {service.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h4
-                className={`mb-6 text-lg font-semibold ${COLOR_COMBINATIONS.page.text}`}
-              >
-                Entreprise
-              </h4>
-              <ul className="space-y-3">
-                {footerSections.company.map(item => (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={`${COLOR_COMBINATIONS.page.text} hover:text-accent opacity-80 transition-all duration-300 hover:opacity-100`}
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h4
-                className={`mb-6 text-lg font-semibold ${COLOR_COMBINATIONS.page.text}`}
-              >
-                Légal
-              </h4>
-              <ul className="space-y-3">
-                {footerSections.legal.map(item => (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={`${COLOR_COMBINATIONS.page.text} hover:text-accent opacity-80 transition-all duration-300 hover:opacity-100`}
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Newsletter & Social */}
-          <div className="lg:col-span-2">
-            <h4
-              className={`mb-6 text-lg font-semibold ${COLOR_COMBINATIONS.page.text}`}
+          {/* Services */}
+          <div className="lg:col-span-1">
+            <h3
+              className={`mb-4 text-sm font-semibold uppercase tracking-wider ${COLOR_COMBINATIONS.page.text} opacity-90`}
             >
-              Restez connecté
-            </h4>
-
-            {/* Newsletter */}
-            <div className="mb-8">
-              <p
-                className={`mb-4 text-sm ${COLOR_COMBINATIONS.page.text} opacity-80`}
-              >
-                Recevez nos dernières créations
-              </p>
-              <form className="flex flex-col gap-3" suppressHydrationWarning>
-                <input
-                  type="email"
-                  placeholder="Votre email"
-                  className="focus:border-accent focus:ring-accent/20 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2"
-                  suppressHydrationWarning
-                />
-                <button
-                  type="submit"
-                  className="bg-accent hover:bg-accent-700 focus:ring-accent rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50"
-                >
-                  S&apos;abonner
-                </button>
-              </form>
-            </div>
-
-            {/* Social Links */}
-            <div>
-              <p
-                className={`mb-4 text-sm ${COLOR_COMBINATIONS.page.text} opacity-80`}
-              >
-                Suivez-nous
-              </p>
-              <div className="flex gap-3">
-                {footerSections.social.map(social => (
+              Services
+            </h3>
+            <ul className="space-y-2">
+              {navigation.services.map(item => (
+                <li key={item.name}>
                   <Link
-                    key={social.name}
-                    href={social.href}
-                    className="hover:bg-accent flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:text-white"
-                    aria-label={social.name}
+                    href={item.href}
+                    className={`text-sm ${COLOR_COMBINATIONS.page.text} opacity-70 transition-all duration-200 hover:translate-x-1 hover:opacity-100`}
                   >
-                    {social.icon}
+                    {item.name}
                   </Link>
-                ))}
-              </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Pages */}
+          <div className="lg:col-span-1">
+            <h3
+              className={`mb-4 text-sm font-semibold uppercase tracking-wider ${COLOR_COMBINATIONS.page.text} opacity-90`}
+            >
+              Navigation
+            </h3>
+            <ul className="space-y-2">
+              {navigation.pages.map(item => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className={`text-sm ${COLOR_COMBINATIONS.page.text} opacity-70 transition-all duration-200 hover:translate-x-1 hover:opacity-100`}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact & Social */}
+          <div className="lg:col-span-1">
+            <h3
+              className={`mb-4 text-sm font-semibold uppercase tracking-wider ${COLOR_COMBINATIONS.page.text} opacity-90`}
+            >
+              Contact
+            </h3>
+            <div className="mb-4 space-y-2">
+              <p
+                className={`text-sm ${COLOR_COMBINATIONS.page.text} opacity-70`}
+              >
+                contact@doensproduction.com
+              </p>
+              <p
+                className={`text-sm ${COLOR_COMBINATIONS.page.text} opacity-70`}
+              >
+                France
+              </p>
+            </div>
+            <div className="flex gap-3">
+              {navigation.social.map(item => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/60 backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-[#ff0015]/20 hover:text-white"
+                  aria-label={item.name}
+                >
+                  {item.icon}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Bottom section */}
+        {/* Bottom Bar */}
         <div className="mt-16 border-t border-white/10 pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex flex-col items-center gap-2 md:flex-row md:gap-6">
-              <p
-                className={`text-sm ${COLOR_COMBINATIONS.page.text} opacity-60`}
-              >
-                © {currentYear} Doens Production. Tous droits réservés.
-              </p>
-              <div className="flex gap-4 text-xs">
-                <Link
-                  href="/mentions-legales"
-                  className={`${COLOR_COMBINATIONS.page.text} hover:text-accent opacity-60 transition-colors hover:opacity-100`}
-                >
-                  Mentions légales
-                </Link>
-                <Link
-                  href="/privacy"
-                  className={`${COLOR_COMBINATIONS.page.text} hover:text-accent opacity-60 transition-colors hover:opacity-100`}
-                >
-                  Confidentialité
-                </Link>
-                <Link
-                  href="/terms"
-                  className={`${COLOR_COMBINATIONS.page.text} hover:text-accent opacity-60 transition-colors hover:opacity-100`}
-                >
-                  CGU
-                </Link>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-xs ${COLOR_COMBINATIONS.page.text} opacity-60`}
-              >
-                Créé avec passion
-              </span>
-              <div className="text-accent h-4 w-4 animate-pulse">❤️</div>
-              <span
-                className={`text-xs ${COLOR_COMBINATIONS.page.text} opacity-60`}
-              >
-                par Doens Production
-              </span>
-            </div>
+          <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+            <p className={`text-xs ${COLOR_COMBINATIONS.page.text} opacity-50`}>
+              © {currentYear} Doens Production. Tous droits réservés.
+            </p>
+            <p className={`text-xs ${COLOR_COMBINATIONS.page.text} opacity-50`}>
+              Créé avec passion ❤️
+            </p>
           </div>
         </div>
       </div>

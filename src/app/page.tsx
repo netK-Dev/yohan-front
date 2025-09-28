@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import VideoBanner from '@/components/sections/VideoBanner';
 import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
+import CTASection from '@/components/sections/CTASection';
 import Footer from '@/components/layout/Footer';
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
         <HeroSection />
         <ServicesSection />
       </main>
+      <CTASection />
       <Footer />
     </>
   );
