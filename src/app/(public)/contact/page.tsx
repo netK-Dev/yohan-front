@@ -30,14 +30,18 @@ export default function ContactPage() {
             <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff0015]/5 blur-3xl" />
           </div>
 
-          <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8">
+          <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:px-8">
             {/* Infos + highlights */}
             <div
-              className={`relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.gradients.card} p-6 shadow-2xl sm:rounded-3xl sm:p-8`}
+              className={`relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.gradients.subtle} p-6 shadow-2xl sm:rounded-3xl sm:p-8`}
             >
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-20" />
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/50 via-white/20 to-transparent" />
               <div className="relative z-10 space-y-6">
                 <div>
+                  <span className="inline-flex items-center rounded-md bg-white/10 px-2 py-1 text-xs font-medium text-white/80">
+                    Infos
+                  </span>
                   <h2 className="text-2xl font-bold text-white sm:text-3xl">
                     Parlez-moi de votre projet
                   </h2>
@@ -80,18 +84,72 @@ export default function ContactPage() {
                     LinkedIn
                   </a>
                 </div>
+
+                {/* FAQ courte */}
+                <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                  <details className="group p-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between text-white/90">
+                      Délais de réponse
+                      <span className="transition-transform group-open:rotate-180">
+                        ⌄
+                      </span>
+                    </summary>
+                    <p className="mt-2 text-sm text-white/70">
+                      Je réponds sous 24 à 48h ouvrées, souvent le jour même.
+                    </p>
+                  </details>
+                  <details className="group p-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between text-white/90">
+                      Devis et budget
+                      <span className="transition-transform group-open:rotate-180">
+                        ⌄
+                      </span>
+                    </summary>
+                    <p className="mt-2 text-sm text-white/70">
+                      Après un premier échange, je fournis un devis clair et
+                      détaillé.
+                    </p>
+                  </details>
+                  <details className="group p-4">
+                    <summary className="flex cursor-pointer list-none items-center justify-between text-white/90">
+                      Processus
+                      <span className="transition-transform group-open:rotate-180">
+                        ⌄
+                      </span>
+                    </summary>
+                    <p className="mt-2 text-sm text-white/70">
+                      Brief, moodboard, itérations créatives, puis livraison
+                      finale conforme.
+                    </p>
+                  </details>
+                </div>
               </div>
             </div>
 
             {/* Formulaire */}
             <div
-              className={`relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.gradients.card} p-6 shadow-2xl sm:rounded-3xl sm:p-8`}
+              className={`relative overflow-hidden rounded-2xl border border-[#ff0015]/30 ${COLOR_COMBINATIONS.gradients.card} p-6 shadow-2xl sm:rounded-3xl sm:p-8`}
             >
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-[#ff0015]/10 to-transparent opacity-20" />
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#ff0015] via-[#e6000c] to-transparent opacity-80" />
               <div className="relative z-10">
+                <div className="mb-6 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-md bg-[#ff0015]/20 px-2 py-1 text-xs font-medium text-white">
+                      Formulaire
+                    </span>
+                    <h3 className="text-sm font-semibold text-white/90">
+                      Contact
+                    </h3>
+                  </div>
+                </div>
                 <Suspense fallback={null}>
                   <ContactForm />
                 </Suspense>
+                <p className="mt-4 text-center text-xs text-white/50">
+                  Protégé par détection anti-spam silencieuse. Vos données ne
+                  sont jamais revendues.
+                </p>
               </div>
             </div>
           </div>
