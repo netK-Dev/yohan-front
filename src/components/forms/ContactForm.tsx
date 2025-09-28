@@ -1,7 +1,7 @@
 'use client';
 
 // import
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
@@ -20,6 +20,11 @@ export default function ContactForm() {
     subject: false,
     message: false,
   });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const isSubmitting = state === 'submitting';
 
@@ -90,6 +95,41 @@ export default function ContactForm() {
   const inputBase =
     'w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ff0015]/30 focus:border-[#ff0015]/60';
   const errorText = 'mt-1 text-xs text-[#ff666c]';
+
+  if (!isMounted) {
+    return (
+      <div className="space-y-5 sm:space-y-6">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-2 block text-sm text-white/80">
+              Nom complet
+            </label>
+            <div className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
+              Chargement...
+            </div>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm text-white/80">Email</label>
+            <div className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
+              Chargement...
+            </div>
+          </div>
+        </div>
+        <div>
+          <label className="mb-2 block text-sm text-white/80">Sujet</label>
+          <div className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
+            Chargement...
+          </div>
+        </div>
+        <div>
+          <label className="mb-2 block text-sm text-white/80">Message</label>
+          <div className="min-h-[140px] w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
+            Chargement...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form

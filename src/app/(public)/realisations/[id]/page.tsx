@@ -6,6 +6,7 @@ import { parseSkills } from '@/lib/utils/skills';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 
 async function fetchProject(id: string) {
   try {
@@ -117,6 +118,27 @@ export default async function ProjectDetailPage({
       >
         <section className="relative pb-12 pt-24 sm:pb-16 sm:pt-28 lg:pb-20 lg:pt-32">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-4">
+              <Link
+                href="/realisations"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/80 transition hover:bg-white/10"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9.53 4.47a.75.75 0 010 1.06L4.81 10.25H21a.75.75 0 010 1.5H4.81l4.72 4.72a.75.75 0 11-1.06 1.06l-6-6a.75.75 0 010-1.06l6-6a.75.75 0 011.06 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Retour aux réalisations
+              </Link>
+            </div>
             <h1 className="mb-2 text-2xl font-bold sm:text-4xl">
               {project.title}
             </h1>
