@@ -6,7 +6,6 @@ import {
   CreateSliderMediaInput,
   UpdateSliderMediaInput,
   SLIDER_CATEGORIES,
-  SLIDER_MEDIA_TYPES,
 } from '@/lib/types/slider';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import FileUploader from '@/components/ui/FileUploader';
@@ -172,7 +171,7 @@ export default function SliderMediaForm({
           <label
             className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
           >
-            Ordre d'affichage
+            Ordre d&apos;affichage
           </label>
           <input
             type="number"

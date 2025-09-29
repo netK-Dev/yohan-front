@@ -175,7 +175,7 @@ export default function ContactForm() {
             required
           />
           <p id="fullName-help" className="mt-1 text-xs text-white/60">
-            Votre nom complet tel qu'il apparaîtra dans nos échanges.
+            Votre nom complet tel qu&apos;il apparaîtra dans nos échanges.
           </p>
           {errors.fullName && (
             <p id="fullName-error" className={errorText}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   SliderMedia,
   CreateSliderMediaInput,
@@ -13,7 +13,7 @@ export function useSliderMedia(activeOnly: boolean = false) {
   const [error, setError] = useState<string | null>(null);
 
   // Charger les médias slider
-  const fetchSliderMedia = async () => {
+  const fetchSliderMedia = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -34,7 +34,7 @@ export function useSliderMedia(activeOnly: boolean = false) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeOnly]);
 
   // Créer un nouveau média slider
   const createSliderMedia = async (
@@ -116,7 +116,7 @@ export function useSliderMedia(activeOnly: boolean = false) {
 
   useEffect(() => {
     fetchSliderMedia();
-  }, [activeOnly]);
+  }, [fetchSliderMedia]);
 
   return {
     sliderMedia,
