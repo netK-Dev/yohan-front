@@ -61,21 +61,40 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/"
-            className={`rounded-md px-3 py-2 text-sm font-medium ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
-          >
-            Retour au site
-          </Link>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className={`rounded-md px-3 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
-          >
-            Se déconnecter
-          </button>
-        </div>
+        <nav className="flex items-center gap-4">
+          {/* Navigation admin */}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/dashboard"
+              className="rounded-md px-3 py-2 text-sm font-medium text-white/80 transition-all duration-300 hover:bg-white/10 hover:text-white"
+            >
+              Projets
+            </Link>
+            <Link
+              href="/admin/slider"
+              className="rounded-md px-3 py-2 text-sm font-medium text-white/80 transition-all duration-300 hover:bg-white/10 hover:text-white"
+            >
+              Slider
+            </Link>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className={`rounded-md px-3 py-2 text-sm font-medium ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
+            >
+              Retour au site
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className={`rounded-md px-3 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
+            >
+              Se déconnecter
+            </button>
+          </div>
+        </nav>
       </div>
     </header>
   );

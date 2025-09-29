@@ -198,77 +198,53 @@ button {
   animation: spin-slow 20s linear infinite;
 }
 
-/* Carousel 3D avec perspective avancée */
-.carousel-3d-container {
-  transform-style: preserve-3d;
-}
-
-.carousel-3d-stage {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transform-style: preserve-3d;
-  animation: carousel-3d-rotate 25s linear infinite;
-}
-
-.carousel-3d-item {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center center;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform, opacity;
-}
-
-.carousel-item-content {
-  transform: translate(-50%, -50%);
-  transform-style: preserve-3d;
-}
-
-/* Animation principale du carousel */
-@keyframes carousel-3d-rotate {
-  from {
+/* Animation 3D moderne et fluide */
+@keyframes spin3d {
+  0% {
     transform: translate(-50%, -50%) rotateY(0deg);
   }
-  to {
+  100% {
     transform: translate(-50%, -50%) rotateY(-360deg);
   }
 }
 
-/* Optimisations de performance */
-.carousel-3d-container * {
+/* Animation de pulsation moderne */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Optimisations 3D */
+[style*='preserve-3d'] {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+[style*='perspective'] {
+  -webkit-perspective: inherit;
+  perspective: inherit;
+}
+
+/* Optimisations GPU */
+[style*='rotateY'],
+[style*='translateZ'] {
+  will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
-/* Responsive pour le carousel */
-@media (max-width: 768px) {
-  .carousel-3d-stage {
-    animation-duration: 30s;
+/* Préférences utilisateur */
+@media (prefers-reduced-motion: reduce) {
+  [style*='spin3d'] {
+    animation-duration: 60s !important;
   }
-
-  .carousel-3d-container {
-    perspective: 600px;
-  }
-}
-
-@media (max-width: 640px) {
-  .carousel-3d-container {
-    perspective: 500px;
-  }
-}
-
-.carousel-item-content:hover {
-  transform: translate(-50%, -50%) scale(1.05);
-  transition: transform 0.3s ease;
-}
-
-.carousel-3d-container,
-.carousel-3d-stage,
-.carousel-3d-item {
-  will-change: transform;
 }
 
 /* Media query pour les très petits écrans (moins de 400px) */

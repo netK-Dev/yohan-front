@@ -93,3 +93,27 @@ model Project {
 
   @@map("projects_v2")
 }
+
+// Slider Media Collection
+model SliderMedia {
+  id          Int      @id @default(autoincrement())
+  title       String
+  /// Description/Alt text pour l'accessibilité
+  description String?
+  /// URL du média stocké sur Vercel Blob
+  mediaUrl    String
+  /// Pathname Blob pour la suppression
+  mediaPath   String?
+  /// Type de média (image, gif)
+  mediaType   String   @default("image")
+  /// Catégorie d'affichage (Sculpture, Produit, Environnement, Character, etc.)
+  category    String?
+  /// Ordre d'affichage dans le slider
+  order       Int      @default(0)
+  /// Statut actif/inactif
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("slider_media")
+}
