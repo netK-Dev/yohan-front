@@ -63,7 +63,7 @@ export function ClientConfirmationTemplate({
 
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <a
-            href="https://yohandoens.dev"
+            href="https://yohandoens.fr/realisations"
             style={{
               backgroundColor: '#ff0015',
               color: 'white',
