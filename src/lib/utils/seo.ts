@@ -3,7 +3,22 @@
  */
 
 import { Metadata } from 'next';
-import { Project } from '@/lib/types/project';
+
+// Type plus flexible pour les projets venant de Prisma
+export interface ProjectForSEO {
+  id: number;
+  title: string;
+  category: string;
+  date: Date;
+  description: string;
+  images: string[];
+  video: string | null;
+  videoFile: string | null;
+  skill: string | null;
+  link: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 // Configuration SEO de base
 const SEO_CONFIG = {
@@ -95,7 +110,7 @@ export function generateSEOTitle(
 /**
  * Génère les mots-clés SEO basés sur le projet
  */
-export function generateSEOKeywords(project: Project): string[] {
+export function generateSEOKeywords(project: ProjectForSEO): string[] {
   const baseKeywords = [
     'Doens Production',
     'Yohan Doens',
@@ -150,7 +165,7 @@ export function generateSEOKeywords(project: Project): string[] {
 /**
  * Génère les métadonnées complètes pour une page de projet
  */
-export function generateProjectMetadata(project: Project): Metadata {
+export function generateProjectMetadata(project: ProjectForSEO): Metadata {
   const title = generateSEOTitle(project.title, project.category);
   const description = generateSEODescription(
     project.description,
@@ -219,7 +234,7 @@ export function generateProjectMetadata(project: Project): Metadata {
 /**
  * Génère les données structurées JSON-LD pour un projet
  */
-export function generateProjectStructuredData(project: Project) {
+export function generateProjectStructuredData(project: ProjectForSEO) {
   const projectUrl = `${SEO_CONFIG.siteUrl}/realisations/${project.id}`;
   const imageUrl =
     project.images.length > 0 ? project.images[0] : SEO_CONFIG.defaultImage;
@@ -286,7 +301,7 @@ export function generateProjectStructuredData(project: Project) {
  * Génère les métadonnées pour la page de listing des réalisations
  */
 export function generateRealisationsListingMetadata(
-  projects: Project[],
+  projects: ProjectForSEO[],
   category?: string
 ): Metadata {
   const baseTitle = category ? `${category} | Réalisations` : 'Réalisations';
