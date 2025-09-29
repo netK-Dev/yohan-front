@@ -87,7 +87,7 @@ export function ClientConfirmationTemplate({
           }}
         >
           <p>Yohan Doens - Développeur Full-Stack</p>
-          <p>📧 contact@yohandoens.dev | 🌐 yohandoens.dev</p>
+          <p>📧 yohandoens.yd@gmail.com | 🌐 yohandoens.fr</p>
         </div>
       </div>
     </div>

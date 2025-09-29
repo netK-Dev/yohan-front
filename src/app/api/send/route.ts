@@ -44,10 +44,7 @@ export async function POST(request: Request) {
       from:
         process.env.RESEND_FROM_NOTIF ||
         'Portfolio Contact <onboarding@resend.dev>',
-      to: [
-        process.env.RESEND_FROM_CLIENT?.split('<')[1]?.split('>')[0] ||
-          'doenshugo@gmail.com',
-      ],
+      to: ['yohandoens.yd@gmail.com'],
       subject: `Nouveau contact: ${fullName} - ${subject}`,
       react: YohanNotificationTemplate({
         clientName: fullName,
