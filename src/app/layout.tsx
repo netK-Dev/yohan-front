@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Yohan Front',
+  title: 'Accueil | Doens Production',
   description: 'Portfolio professionnel de Yohan Doens',
 };
 

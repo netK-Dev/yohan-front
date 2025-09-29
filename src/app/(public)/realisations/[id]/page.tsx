@@ -3,10 +3,12 @@ import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
+import { generateProjectMetadata, generateProjectStructuredData } from '@/lib/utils/seo';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
 async function fetchProject(id: string) {
   try {
@@ -87,6 +89,25 @@ function getExternalVideoEmbed(url: string | null | undefined): string | null {
 // Configuration pour ISR - revalidation toutes les 5 minutes
 export const revalidate = 300;
 
+// Génération des métadonnées dynamiques pour le SEO
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const project = await fetchProject(id);
+
+  if (!project) {
+    return {
+      title: 'Projet non trouvé | Doens Production',
+      description: 'Le projet demandé n\'existe pas ou n\'est plus disponible.',
+    };
+  }
+
+  return generateProjectMetadata(project);
+}
+
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -108,8 +129,19 @@ export default async function ProjectDetailPage({
 
   const externalEmbed = getExternalVideoEmbed(project?.video);
 
+  // Générer les données structurées JSON-LD
+  const structuredData = generateProjectStructuredData(project);
+
   return (
     <>
+      {/* Données structurées JSON-LD pour le SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+      
       <Suspense fallback={null}>
         <Header />
       </Suspense>
