@@ -10,6 +10,7 @@ import {
   PROJECT_CATEGORIES,
 } from '@/lib/types/project';
 import FileUploader from '@/components/ui/FileUploader';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 
 interface ProjectFormProps {
   initialData?: Partial<UpdateProjectInput>;
@@ -187,17 +188,13 @@ export default function ProjectForm({
         <label className="mb-1.5 block text-sm font-medium text-white/80">
           Description *
         </label>
-        <textarea
+        <RichTextEditor
           value={formData.description}
-          onChange={e => handleChange('description', e.target.value)}
-          rows={3}
-          className={`w-full resize-none rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
-            errors.description
-              ? 'border-red-500 focus:border-red-400'
-              : 'border-white/10 focus:border-white/20'
-          }`}
+          onChange={html => handleChange('description', html)}
           placeholder="Décrivez le projet en détail..."
           disabled={isLoading}
+          error={!!errors.description}
+          maxLength={5000}
         />
         {errors.description && (
           <p className="mt-1 text-xs text-red-400">{errors.description}</p>

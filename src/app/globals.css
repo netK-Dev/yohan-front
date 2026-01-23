@@ -450,3 +450,138 @@ button {
     opacity: 0.35;
   }
 }
+
+/* ==============================
+   Rich Text Editor - Tiptap
+   ============================== */
+
+/* Zone d'édition */
+.rich-text-editor .ProseMirror {
+  outline: none;
+  min-height: 150px;
+}
+
+.rich-text-editor .ProseMirror p.is-editor-empty:first-child::before {
+  color: rgba(255, 255, 255, 0.4);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Styles pour l'édition */
+.rich-text-editor .ProseMirror h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: white;
+}
+
+.rich-text-editor .ProseMirror h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.5rem;
+  color: white;
+}
+
+.rich-text-editor .ProseMirror p {
+  margin: 0.5rem 0;
+}
+
+.rich-text-editor .ProseMirror ul,
+.rich-text-editor .ProseMirror ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.rich-text-editor .ProseMirror ul {
+  list-style-type: disc;
+}
+
+.rich-text-editor .ProseMirror ol {
+  list-style-type: decimal;
+}
+
+.rich-text-editor .ProseMirror li {
+  margin: 0.25rem 0;
+}
+
+.rich-text-editor .ProseMirror a {
+  color: #ff0015;
+  text-decoration: underline;
+}
+
+.rich-text-editor .ProseMirror a:hover {
+  color: #cc0011;
+}
+
+/* ==============================
+   Rich Text Display - Rendu Front
+   ============================== */
+
+.rich-text-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem;
+  color: white;
+}
+
+.rich-text-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+  color: white;
+}
+
+.rich-text-content p {
+  margin: 0.75rem 0;
+  line-height: 1.7;
+}
+
+.rich-text-content ul,
+.rich-text-content ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.rich-text-content ul {
+  list-style-type: disc;
+}
+
+.rich-text-content ol {
+  list-style-type: decimal;
+}
+
+.rich-text-content li {
+  margin: 0.25rem 0;
+  line-height: 1.6;
+}
+
+.rich-text-content a {
+  color: #ff0015;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.rich-text-content a:hover {
+  color: #cc0011;
+}
+
+.rich-text-content strong,
+.rich-text-content b {
+  font-weight: 600;
+}
+
+.rich-text-content em,
+.rich-text-content i {
+  font-style: italic;
+}
+
+.rich-text-content u {
+  text-decoration: underline;
+}
+
+.rich-text-content s,
+.rich-text-content strike {
+  text-decoration: line-through;
+}

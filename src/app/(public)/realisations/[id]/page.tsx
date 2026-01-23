@@ -1,6 +1,7 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
+import RichTextDisplay from '@/components/ui/RichTextDisplay';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
 import { generateProjectMetadata, generateProjectStructuredData } from '@/lib/utils/seo';
@@ -187,7 +188,7 @@ export default async function ProjectDetailPage({
 
             {/* Description */}
             <div className="prose prose-invert mb-8 max-w-none">
-              <p className="text-white/80">{project.description}</p>
+              <RichTextDisplay html={project.description} className="text-white/80" />
             </div>
 
             {/* Galerie d'images */}

@@ -20,7 +20,7 @@ export const ProjectSchema = z.object({
   description: z
     .string()
     .min(1, 'La description est requise')
-    .max(2000, 'Description trop longue'),
+    .max(10000, 'Description trop longue'),
   images: z.array(z.string().url()).min(1, 'Au moins une image est requise'),
   video: z.string().url('URL de vidéo invalide').optional().or(z.literal('')),
   videoFile: z
