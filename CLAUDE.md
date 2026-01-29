@@ -121,7 +121,10 @@ Les fichiers sont automatiquement nettoyés lors de la suppression/modification 
 # Contenu
 - Project {
     id, title, category, date, description,
-    images: String[], video?, videoFile?, skill?, link?
+    images: String[],
+    videos: Json,        # Array de ProjectVideo (nouveau système multi-vidéos)
+    video?, videoFile?,  # Anciens champs (conservés pour rétrocompatibilité)
+    skill?, link?
   }
 - SliderMedia {
     id, title, description?, mediaUrl, mediaPath?,
@@ -140,6 +143,12 @@ Les fichiers sont automatiquement nettoyés lors de la suppression/modification 
 - `SLIDER_CATEGORIES` : `['Sculpture', 'Produit', 'Environnement', 'Character', 'Animation', 'VFX', 'Motion Design']`
 - `SLIDER_MEDIA_TYPES` : `['image', 'gif']`
 - Types : `SliderMedia`, `CreateSliderMediaInput`, `UpdateSliderMediaInput`
+
+**Vidéos** (`src/lib/types/video.ts`) :
+- `ProjectVideo` : `{ type: 'youtube' | 'upload', url: string }` - Type pour les vidéos de projet
+- `getEmbedUrl(url)` - Convertit une URL YouTube/Vimeo en URL d'embed
+- `extractBlobUrlsFromVideos(videos)` - Extrait les URLs Blob des vidéos uploadées (pour nettoyage)
+- Max 8 vidéos par projet, mix YouTube/Vimeo et uploads possible
 
 ### Hooks Personnalisés
 
@@ -178,8 +187,10 @@ Les pages de réalisations génèrent automatiquement les métadonnées et donn�
 **UI** (`src/components/ui/`) :
 - `FileUploader` - Upload drag & drop avec progress (single/multiple)
 - `SafeImage` - Wrapper Next/Image avec fallback d'erreur
-- `Modal` - Modal responsive avec overlay
+- `Modal` - Modal responsive avec overlay opaque
 - `Pagination`, `ImageSlider`
+- `VideoSlider` - Slider pour vidéos multiples (YouTube/Vimeo + uploads), navigation par pills
+- `RichTextDisplay` - Affichage HTML sécurisé pour descriptions de projets
 
 **Admin** (`src/components/admin/`) :
 - `AdminHeader` - Navigation admin avec logout
@@ -223,6 +234,13 @@ RESEND_FROM_NOTIF=<email-expéditeur-notification>
 NEXT_PUBLIC_SITE_URL=https://doensproduction.com
 ```
 
+### Scripts de Migration
+
+Dossier `dev/scripts/` (exclu du build TypeScript) :
+- `migrate-videos-to-array.ts` - Migration des anciens champs `video`/`videoFile` vers le nouveau tableau `videos`
+
+Usage : `tsx dev/scripts/migrate-videos-to-array.ts`
+
 ## Conventions
 
 - **Imports** : Utiliser l'alias `@/*` pour tous les imports depuis `src/`
@@ -230,3 +248,4 @@ NEXT_PUBLIC_SITE_URL=https://doensproduction.com
 - **Composants** : Client Components marqués avec `'use client'` en première ligne
 - **API** : Validation Zod systématique, réponses JSON standardisées
 - **Styles** : Tailwind CSS uniquement, utiliser `COLOR_COMBINATIONS` pour la cohérence
+- **Vidéos** : Utiliser le nouveau système `videos` (array de `ProjectVideo`), les anciens champs sont conservés pour rétrocompatibilité

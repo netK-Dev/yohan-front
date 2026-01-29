@@ -82,9 +82,16 @@ model Project {
   description String   @db.Text
   /// Galerie d'images (la première sera utilisée comme couverture)
   images      String[] @default([])
+
+  /// Liste des vidéos du projet (max 8), stockée en JSON
+  /// Chaque vidéo: { type: 'youtube' | 'upload', url: string }
+  videos      Json?    @default("[]")
+
+  /// @deprecated Utiliser le champ videos. URL externe (YouTube/Vimeo)
   video       String?
-  /// Fichier vidéo uploadé (URL Blob)
+  /// @deprecated Utiliser le champ videos. Fichier vidéo uploadé (URL Blob)
   videoFile   String?
+
   skill       String?
   link        String?
   createdAt   DateTime @default(now())

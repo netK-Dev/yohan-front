@@ -3,6 +3,7 @@
  */
 
 import { Metadata } from 'next';
+import { type ProjectVideo } from '@/lib/types/video';
 
 // Type plus flexible pour les projets venant de Prisma
 export interface ProjectForSEO {
@@ -14,6 +15,7 @@ export interface ProjectForSEO {
   images: string[];
   video: string | null;
   videoFile: string | null;
+  videos?: unknown; // Json type from Prisma
   skill: string | null;
   link: string | null;
   createdAt: Date;
@@ -239,6 +241,52 @@ export function generateProjectStructuredData(project: ProjectForSEO) {
   const imageUrl =
     project.images.length > 0 ? project.images[0] : SEO_CONFIG.defaultImage;
 
+  // Gérer les vidéos (nouveau système array ou ancien système)
+  let videoData = {};
+
+  if (project.videos && Array.isArray(project.videos)) {
+    const videos = project.videos as ProjectVideo[];
+    if (videos.length > 0) {
+      // Si une seule vidéo, utiliser l'objet simple
+      if (videos.length === 1) {
+        videoData = {
+          video: {
+            '@type': 'VideoObject',
+            name: project.title,
+            description: project.description,
+            thumbnailUrl: imageUrl,
+            contentUrl: videos[0].url,
+            uploadDate: project.createdAt.toISOString(),
+          },
+        };
+      } else {
+        // Si plusieurs vidéos, utiliser un array
+        videoData = {
+          video: videos.map((v, index) => ({
+            '@type': 'VideoObject',
+            name: `${project.title} - Vidéo ${index + 1}`,
+            description: project.description,
+            thumbnailUrl: imageUrl,
+            contentUrl: v.url,
+            uploadDate: project.createdAt.toISOString(),
+          })),
+        };
+      }
+    }
+  } else if (project.videoFile || project.video) {
+    // Fallback pour l'ancien système (projets non migrés)
+    videoData = {
+      video: {
+        '@type': 'VideoObject',
+        name: project.title,
+        description: project.description,
+        thumbnailUrl: imageUrl,
+        contentUrl: project.videoFile || project.video,
+        uploadDate: project.createdAt.toISOString(),
+      },
+    };
+  }
+
   return {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
@@ -275,19 +323,8 @@ export function generateProjectStructuredData(project: ProjectForSEO) {
       '@type': 'Thing',
       name: project.category,
     },
-    // Ajouter la vidéo si disponible
-    ...(project.videoFile || project.video
-      ? {
-          video: {
-            '@type': 'VideoObject',
-            name: project.title,
-            description: project.description,
-            thumbnailUrl: imageUrl,
-            contentUrl: project.videoFile || project.video,
-            uploadDate: project.createdAt.toISOString(),
-          },
-        }
-      : {}),
+    // Ajouter les vidéos si disponibles
+    ...videoData,
     // Ajouter le lien externe si disponible
     ...(project.link
       ? {

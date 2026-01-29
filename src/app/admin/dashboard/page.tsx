@@ -16,6 +16,7 @@ import {
   Project,
 } from '@/lib/types/project';
 import { PROJECT_CATEGORIES } from '@/lib/types/project';
+import { type ProjectVideo } from '@/lib/types/video';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -91,6 +92,7 @@ export default function AdminDashboardPage() {
     date: new Date(project.date).toISOString().split('T')[0],
     description: project.description,
     images: project.images,
+    videos: (project.videos as unknown as ProjectVideo[]) || [],
     video: project.video || '',
     videoFile: project.videoFile || '',
     skill: project.skill || '',

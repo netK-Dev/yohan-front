@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth-server';
 import { UpdateProjectSchema } from '@/lib/types/project';
 import { deleteManyFromBlob } from '@/lib/blob';
+import { extractBlobUrlsFromVideos, type ProjectVideo } from '@/lib/types/video';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 // GET /api/projects/[id] - Récupérer un projet spécifique (public)
 export async function GET(
@@ -106,6 +108,23 @@ export const PUT = withAuth(
         removedBlobUrls.push(...removedImages);
       }
 
+      // Vérifier si des vidéos ont été supprimées (nouveau système array)
+      if (finalUpdateData.videos !== undefined) {
+        const oldVideos = (existingProject.videos as unknown as ProjectVideo[]) || [];
+        const newVideos = finalUpdateData.videos as unknown as ProjectVideo[];
+
+        // Extraire les URLs Blob des anciennes et nouvelles vidéos
+        const oldBlobUrls = extractBlobUrlsFromVideos(oldVideos);
+        const newBlobUrls = extractBlobUrlsFromVideos(newVideos);
+
+        // Identifier les URLs supprimées
+        const removedVideoUrls = oldBlobUrls.filter(url => !newBlobUrls.includes(url));
+        removedBlobUrls.push(...removedVideoUrls);
+
+        // Transformer en Prisma.JsonValue pour la DB
+        finalUpdateData.videos = newVideos as unknown as Prisma.JsonValue;
+      }
+
       // Vérifier si la vidéo a été remplacée ou supprimée
       if (finalUpdateData.videoFile !== undefined) {
         if (
@@ -184,6 +203,12 @@ export const DELETE = withAuth(
       }
       if (existingProject.videoFile) {
         blobUrls.push(existingProject.videoFile);
+      }
+      // Extraire les URLs Blob du tableau videos
+      if (existingProject.videos) {
+        const videos = existingProject.videos as unknown as ProjectVideo[];
+        const videoBlobUrls = extractBlobUrlsFromVideos(videos);
+        blobUrls.push(...videoBlobUrls);
       }
 
       // Supprimer le projet de la DB

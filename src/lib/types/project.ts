@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { ProjectVideo } from './video';
 
 // Schema de validation Zod pour les projets
 // Catégories disponibles
@@ -11,6 +12,14 @@ export const PROJECT_CATEGORIES = [
 // Type utilitaire pour la catégorie
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 
+// Schema pour une vidéo individuelle
+const ProjectVideoSchema = z.object({
+  type: z.enum(['youtube', 'upload'], {
+    errorMap: () => ({ message: 'Type de vidéo invalide' }),
+  }),
+  url: z.string().url('URL de vidéo invalide'),
+});
+
 export const ProjectSchema = z.object({
   title: z.string().min(1, 'Le titre est requis').max(100, 'Titre trop long'),
   category: z.enum(PROJECT_CATEGORIES, {
@@ -22,12 +31,22 @@ export const ProjectSchema = z.object({
     .min(1, 'La description est requise')
     .max(10000, 'Description trop longue'),
   images: z.array(z.string().url()).min(1, 'Au moins une image est requise'),
+
+  // NOUVEAU: Array de vidéos avec validation
+  videos: z
+    .array(ProjectVideoSchema)
+    .max(8, 'Maximum 8 vidéos autorisées')
+    .optional()
+    .default([]),
+
+  // ANCIENS CHAMPS (rétrocompatibilité)
   video: z.string().url('URL de vidéo invalide').optional().or(z.literal('')),
   videoFile: z
     .string()
     .url('URL de vidéo invalide')
     .optional()
     .or(z.literal('')),
+
   skill: z
     .string()
     .max(200, 'Compétences trop longues')
@@ -54,8 +73,9 @@ export interface Project {
   date: Date;
   description: string;
   images: string[];
-  video: string | null;
-  videoFile: string | null;
+  videos: ProjectVideo[]; // NOUVEAU: Array de vidéos
+  video: string | null; // Ancien champ (rétrocompatibilité)
+  videoFile: string | null; // Ancien champ (rétrocompatibilité)
   skill: string | null;
   link: string | null;
   createdAt: Date;

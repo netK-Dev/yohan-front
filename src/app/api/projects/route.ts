@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth-server';
 import { CreateProjectSchema } from '@/lib/types/project';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 // GET /api/projects - Récupérer tous les projets (public)
 export async function GET() {
@@ -26,7 +27,7 @@ export const POST = withAuth(async request => {
     const validatedData = CreateProjectSchema.parse(body);
 
     // Conversion de la date string en Date
-    const projectData = {
+    const projectData: Record<string, unknown> = {
       ...validatedData,
       date: new Date(validatedData.date),
       // Nettoyer les champs optionnels vides
@@ -36,8 +37,13 @@ export const POST = withAuth(async request => {
       link: validatedData.link || null,
     };
 
+    // Transformer videos en Prisma.JsonValue si présent
+    if (validatedData.videos && validatedData.videos.length > 0) {
+      projectData.videos = validatedData.videos as unknown as Prisma.JsonValue;
+    }
+
     const project = await prisma.project.create({
-      data: projectData,
+      data: projectData as Prisma.ProjectCreateInput,
     });
 
     return NextResponse.json(project, { status: 201 });

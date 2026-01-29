@@ -1,10 +1,12 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
+import VideoSlider from '@/components/ui/VideoSlider';
 import RichTextDisplay from '@/components/ui/RichTextDisplay';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
 import { generateProjectMetadata, generateProjectStructuredData } from '@/lib/utils/seo';
+import { type ProjectVideo } from '@/lib/types/video';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -196,42 +198,56 @@ export default async function ProjectDetailPage({
               <ImageSlider images={project.images} title={project.title} />
             )}
 
-            {/* Vidéo uploadée */}
-            {project.videoFile && (
-              <div className="mb-8">
-                <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
-                <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
-                  <video
-                    controls
-                    className="h-full w-full object-cover"
-                    poster={
-                      project.images && project.images[0]
-                        ? project.images[0]
-                        : undefined
-                    }
-                  >
-                    <source src={project.videoFile} type="video/mp4" />
-                    <source src={project.videoFile} type="video/webm" />
-                    Votre navigateur ne supporte pas la lecture vidéo.
-                  </video>
-                </div>
-              </div>
+            {/* Vidéos (nouveau système avec VideoSlider) */}
+            {project.videos && (project.videos as unknown as ProjectVideo[]).length > 0 && (
+              <VideoSlider
+                videos={project.videos as unknown as ProjectVideo[]}
+                title={project.title}
+                posterImage={project.images && project.images[0] ? project.images[0] : undefined}
+              />
             )}
 
-            {/* Vidéo externe (YouTube/Vimeo) */}
-            {externalEmbed && (
-              <div className="mb-8">
-                <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
-                <div className="relative aspect-video overflow-hidden rounded-lg">
-                  <iframe
-                    src={externalEmbed}
-                    className="h-full w-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title="Video player"
-                  />
-                </div>
-              </div>
+            {/* Fallback : Ancien système pour projets non migrés */}
+            {(!project.videos || (project.videos as unknown as ProjectVideo[]).length === 0) && (
+              <>
+                {/* Vidéo uploadée */}
+                {project.videoFile && (
+                  <div className="mb-8">
+                    <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
+                    <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
+                      <video
+                        controls
+                        className="h-full w-full object-cover"
+                        poster={
+                          project.images && project.images[0]
+                            ? project.images[0]
+                            : undefined
+                        }
+                      >
+                        <source src={project.videoFile} type="video/mp4" />
+                        <source src={project.videoFile} type="video/webm" />
+                        Votre navigateur ne supporte pas la lecture vidéo.
+                      </video>
+                    </div>
+                  </div>
+                )}
+
+                {/* Vidéo externe (YouTube/Vimeo) */}
+                {externalEmbed && (
+                  <div className="mb-8">
+                    <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
+                    <div className="relative aspect-video overflow-hidden rounded-lg">
+                      <iframe
+                        src={externalEmbed}
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Video player"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Compétences */}
