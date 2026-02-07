@@ -80,7 +80,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               <Link
                 href="/admin/dashboard"
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
-                  pathname === '/admin/dashboard'
+                  pathname.startsWith('/admin/dashboard')
                     ? 'bg-white/15 text-white border border-white/20'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
@@ -90,7 +90,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               <Link
                 href="/admin/slider"
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
-                  pathname === '/admin/slider'
+                  pathname.startsWith('/admin/slider')
                     ? 'bg-white/15 text-white border border-white/20'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
@@ -170,7 +170,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               href="/admin/dashboard"
               onClick={() => setMobileOpen(false)}
               className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
-                pathname === '/admin/dashboard'
+                pathname.startsWith('/admin/dashboard')
                   ? 'bg-white/15 text-white'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
@@ -181,7 +181,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               href="/admin/slider"
               onClick={() => setMobileOpen(false)}
               className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
-                pathname === '/admin/slider'
+                pathname.startsWith('/admin/slider')
                   ? 'bg-white/15 text-white'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
