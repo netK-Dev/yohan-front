@@ -68,6 +68,7 @@ export default function EditProjectPage() {
     video: p.video || '',
     videoFile: p.videoFile || '',
     skill: p.skill || '',
+    software: p.software || [],
     link: p.link || '',
   });
 

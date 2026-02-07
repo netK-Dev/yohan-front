@@ -22,6 +22,8 @@ export default function FileUploader({
 }: FileUploaderProps) {
   const [isDragging, setDragging] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+  const [uploadingFile, setUploadingFile] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   function openPicker() {
@@ -31,12 +33,20 @@ export default function FileUploader({
   async function handleFiles(files: FileList | null) {
     if (!files || !files[0]) return;
     setLoading(true);
+    setProgress(0);
     try {
       if (multiple) {
         const uploaded: Array<{ url: string; pathname: string }> = [];
-        for (const file of Array.from(files)) {
-          if (file.size > maxSizeMb * 1024 * 1024) continue;
-          const { url, pathname } = await uploadToBlob(file);
+        const validFiles = Array.from(files).filter(
+          f => f.size <= maxSizeMb * 1024 * 1024
+        );
+        for (let i = 0; i < validFiles.length; i++) {
+          const file = validFiles[i];
+          setUploadingFile(`${file.name} (${i + 1}/${validFiles.length})`);
+          setProgress(0);
+          const { url, pathname } = await uploadToBlob(file, {
+            onUploadProgress: e => setProgress(Math.round(e.percentage)),
+          });
           uploaded.push({ url, pathname });
         }
         if (uploaded.length) onMultipleUploaded?.(uploaded);
@@ -46,7 +56,10 @@ export default function FileUploader({
           alert(`Fichier trop volumineux (max ${maxSizeMb}MB)`);
           return;
         }
-        const { url, pathname } = await uploadToBlob(file);
+        setUploadingFile(file.name);
+        const { url, pathname } = await uploadToBlob(file, {
+          onUploadProgress: e => setProgress(Math.round(e.percentage)),
+        });
         onUploaded?.(url, pathname);
       }
     } catch {
@@ -54,6 +67,8 @@ export default function FileUploader({
     } finally {
       setLoading(false);
       setDragging(false);
+      setProgress(0);
+      setUploadingFile(null);
     }
   }
 
@@ -86,9 +101,23 @@ export default function FileUploader({
       />
 
       {isLoading ? (
-        <div className="flex flex-col items-center">
-          <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#ff0015]"></div>
-          <div className="text-sm text-white/70">Envoi en cours...</div>
+        <div className="flex flex-col items-center px-2">
+          {uploadingFile && (
+            <p className="mb-3 max-w-full truncate text-xs text-white/60">
+              {uploadingFile}
+            </p>
+          )}
+          <div className="mb-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-[#ff0015] transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="text-sm text-white/70">
+            {progress < 100
+              ? `Envoi en cours... ${progress}%`
+              : 'Finalisation...'}
+          </div>
         </div>
       ) : (
         <>

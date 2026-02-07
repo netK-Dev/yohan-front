@@ -4,11 +4,13 @@ import React from 'react';
 import SafeImage from '@/components/ui/SafeImage';
 import Modal from '@/components/ui/Modal';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import Image from 'next/image';
 import {
   CreateProjectInput,
   UpdateProjectInput,
   ProjectSchema,
   PROJECT_CATEGORIES,
+  SOFTWARE_LIST,
 } from '@/lib/types/project';
 import { ProjectVideo } from '@/lib/types/video';
 import FileUploader from '@/components/ui/FileUploader';
@@ -39,6 +41,7 @@ export default function ProjectForm({
     video: initialData?.video || '',
     videoFile: initialData?.videoFile || '',
     skill: initialData?.skill || '',
+    software: initialData?.software || [],
     link: initialData?.link || '',
   });
 
@@ -547,7 +550,7 @@ export default function ProjectForm({
                 </p>
                 <FileUploader
                   accept="video/*"
-                  maxSizeMb={50}
+                  maxSizeMb={500}
                   onUploaded={handleVideoFileUploaded}
                 />
               </div>
@@ -611,6 +614,53 @@ export default function ProjectForm({
           {errors.skill && (
             <p className="mt-1 text-xs text-red-400">{errors.skill}</p>
           )}
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Logiciels utilisés
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            {SOFTWARE_LIST.map(sw => {
+              const selected = formData.software.includes(sw.id);
+              return (
+                <button
+                  key={sw.id}
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() =>
+                    setFormData(prev => ({
+                      ...prev,
+                      software: prev.software.includes(sw.id)
+                        ? prev.software.filter(s => s !== sw.id)
+                        : [...prev.software, sw.id],
+                    }))
+                  }
+                  className={`flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-all ${
+                    selected
+                      ? 'border-[#ff0015] bg-[#ff0015]/10'
+                      : 'border-white/10 opacity-50 hover:opacity-75'
+                  } disabled:cursor-not-allowed`}
+                >
+                  <Image
+                    src={sw.icon}
+                    alt={sw.name}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 object-contain"
+                  />
+                  <span className="text-center text-xs text-white/80">
+                    {sw.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div>

@@ -93,6 +93,8 @@ model Project {
   videoFile   String?
 
   skill       String?
+  /// Logiciels utilisés (IDs des logiciels, ex: ["blender", "after-effects"])
+  software    String[] @default([])
   link        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -7,6 +7,8 @@ import Pagination from '@/components/ui/Pagination';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { parseSkills } from '@/lib/utils/skills';
+import { getSoftwareById } from '@/lib/types/project';
+import Image from 'next/image';
 
 type ProjectCategory = '3d-vfx' | 'motion-design' | 'court-metrage';
 
@@ -17,6 +19,7 @@ type ProjectItem = {
   image: string;
   description: string;
   tags: string[];
+  software: string[];
 };
 
 // Type du projet renvoyé par l'API/DB
@@ -27,6 +30,7 @@ type DbProject = {
   images: string[];
   description: string;
   skill?: string | null;
+  software?: string[];
 };
 
 const CATEGORIES: Array<{ key: 'all' | ProjectCategory; label: string }> = [
@@ -56,6 +60,7 @@ function toProjectItem(p: DbProject): ProjectItem {
     image: cover,
     description: p.description,
     tags,
+    software: p.software || [],
   };
 }
 
@@ -231,6 +236,7 @@ export default function RealisationsGallery() {
                 image: '',
                 description: '',
                 tags: [],
+                software: [],
               }))
             : paginated
           ).map((project, index) => (
@@ -273,17 +279,50 @@ export default function RealisationsGallery() {
                   {project.title}
                 </h3>
 
-                {/* Tags */}
-                <div className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
-                  {project.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80 backdrop-blur-sm transition-colors group-hover:bg-[#ff0015]/20 group-hover:text-white sm:px-3 sm:py-1"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {/* Tags (max 3 visibles) */}
+                {project.tags.length > 0 && (
+                  <div className="mb-3 flex flex-wrap gap-1.5 sm:gap-2">
+                    {project.tags.slice(0, 3).map((tag, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80 backdrop-blur-sm transition-colors group-hover:bg-[#ff0015]/20 group-hover:text-white sm:px-3 sm:py-1"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {project.tags.length > 3 && (
+                      <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-white/50 sm:px-3 sm:py-1">
+                        +{project.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Icônes logiciels (max 6 visibles) */}
+                {project.software.length > 0 && (
+                  <div className="mb-3 flex items-center gap-1.5">
+                    {project.software.slice(0, 6).map(swId => {
+                      const sw = getSoftwareById(swId);
+                      if (!sw) return null;
+                      return (
+                        <Image
+                          key={swId}
+                          src={sw.icon}
+                          alt={sw.name}
+                          width={32}
+                          height={32}
+                          title={sw.name}
+                          className="h-8 w-8 rounded object-contain"
+                        />
+                      );
+                    })}
+                    {project.software.length > 6 && (
+                      <span className="text-xs text-white/50">
+                        +{project.software.length - 6}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* CTA - poussé vers le bas */}
                 <div className="mt-auto">

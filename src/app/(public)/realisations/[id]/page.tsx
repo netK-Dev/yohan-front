@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
@@ -5,6 +6,7 @@ import VideoSlider from '@/components/ui/VideoSlider';
 import RichTextDisplay from '@/components/ui/RichTextDisplay';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
+import { getSoftwareById } from '@/lib/types/project';
 import { generateProjectMetadata, generateProjectStructuredData } from '@/lib/utils/seo';
 import { type ProjectVideo } from '@/lib/types/video';
 import prisma from '@/lib/prisma';
@@ -267,6 +269,38 @@ export default async function ProjectDetailPage({
                       </span>
                     )
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Logiciels utilisés */}
+            {project.software && project.software.length > 0 && (
+              <div className="mb-6">
+                <h3 className="mb-2 text-lg font-medium text-white">
+                  Logiciels utilisés
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {(project.software as string[]).map((swId: string) => {
+                    const sw = getSoftwareById(swId);
+                    if (!sw) return null;
+                    return (
+                      <div
+                        key={swId}
+                        className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5"
+                      >
+                        <Image
+                          src={sw.icon}
+                          alt={sw.name}
+                          width={24}
+                          height={24}
+                          className="h-6 w-6 object-contain"
+                        />
+                        <span className="text-sm text-white/80">
+                          {sw.name}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -1,46 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
-
-export const runtime = 'edge';
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
+import { getServerSession } from '@/lib/auth-server';
 
 export async function POST(request: NextRequest) {
   try {
-    const contentType = request.headers.get('content-type') || '';
-
-    if (contentType.includes('multipart/form-data')) {
-      const formData = await request.formData();
-      const file = formData.get('file');
-
-      if (!file || !(file instanceof File)) {
-        return NextResponse.json(
-          { error: 'Fichier invalide' },
-          { status: 400 }
-        );
-      }
-
-      const filename = `${Date.now()}-${file.name}`.toLowerCase();
-
-      const blob = await put(filename, file, {
-        access: 'public',
-      });
-
-      return NextResponse.json({ url: blob.url, pathname: blob.pathname });
+    const session = await getServerSession();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Authentification requise' },
+        { status: 401 }
+      );
     }
 
-    // Upload binaire direct
-    const url = new URL(request.url);
-    const filenameParam = url.searchParams.get('filename');
-    const filename = (filenameParam || `${Date.now()}-upload`).toLowerCase();
+    const body = (await request.json()) as HandleUploadBody;
 
-    const arrayBuffer = await request.arrayBuffer();
-    const file = new Blob([arrayBuffer]);
-
-    const blob = await put(filename, file, {
-      access: 'public',
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async () => {
+        return {
+          allowedContentTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'image/svg+xml',
+            'video/mp4',
+            'video/quicktime',
+            'video/webm',
+            'video/x-msvideo',
+          ],
+          maximumSizeInBytes: 500 * 1024 * 1024, // 500MB
+        };
+      },
+      onUploadCompleted: async () => {
+        // Pas de traitement post-upload nécessaire
+      },
     });
 
-    return NextResponse.json({ url: blob.url, pathname: blob.pathname });
+    return NextResponse.json(jsonResponse);
   } catch {
-    return NextResponse.json({ error: 'Upload échoué' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Upload échoué' },
+      { status: 500 }
+    );
   }
 }

@@ -16,6 +16,7 @@ export const POST = withAuth(async request => {
       video: validated.video || null,
       videoFile: validated.videoFile || null,
       skill: validated.skill || null,
+      software: validated.software || [],
       link: validated.link || null,
     };
 

@@ -1,16 +1,27 @@
-export async function uploadToBlob(
-  file: File
-): Promise<{ url: string; pathname: string }> {
-  const formData = new FormData();
-  formData.append('file', file);
+import { upload } from '@vercel/blob/client';
 
-  const res = await fetch('/api/blob/upload', {
-    method: 'POST',
-    body: formData,
+export type UploadProgressEvent = {
+  loaded: number;
+  total: number;
+  percentage: number;
+};
+
+export async function uploadToBlob(
+  file: File,
+  options?: {
+    onUploadProgress?: (event: UploadProgressEvent) => void;
+  }
+): Promise<{ url: string; pathname: string }> {
+  const filename = `${Date.now()}-${file.name}`.toLowerCase();
+
+  const blob = await upload(filename, file, {
+    access: 'public',
+    handleUploadUrl: '/api/blob/upload',
+    multipart: true,
+    onUploadProgress: options?.onUploadProgress,
   });
 
-  if (!res.ok) throw new Error('Échec upload');
-  return res.json();
+  return { url: blob.url, pathname: blob.pathname };
 }
 
 export async function deleteFromBlob(pathname: string): Promise<void> {
