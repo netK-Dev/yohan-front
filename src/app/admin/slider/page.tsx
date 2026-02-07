@@ -114,13 +114,13 @@ export default function AdminSliderPage() {
         <AdminHeader />
 
         <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-lg font-semibold tracking-wide">
               Gestion du Slider
             </h1>
             <button
               onClick={() => setShowCreateModal(true)}
-              className={`rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
+              className={`w-full rounded-md px-4 py-3 text-sm font-medium sm:w-auto sm:py-2 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
             >
               Nouveau Média
             </button>
@@ -179,16 +179,16 @@ export default function AdminSliderPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-4 flex space-x-2">
+                  <div className="mt-4 grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setEditingMedia(media)}
-                      className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white transition-all duration-300 hover:bg-white/20"
+                      className="min-h-[44px] rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-white transition-all duration-300 hover:bg-white/20"
                     >
                       Modifier
                     </button>
                     <button
                       onClick={() => handleToggleStatus(media)}
-                      className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-300 ${
+                      className={`min-h-[44px] rounded-lg px-3 py-2 text-xs font-medium transition-all duration-300 ${
                         media.isActive
                           ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'
                           : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
@@ -198,7 +198,7 @@ export default function AdminSliderPage() {
                     </button>
                     <button
                       onClick={() => handleDeleteMedia(media)}
-                      className="rounded-lg bg-red-500/20 px-3 py-2 text-xs font-medium text-red-400 transition-all duration-300 hover:bg-red-500/30"
+                      className="col-span-2 min-h-[44px] rounded-lg bg-red-500/20 px-3 py-2 text-xs font-medium text-red-400 transition-all duration-300 hover:bg-red-500/30"
                     >
                       Supprimer
                     </button>

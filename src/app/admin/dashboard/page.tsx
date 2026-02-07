@@ -130,13 +130,13 @@ export default function AdminDashboardPage() {
         <AdminHeader />
 
         <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-lg font-semibold tracking-wide">
               Gestion des Projets
             </h1>
             <button
               onClick={() => setShowCreateModal(true)}
-              className={`rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
+              className={`w-full rounded-md px-4 py-3 text-sm font-medium sm:w-auto sm:py-2 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
             >
               Nouveau Projet
             </button>
@@ -173,7 +173,7 @@ export default function AdminDashboardPage() {
                         {items.map(project => (
                           <div
                             key={project.id}
-                            className="group relative h-32 overflow-hidden rounded-lg border border-white/10 bg-black/30 shadow-lg backdrop-blur transition-colors hover:border-white/20"
+                            className="group relative h-40 overflow-hidden rounded-lg border border-white/10 bg-black/30 shadow-lg backdrop-blur transition-colors hover:border-white/20 sm:h-32"
                           >
                             <SafeImage
                               src={project.images[0] || ''}
@@ -184,12 +184,12 @@ export default function AdminDashboardPage() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
 
-                            <div className="relative flex h-full flex-col justify-between p-3">
+                            <div className="relative flex h-full flex-col justify-between p-4 sm:p-3">
                               <div>
                                 <h3 className="line-clamp-1 text-sm font-medium text-white/90">
                                   {project.title}
                                 </h3>
-                                <p className="text-[11px] text-white/60">
+                                <p className="text-xs text-white/60">
                                   {new Date(project.date).toLocaleDateString(
                                     'fr-FR'
                                   )}
@@ -198,13 +198,13 @@ export default function AdminDashboardPage() {
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => setEditingProject(project)}
-                                  className={`rounded-md px-2 py-1 text-[11px] ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
+                                  className={`rounded-md px-3 py-2 text-xs ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
                                 >
                                   Éditer
                                 </button>
                                 <button
                                   onClick={() => handleDeleteProject(project)}
-                                  className="rounded-md border border-red-500/20 bg-red-600/20 px-2 py-1 text-[11px] text-red-400 transition hover:bg-red-600/30"
+                                  className="rounded-md border border-red-500/20 bg-red-600/20 px-3 py-2 text-xs text-red-400 transition hover:bg-red-600/30"
                                 >
                                   Supprimer
                                 </button>

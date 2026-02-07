@@ -267,10 +267,10 @@ export default function ProjectForm({
         </div>
 
         {formData.images.length > 0 && (
-          <div className="mb-3 grid grid-cols-3 gap-2">
+          <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-2">
             {formData.images.map((imageUrl, index) => (
               <div key={index} className="group relative">
-                <div className="relative h-20 w-full overflow-hidden rounded-md border border-white/10">
+                <div className="relative h-24 w-full overflow-hidden rounded-md border border-white/10 sm:h-20">
                   <SafeImage
                     src={imageUrl}
                     alt={`Galerie ${index + 1}`}
@@ -282,7 +282,7 @@ export default function ProjectForm({
                 <button
                   type="button"
                   onClick={() => removeGalleryImage(index)}
-                  className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white opacity-0 transition group-hover:opacity-100"
+                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white opacity-100 shadow-lg sm:-right-1 sm:-top-1 sm:h-5 sm:w-5 sm:opacity-0 sm:shadow-none sm:transition sm:group-hover:opacity-100"
                 >
                   ×
                 </button>
@@ -377,7 +377,7 @@ export default function ProjectForm({
                 <button
                   type="button"
                   onClick={() => removeVideo(index)}
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-transparent text-white/30 transition hover:bg-red-500/10 hover:text-red-400"
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-transparent text-white/30 transition hover:bg-red-500/10 hover:text-red-400 sm:h-8 sm:w-8"
                   aria-label="Supprimer la vidéo"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -429,7 +429,7 @@ export default function ProjectForm({
                     setVideoType('youtube');
                     setShowVideoUpload(false);
                   }}
-                  className={`relative flex flex-col items-center gap-3 rounded-xl border-2 p-5 transition ${
+                  className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition sm:gap-3 sm:p-5 ${
                     videoType === 'youtube'
                       ? 'border-[#ff0015] bg-[#ff0015]/5'
                       : 'border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
@@ -465,7 +465,7 @@ export default function ProjectForm({
                     setVideoType('upload');
                     setShowVideoUpload(true);
                   }}
-                  className={`relative flex flex-col items-center gap-3 rounded-xl border-2 p-5 transition ${
+                  className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition sm:gap-3 sm:p-5 ${
                     videoType === 'upload'
                       ? 'border-[#ff0015] bg-[#ff0015]/5'
                       : 'border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'

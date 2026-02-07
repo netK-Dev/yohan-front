@@ -79,7 +79,7 @@ export default function Modal({
             </h2>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white"
               aria-label="Fermer"
             >
               <svg
@@ -99,7 +99,7 @@ export default function Modal({
           </div>
 
           {/* Content */}
-          <div className="max-h-[calc(90vh-80px)] overflow-y-auto p-6">
+          <div className="max-h-[calc(90vh-80px)] overflow-y-auto p-4 sm:p-6">
             {children}
           </div>
         </div>

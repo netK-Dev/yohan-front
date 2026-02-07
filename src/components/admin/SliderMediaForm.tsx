@@ -116,13 +116,13 @@ export default function SliderMediaForm({
         {formData.mediaUrl ? (
           <div className="space-y-4">
             {/* Prévisualisation */}
-            <div className="relative h-32 w-32 overflow-hidden rounded-lg border border-white/10">
+            <div className="relative h-40 w-full overflow-hidden rounded-lg border border-white/10 sm:h-32 sm:w-32">
               <SafeImage
                 src={formData.mediaUrl}
                 alt={formData.title || 'Média'}
                 fill
                 className="object-cover"
-                sizes="128px"
+                sizes="(max-width: 640px) 100vw, 128px"
               />
             </div>
 
@@ -166,7 +166,7 @@ export default function SliderMediaForm({
       </div>
 
       {/* Ordre et Statut */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label
             className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
@@ -214,19 +214,19 @@ export default function SliderMediaForm({
       </div>
 
       {/* Boutons d'action */}
-      <div className="flex justify-end space-x-3 pt-6">
+      <div className="flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end">
         <button
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-white/10 disabled:opacity-50"
+          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-sm font-medium text-white transition-all duration-300 hover:bg-white/10 disabled:opacity-50 sm:w-auto sm:py-2"
         >
           Annuler
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-all duration-300 disabled:opacity-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover}`}
+          className={`w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition-all duration-300 disabled:opacity-50 sm:w-auto sm:py-2 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover}`}
         >
           {isLoading
             ? 'Enregistrement...'
