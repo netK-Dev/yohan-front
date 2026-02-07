@@ -25,7 +25,7 @@ export default function CTASection() {
             <p
               className={`mb-8 text-lg ${COLOR_COMBINATIONS.page.text} opacity-80`}
             >
-              Collaborons pour créer quelque chose d&apos;exceptionnel ensemble.
+              {"Collaborons pour créer quelque chose d'exceptionnel ensemble."}
             </p>
             <Link
               href="/contact"

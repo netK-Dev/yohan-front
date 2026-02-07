@@ -34,7 +34,7 @@ export default function ServicesSection() {
       image: '/img/services/Hnet-image.webp',
       category: 'motion-design',
       description:
-        'Création graphique animée avec maîtrise experte d&apos;Illustrator, Photoshop et After Effects. Développement continu de styles variés et d&apos;approches innovantes pour des visuels percutants et mémorables.',
+        "Création graphique animée avec maîtrise experte d'Illustrator, Photoshop et After Effects. Développement continu de styles variés et d'approches innovantes pour des visuels percutants et mémorables.",
       tags: ['After Effects', 'Illustration', 'Animation', 'Branding'],
       gradient: 'from-white/20 to-white/5',
       hoverGradient: 'group-hover:from-white/30 group-hover:to-white/10',
@@ -45,7 +45,7 @@ export default function ServicesSection() {
       image: '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp',
       category: 'court-metrage',
       description:
-        'Expertise complète en production audiovisuelle : réalisation, développement scénaristique et montage créatif. Transformation d&apos;idées en récits visuels captivants avec une approche artistique et technique maîtrisée.',
+        "Expertise complète en production audiovisuelle : réalisation, développement scénaristique et montage créatif. Transformation d'idées en récits visuels captivants avec une approche artistique et technique maîtrisée.",
       tags: ['Réalisation', 'Scénario', 'Montage', 'Storytelling'],
       gradient: 'from-gray-600/20 to-gray-600/5',
       hoverGradient: 'group-hover:from-gray-600/30 group-hover:to-gray-600/10',
@@ -82,7 +82,7 @@ export default function ServicesSection() {
           <p
             className={`mx-auto max-w-3xl text-base leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-80 sm:text-lg md:text-xl`}
           >
-            Découvrez l&apos;univers créatif de{' '}
+            {"Découvrez l'univers créatif de"}{' '}
             <span className="font-semibold text-[#ff0015]">
               Doens Production
             </span>
