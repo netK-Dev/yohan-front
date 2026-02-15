@@ -97,6 +97,16 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               >
                 Slider
               </Link>
+              <Link
+                href="/admin/homepage"
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                  pathname.startsWith('/admin/homepage')
+                    ? 'bg-white/15 text-white border border-white/20'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Accueil
+              </Link>
             </div>
 
             <div className="flex items-center gap-3">
@@ -187,6 +197,17 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               }`}
             >
               Slider
+            </Link>
+            <Link
+              href="/admin/homepage"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
+                pathname.startsWith('/admin/homepage')
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              Accueil
             </Link>
           </nav>
 

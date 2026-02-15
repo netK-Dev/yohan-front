@@ -5,8 +5,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { useSliderMedia } from '@/lib/hooks/useSliderMedia';
+import type { HeroContent } from '@/lib/types/page-content';
+import { DEFAULT_HERO_CONTENT } from '@/lib/defaults/home-defaults';
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  content?: HeroContent;
+}
+
+export default function HeroSection({ content }: HeroSectionProps) {
+  const c = content ?? DEFAULT_HERO_CONTENT;
+
   return (
     <section
       className={`hero-section-mobile relative min-h-screen overflow-hidden ${COLOR_COMBINATIONS.gradients.primary}`}
@@ -31,32 +39,23 @@ export default function HeroSection() {
             <div className="space-y-4 sm:space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-[#ff0015]/20 px-3 py-1.5 text-xs font-medium text-[#ff0015] backdrop-blur-sm sm:px-4 sm:py-2 sm:text-sm lg:bg-[#ff0015]/10">
                 <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff0015] sm:h-2 sm:w-2" />
-                Portfolio 3D & VFX
+                {c.badge}
               </div>
 
               <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
-                Créateur de{' '}
+                {c.title}{' '}
                 <span className="block bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
-                  Mondes Visuels
+                  {c.titleHighlight}
                 </span>
               </h1>
 
               <p className="text-lg font-light leading-relaxed text-white/90 sm:text-xl md:text-2xl lg:text-3xl">
-                Spécialisé en{' '}
-                <span className="font-semibold text-white">3D/VFX</span>,{' '}
-                <span className="font-semibold text-white">Motion Design</span>{' '}
-                et{' '}
-                <span className="font-semibold text-white">Courts Métrages</span>
+                {c.subtitle}
               </p>
             </div>
 
             <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg lg:mx-0 lg:text-xl">
-              Bienvenue dans l&apos;univers de{' '}
-              <span className="font-semibold text-[#ff0015]">
-                Doens Production
-              </span>
-              , où la créativité rencontre la technologie pour donner vie à vos
-              projets les plus ambitieux.
+              {c.description}
             </p>
 
             {/* Call to Action */}
@@ -65,7 +64,7 @@ export default function HeroSection() {
                 href="/realisations"
                 className={`group relative w-full transform overflow-hidden rounded-2xl px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl sm:w-auto sm:px-8 sm:py-4 sm:text-base ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow}`}
               >
-                <span className="relative z-10">Découvrir mes créations</span>
+                <span className="relative z-10">{c.ctaPrimaryText}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-[#e6000c] to-[#cc0009] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </Link>
               <Link
@@ -73,7 +72,7 @@ export default function HeroSection() {
                 className="group w-full rounded-2xl border-2 border-white/80 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-[#ff0015] hover:bg-[#ff0015]/10 hover:text-[#ff0015] hover:shadow-lg sm:w-auto sm:px-8 sm:py-4 sm:text-base lg:border-white lg:bg-transparent"
               >
                 <span className="flex items-center justify-center gap-2">
-                  Me contacter
+                  {c.ctaSecondaryText}
                   <svg
                     className="h-3 w-3 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4"
                     fill="none"
@@ -93,30 +92,16 @@ export default function HeroSection() {
 
             {/* Statistics */}
             <div className="flex flex-wrap justify-center gap-6 border-t border-white/10 pt-6 sm:gap-8 sm:pt-8 lg:justify-start lg:border-gray-800">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
-                  50+
+              {c.stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs font-medium text-white/80 sm:text-sm">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-xs font-medium text-white/80 sm:text-sm">
-                  Projets
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
-                  5
-                </div>
-                <div className="text-xs font-medium text-white/80 sm:text-sm">
-                  Années
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#ff0015] sm:text-3xl">
-                  100%
-                </div>
-                <div className="text-xs font-medium text-white/80 sm:text-sm">
-                  Passion
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 

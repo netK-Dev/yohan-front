@@ -1,7 +1,15 @@
 import Link from 'next/link';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
+import type { CTAContent } from '@/lib/types/page-content';
+import { DEFAULT_CTA_CONTENT } from '@/lib/defaults/home-defaults';
 
-export default function CTASection() {
+interface CTASectionProps {
+  content?: CTAContent;
+}
+
+export default function CTASection({ content }: CTASectionProps) {
+  const c = content ?? DEFAULT_CTA_CONTENT;
+
   return (
     <section className={`relative ${COLOR_COMBINATIONS.page.background} py-20`}>
       {/* Background effects */}
@@ -16,22 +24,22 @@ export default function CTASection() {
             <h2
               className={`mb-4 text-3xl font-bold ${COLOR_COMBINATIONS.page.text} sm:text-4xl`}
             >
-              Prêt à donner vie à{' '}
+              {c.title}{' '}
               <span className="bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
-                votre vision
+                {c.titleHighlight}
               </span>
-              ?
+              {c.titleSuffix}
             </h2>
             <p
               className={`mb-8 text-lg ${COLOR_COMBINATIONS.page.text} opacity-80`}
             >
-              {"Collaborons pour créer quelque chose d'exceptionnel ensemble."}
+              {c.subtitle}
             </p>
             <Link
               href="/contact"
               className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff1a2a] via-[#ff3340] to-[#e6000c] px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#ff0015]/25 focus:outline-none focus:ring-2 focus:ring-[#ff0015]/50"
             >
-              <span>Démarrer un projet</span>
+              <span>{c.ctaText}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"

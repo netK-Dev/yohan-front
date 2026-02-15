@@ -1,56 +1,31 @@
 import Image from 'next/image';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import Link from 'next/link';
+import type { ServicesContent } from '@/lib/types/page-content';
+import { DEFAULT_SERVICES_CONTENT } from '@/lib/defaults/home-defaults';
 
-export default function ServicesSection() {
-  type ServiceCategory = '3d-vfx' | 'motion-design' | 'court-metrage';
-  type ServiceItem = {
-    id: number;
-    title: string;
-    image: string;
-    description: string;
-    tags: string[];
-    gradient: string;
-    hoverGradient: string;
-    category: ServiceCategory;
-  };
+const CARD_GRADIENTS = [
+  {
+    gradient: 'from-[#ff0015]/20 to-[#ff0015]/5',
+    hoverGradient: 'group-hover:from-[#ff0015]/30 group-hover:to-[#ff0015]/10',
+  },
+  {
+    gradient: 'from-white/20 to-white/5',
+    hoverGradient: 'group-hover:from-white/30 group-hover:to-white/10',
+  },
+  {
+    gradient: 'from-gray-600/20 to-gray-600/5',
+    hoverGradient:
+      'group-hover:from-gray-600/30 group-hover:to-gray-600/10',
+  },
+];
 
-  const services: ServiceItem[] = [
-    {
-      id: 1,
-      title: '3D/VFX et Compositing',
-      image: '/img/services/basement-doens-yohan-combo-07.webp',
-      category: '3d-vfx',
-      description:
-        'Formation spécialisée à ISART Digital avec maîtrise complète du pipeline 3D : modeling, shading, rigging, animation, rendering et compositing. Expertise technique approfondie pour donner vie à vos projets les plus ambitieux.',
-      tags: ['3D Modeling', 'VFX', 'Compositing', 'Rendering'],
-      gradient: 'from-[#ff0015]/20 to-[#ff0015]/5',
-      hoverGradient:
-        'group-hover:from-[#ff0015]/30 group-hover:to-[#ff0015]/10',
-    },
-    {
-      id: 2,
-      title: 'Motion Design',
-      image: '/img/services/Hnet-image.webp',
-      category: 'motion-design',
-      description:
-        "Création graphique animée avec maîtrise experte d'Illustrator, Photoshop et After Effects. Développement continu de styles variés et d'approches innovantes pour des visuels percutants et mémorables.",
-      tags: ['After Effects', 'Illustration', 'Animation', 'Branding'],
-      gradient: 'from-white/20 to-white/5',
-      hoverGradient: 'group-hover:from-white/30 group-hover:to-white/10',
-    },
-    {
-      id: 3,
-      title: 'Court Métrage',
-      image: '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp',
-      category: 'court-metrage',
-      description:
-        "Expertise complète en production audiovisuelle : réalisation, développement scénaristique et montage créatif. Transformation d'idées en récits visuels captivants avec une approche artistique et technique maîtrisée.",
-      tags: ['Réalisation', 'Scénario', 'Montage', 'Storytelling'],
-      gradient: 'from-gray-600/20 to-gray-600/5',
-      hoverGradient: 'group-hover:from-gray-600/30 group-hover:to-gray-600/10',
-    },
-  ];
+interface ServicesSectionProps {
+  content?: ServicesContent;
+}
+
+export default function ServicesSection({ content }: ServicesSectionProps) {
+  const c = content ?? DEFAULT_SERVICES_CONTENT;
 
   return (
     <section
@@ -67,35 +42,34 @@ export default function ServicesSection() {
         <div className="mb-12 text-center sm:mb-16">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#ff0015]/10 px-3 py-1.5 text-xs font-medium text-[#ff0015] sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
             <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff0015] sm:h-2 sm:w-2" />
-            Nos Expertises
+            {c.badge}
           </div>
 
           <h2
             className={`mb-4 text-3xl font-bold leading-tight ${COLOR_COMBINATIONS.page.text} sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl`}
           >
-            Domaines de{' '}
+            {c.title}{' '}
             <span className="bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
-              Création
+              {c.titleHighlight}
             </span>
           </h2>
 
           <p
             className={`mx-auto max-w-3xl text-base leading-relaxed ${COLOR_COMBINATIONS.page.text} opacity-80 sm:text-lg md:text-xl`}
           >
-            {"Découvrez l'univers créatif de"}{' '}
-            <span className="font-semibold text-[#ff0015]">
-              Doens Production
-            </span>
-            , où technique et artistique se rencontrent pour donner vie à vos
-            projets.
+            {c.subtitle}
           </p>
         </div>
 
         {/* Services Grid */}
         <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-          {services.map((service, index) => (
+          {c.services.map((service, index) => {
+            const gradientStyle =
+              CARD_GRADIENTS[index % CARD_GRADIENTS.length];
+
+            return (
             <div
-              key={service.id}
+              key={index}
               className={`group relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-6 shadow-2xl transition-all duration-500 hover:scale-105 hover:shadow-[#ff0015]/10 sm:rounded-3xl sm:p-8`}
               style={{
                 animationDelay: `${index * 150}ms`,
@@ -103,7 +77,7 @@ export default function ServicesSection() {
             >
               {/* Background gradient overlay */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${service.gradient} ${service.hoverGradient} transition-all duration-500`}
+                className={`absolute inset-0 bg-gradient-to-br ${gradientStyle.gradient} ${gradientStyle.hoverGradient} transition-all duration-500`}
               />
 
               {/* Card content */}
@@ -151,7 +125,7 @@ export default function ServicesSection() {
                 {/* Call to action - full width, edge-to-edge, modern style */}
                 <div className="-mx-6 mt-6 border-t border-white/10 sm:-mx-8">
                   <Link
-                    href={`/realisations?category=${service.category}`}
+                    href={`/realisations?category=${service.categorySlug}`}
                     aria-label={`Découvrir le domaine ${service.title}`}
                     className="group relative block w-full overflow-hidden rounded-b-2xl rounded-t-none bg-gradient-to-r from-[#ff1a2a] via-[#ff3340] to-[#e6000c] px-6 py-4 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#ff0015]/50 sm:rounded-b-3xl sm:py-5 sm:text-base"
                   >
@@ -180,7 +154,8 @@ export default function ServicesSection() {
               {/* Bottom accent line */}
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff0015] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

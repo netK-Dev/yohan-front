@@ -452,6 +452,39 @@ button {
 }
 
 /* ==============================
+   Admin - Inputs
+   ============================== */
+
+.admin-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.admin-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: #ff0015;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 2px rgba(255, 0, 21, 0.15);
+}
+
+.admin-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==============================
    Rich Text Editor - Tiptap
    ============================== */
 

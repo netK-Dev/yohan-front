@@ -125,3 +125,18 @@ model SliderMedia {
 
   @@map("slider_media")
 }
+
+// Contenu éditable des pages (stocké en JSON par section)
+model PageContent {
+  id        String   @id @default(cuid())
+  /// Identifiant de la page (ex: "home")
+  page      String
+  /// Identifiant de la section (ex: "hero", "services", "cta")
+  section   String
+  /// Contenu structuré de la section (validé par Zod côté applicatif)
+  content   Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([page, section])
+  @@map("page_content")
+}

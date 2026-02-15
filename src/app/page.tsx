@@ -6,8 +6,11 @@ import HeroSection from '@/components/sections/HeroSection';
 import ServicesSection from '@/components/sections/ServicesSection';
 import CTASection from '@/components/sections/CTASection';
 import Footer from '@/components/layout/Footer';
+import { getHomeContent } from '@/lib/data/home-content';
 
-export default function Home() {
+export default async function Home() {
+  const homeContent = await getHomeContent();
+
   return (
     <>
       <Suspense fallback={null}>
@@ -15,10 +18,10 @@ export default function Home() {
       </Suspense>
       <main className="h-full w-full">
         <VideoBanner />
-        <HeroSection />
-        <ServicesSection />
+        <HeroSection content={homeContent.hero} />
+        <ServicesSection content={homeContent.services} />
       </main>
-      <CTASection />
+      <CTASection content={homeContent.cta} />
       <Footer />
     </>
   );
