@@ -27,7 +27,6 @@ const DEFAULT_HERO_CONTENT = {
   stats: [
     { value: '50+', label: 'Projets' },
     { value: '5', label: 'Années' },
-    { value: '100%', label: 'Passion' },
   ],
 };
 
@@ -65,6 +64,22 @@ const DEFAULT_SERVICES_CONTENT = {
   ],
 };
 
+const DEFAULT_SHOWREEL_CONTENT = {
+  badge: 'Showreel',
+  title: 'Showreel 2026',
+  description: 'Direction artistique, 3D et VFX en mouvement.',
+  youtubeUrl: 'https://www.youtube.com/watch?v=_4_oc9oPMwY',
+  mp4Url:
+    'https://q0rddlmz68grwzup.public.blob.vercel-storage.com/showreel/yohan-showreel-1080p.mp4',
+  mp4Pathname: '/showreel/yohan-showreel-1080p.mp4',
+  webmUrl:
+    'https://q0rddlmz68grwzup.public.blob.vercel-storage.com/showreel/yohan-showreel-1080p.webm',
+  webmPathname: '/showreel/yohan-showreel-1080p.webm',
+  posterUrl:
+    'https://q0rddlmz68grwzup.public.blob.vercel-storage.com/showreel/yohan-showreel-poster.jpg',
+  posterPathname: '/showreel/yohan-showreel-poster.jpg',
+};
+
 const DEFAULT_CTA_CONTENT = {
   title: 'Prêt à donner vie à',
   titleHighlight: 'votre vision',
@@ -75,6 +90,7 @@ const DEFAULT_CTA_CONTENT = {
 
 const SECTIONS = [
   { section: 'hero', content: DEFAULT_HERO_CONTENT },
+  { section: 'showreel', content: DEFAULT_SHOWREEL_CONTENT },
   { section: 'services', content: DEFAULT_SERVICES_CONTENT },
   { section: 'cta', content: DEFAULT_CTA_CONTENT },
 ] as const;

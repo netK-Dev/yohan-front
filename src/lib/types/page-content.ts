@@ -4,7 +4,7 @@ import { z } from 'zod';
 // SECTIONS DE LA PAGE D'ACCUEIL
 // ============================================
 
-export const HOME_SECTIONS = ['hero', 'services', 'cta'] as const;
+export const HOME_SECTIONS = ['hero', 'showreel', 'services', 'cta'] as const;
 export type HomeSection = (typeof HOME_SECTIONS)[number];
 
 // ============================================
@@ -47,6 +47,51 @@ export const HeroContentSchema = z.object({
 
 export type HeroContent = z.infer<typeof HeroContentSchema>;
 export type HeroStat = z.infer<typeof HeroStatSchema>;
+
+const HERO_REMOVED_STAT_LABELS = new Set(['passion']);
+
+function normalizeHeroStatLabel(label: string): string {
+  return label.trim().toLowerCase();
+}
+
+/**
+ * Retire les anciennes stats Hero qui ne sont plus pertinentes.
+ * Actuellement: "Passion".
+ */
+export function sanitizeHeroStats(stats: HeroStat[]): HeroStat[] {
+  return stats.filter(
+    stat => !HERO_REMOVED_STAT_LABELS.has(normalizeHeroStatLabel(stat.label))
+  );
+}
+
+export function sanitizeHeroContent(content: HeroContent): HeroContent {
+  return {
+    ...content,
+    stats: sanitizeHeroStats(content.stats),
+  };
+}
+
+// ============================================
+// SHOWREEL SECTION
+// ============================================
+
+export const ShowreelContentSchema = z.object({
+  badge: z.string().min(1, 'Badge requis').max(30, 'Max 30 caracteres'),
+  title: z.string().min(1, 'Titre requis').max(80, 'Max 80 caracteres'),
+  description: z
+    .string()
+    .min(1, 'Description requise')
+    .max(240, 'Max 240 caracteres'),
+  youtubeUrl: z.union([z.string().url('URL YouTube invalide'), z.literal('')]),
+  mp4Url: z.string().url('URL MP4 invalide'),
+  mp4Pathname: z.string(),
+  webmUrl: z.union([z.string().url('URL WebM invalide'), z.literal('')]),
+  webmPathname: z.string(),
+  posterUrl: z.string().url('URL du poster invalide'),
+  posterPathname: z.string(),
+});
+
+export type ShowreelContent = z.infer<typeof ShowreelContentSchema>;
 
 // ============================================
 // SERVICES SECTION
@@ -115,6 +160,7 @@ export type CTAContent = z.infer<typeof CTAContentSchema>;
 
 export const SECTION_SCHEMAS: Record<HomeSection, z.ZodSchema> = {
   hero: HeroContentSchema,
+  showreel: ShowreelContentSchema,
   services: ServicesContentSchema,
   cta: CTAContentSchema,
 };
@@ -122,6 +168,7 @@ export const SECTION_SCHEMAS: Record<HomeSection, z.ZodSchema> = {
 // Type union pour le contenu complet de la page d'accueil
 export type HomeContentMap = {
   hero: HeroContent;
+  showreel: ShowreelContent;
   services: ServicesContent;
   cta: CTAContent;
 };
@@ -130,3 +177,43 @@ export type HomeContentMap = {
 export type HomeContentResponse = {
   [K in HomeSection]?: HomeContentMap[K];
 };
+
+const SHOWREEL_URL_FIELDS = ['mp4Url', 'webmUrl', 'posterUrl'] as const;
+const SHOWREEL_PATH_FIELDS = [
+  'mp4Pathname',
+  'webmPathname',
+  'posterPathname',
+] as const;
+
+export function isBlobStorageUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname.includes('blob.vercel-storage.com');
+  } catch {
+    return false;
+  }
+}
+
+export function extractBlobUrlsFromShowreel(
+  content?: Partial<ShowreelContent> | null
+): string[] {
+  if (!content) return [];
+
+  const urls = SHOWREEL_URL_FIELDS.map(field => content[field]).filter(
+    (value): value is string =>
+      typeof value === 'string' && value.length > 0 && isBlobStorageUrl(value)
+  );
+
+  return Array.from(new Set(urls));
+}
+
+export function extractBlobPathnamesFromShowreel(
+  content?: Partial<ShowreelContent> | null
+): string[] {
+  if (!content) return [];
+
+  const pathnames = SHOWREEL_PATH_FIELDS.map(field => content[field]).filter(
+    (value): value is string => typeof value === 'string' && value.length > 0
+  );
+
+  return Array.from(new Set(pathnames));
+}

@@ -1,8 +1,10 @@
 import type {
   HeroContent,
+  ShowreelContent,
   ServicesContent,
   CTAContent,
 } from '@/lib/types/page-content';
+import { DEFAULT_SHOWREEL_ASSETS } from '@/lib/constants/showreel';
 
 /**
  * Valeurs par défaut de la page d'accueil.
@@ -22,7 +24,6 @@ export const DEFAULT_HERO_CONTENT: HeroContent = {
   stats: [
     { value: '50+', label: 'Projets' },
     { value: '5', label: 'Années' },
-    { value: '100%', label: 'Passion' },
   ],
 };
 
@@ -58,6 +59,19 @@ export const DEFAULT_SERVICES_CONTENT: ServicesContent = {
       categorySlug: 'court-metrage',
     },
   ],
+};
+
+export const DEFAULT_SHOWREEL_CONTENT: ShowreelContent = {
+  badge: 'Showreel',
+  title: 'Showreel 2026',
+  description: 'Direction artistique, 3D et VFX en mouvement.',
+  youtubeUrl: DEFAULT_SHOWREEL_ASSETS.youtubeUrl,
+  mp4Url: DEFAULT_SHOWREEL_ASSETS.mp4Url,
+  mp4Pathname: DEFAULT_SHOWREEL_ASSETS.mp4Pathname,
+  webmUrl: DEFAULT_SHOWREEL_ASSETS.webmUrl,
+  webmPathname: DEFAULT_SHOWREEL_ASSETS.webmPathname,
+  posterUrl: DEFAULT_SHOWREEL_ASSETS.posterUrl,
+  posterPathname: DEFAULT_SHOWREEL_ASSETS.posterPathname,
 };
 
 export const DEFAULT_CTA_CONTENT: CTAContent = {

@@ -17,8 +17,8 @@ export default async function Home() {
         <Header />
       </Suspense>
       <main className="h-full w-full">
-        <VideoBanner />
         <HeroSection content={homeContent.hero} />
+        <VideoBanner content={homeContent.showreel} />
         <ServicesSection content={homeContent.services} />
       </main>
       <CTASection content={homeContent.cta} />

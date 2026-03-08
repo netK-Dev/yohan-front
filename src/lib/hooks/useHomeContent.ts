@@ -8,12 +8,14 @@ import type {
 } from '@/lib/types/page-content';
 import {
   DEFAULT_HERO_CONTENT,
+  DEFAULT_SHOWREEL_CONTENT,
   DEFAULT_SERVICES_CONTENT,
   DEFAULT_CTA_CONTENT,
 } from '@/lib/defaults/home-defaults';
 
 const DEFAULTS: HomeContentMap = {
   hero: DEFAULT_HERO_CONTENT,
+  showreel: DEFAULT_SHOWREEL_CONTENT,
   services: DEFAULT_SERVICES_CONTENT,
   cta: DEFAULT_CTA_CONTENT,
 };
@@ -27,6 +29,7 @@ export function useHomeContent() {
   const [saveStatus, setSaveStatus] = useState<Record<HomeSection, SaveStatus>>(
     {
       hero: 'idle',
+      showreel: 'idle',
       services: 'idle',
       cta: 'idle',
     }
@@ -47,6 +50,7 @@ export function useHomeContent() {
 
       setContent({
         hero: data.hero ?? DEFAULTS.hero,
+        showreel: data.showreel ?? DEFAULTS.showreel,
         services: data.services ?? DEFAULTS.services,
         cta: data.cta ?? DEFAULTS.cta,
       });

@@ -2,20 +2,25 @@ import { unstable_cache } from 'next/cache';
 import prisma from '@/lib/prisma';
 import {
   HeroContentSchema,
+  ShowreelContentSchema,
   ServicesContentSchema,
   CTAContentSchema,
+  sanitizeHeroContent,
   type HeroContent,
+  type ShowreelContent,
   type ServicesContent,
   type CTAContent,
 } from '@/lib/types/page-content';
 import {
   DEFAULT_HERO_CONTENT,
+  DEFAULT_SHOWREEL_CONTENT,
   DEFAULT_SERVICES_CONTENT,
   DEFAULT_CTA_CONTENT,
 } from '@/lib/defaults/home-defaults';
 
 type HomeContent = {
   hero: HeroContent;
+  showreel: ShowreelContent;
   services: ServicesContent;
   cta: CTAContent;
 };
@@ -38,6 +43,12 @@ async function fetchHomeContent(): Promise<HomeContent> {
 
   // Parser et valider chaque section — la source primaire est toujours la DB
   const heroParsed = HeroContentSchema.safeParse(contentMap['hero']);
+  const rawShowreel = contentMap['showreel'];
+  const showreelParsed = ShowreelContentSchema.safeParse(
+    rawShowreel && typeof rawShowreel === 'object'
+      ? { ...DEFAULT_SHOWREEL_CONTENT, ...(rawShowreel as object) }
+      : rawShowreel
+  );
   const servicesParsed = ServicesContentSchema.safeParse(
     contentMap['services']
   );
@@ -54,14 +65,26 @@ async function fetchHomeContent(): Promise<HomeContent> {
       '[home-content] Section "services" absente ou invalide en DB — fallback sur les defaults. Exécuter : npx tsx scripts/seed-home-content.ts'
     );
   }
+  if (!showreelParsed.success) {
+    console.warn(
+      '[home-content] Section "showreel" absente ou invalide en DB - fallback sur les defaults. Executer : npx tsx scripts/seed-home-content.ts'
+    );
+  }
   if (!ctaParsed.success) {
     console.warn(
       '[home-content] Section "cta" absente ou invalide en DB — fallback sur les defaults. Exécuter : npx tsx scripts/seed-home-content.ts'
     );
   }
 
+  const heroContent = heroParsed.success
+    ? sanitizeHeroContent(heroParsed.data)
+    : DEFAULT_HERO_CONTENT;
+
   return {
-    hero: heroParsed.success ? heroParsed.data : DEFAULT_HERO_CONTENT,
+    hero: heroContent.stats.length > 0 ? heroContent : DEFAULT_HERO_CONTENT,
+    showreel: showreelParsed.success
+      ? showreelParsed.data
+      : DEFAULT_SHOWREEL_CONTENT,
     services: servicesParsed.success
       ? servicesParsed.data
       : DEFAULT_SERVICES_CONTENT,

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import {
+  HeroContentSchema,
+  sanitizeHeroContent,
+} from '@/lib/types/page-content';
 
 /**
  * GET /api/page-content?page=home
@@ -24,7 +28,18 @@ export async function GET(request: NextRequest) {
 
     const result: Record<string, unknown> = {};
     for (const row of rows) {
-      result[row.section] = row.content;
+      let sectionContent: unknown = row.content;
+
+      if (page === 'home' && row.section === 'hero') {
+        const heroParsed = HeroContentSchema.safeParse(row.content);
+        if (heroParsed.success) {
+          const normalized = sanitizeHeroContent(heroParsed.data);
+          sectionContent =
+            normalized.stats.length > 0 ? normalized : heroParsed.data;
+        }
+      }
+
+      result[row.section] = sectionContent;
     }
 
     return NextResponse.json(result);

@@ -6,6 +6,7 @@ import { useSession } from '@/lib/auth-client';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
 import SectionAccordion from '@/components/admin/homepage/SectionAccordion';
 import HomepageHeroForm from '@/components/admin/homepage/HomepageHeroForm';
+import HomepageShowreelForm from '@/components/admin/homepage/HomepageShowreelForm';
 import HomepageServicesForm from '@/components/admin/homepage/HomepageServicesForm';
 import HomepageCTAForm from '@/components/admin/homepage/HomepageCTAForm';
 import { useHomeContent } from '@/lib/hooks/useHomeContent';
@@ -74,6 +75,35 @@ export default function AdminHomepagePage() {
               onSave={(c) => saveSection('hero', c)}
               onReset={() => resetSection('hero')}
               saveStatus={saveStatus.hero}
+            />
+          </SectionAccordion>
+
+          {/* Section Showreel */}
+          <SectionAccordion
+            title="Section Showreel"
+            description="Textes, videos (MP4/WebM) et poster de la section sous le hero"
+            saveStatus={saveStatus.showreel}
+            icon={
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M15.75 10.5V6.75a3.75 3.75 0 00-7.5 0v10.5a3.75 3.75 0 007.5 0V13.5m0-3l3.75 3m-3.75-3L12 14.25"
+                />
+              </svg>
+            }
+          >
+            <HomepageShowreelForm
+              initialContent={content.showreel}
+              onSave={(c) => saveSection('showreel', c)}
+              onReset={() => resetSection('showreel')}
+              saveStatus={saveStatus.showreel}
             />
           </SectionAccordion>
 
