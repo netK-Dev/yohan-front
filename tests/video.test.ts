@@ -29,12 +29,33 @@ test('Vimeo links and embeds preserve the private playback hash without autoplay
     );
 });
 
+test('known mobile and music YouTube aliases use canonical embeds without autoplay', () => {
+  const id = '_4_oc9oPMwY';
+  for (const host of ['m.youtube.com', 'music.youtube.com']) {
+    for (const path of [
+      `/watch?v=${id}&autoplay=1`,
+      `/shorts/${id}?autoplay=1`,
+      `/live/${id}?autoplay=1`,
+      `/embed/${id}?autoplay=1`,
+    ])
+      assert.equal(
+        getEmbedUrl(`https://${host}${path}`),
+        `https://www.youtube.com/embed/${id}`
+      );
+  }
+});
+
 test('unsupported hosts, protocols and invalid video IDs cannot be published as playable embeds', () => {
   for (const url of [
     'https://example.com/video',
     'https://youtube.com.example.com/watch?v=_4_oc9oPMwY',
+    'https://m.youtube.com.example.com/watch?v=_4_oc9oPMwY',
+    'https://music.youtube.com.example.com/watch?v=_4_oc9oPMwY',
+    'https://other.youtube.com/watch?v=_4_oc9oPMwY',
     'ftp://youtube.com/watch?v=_4_oc9oPMwY',
+    'ftp://m.youtube.com/watch?v=_4_oc9oPMwY',
     'https://youtube.com/watch?v=invalid',
+    'https://music.youtube.com/watch?v=invalid',
     'https://vimeo.com/channels',
     'javascript:alert(1)',
   ])

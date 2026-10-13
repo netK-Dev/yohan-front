@@ -24,7 +24,10 @@ export function getEmbedUrl(url: string): string | null {
   try {
     const u = new URL(url);
     if (!['https:', 'http:'].includes(u.protocol)) return null;
-    const host = u.hostname.replace(/^www\./, '');
+    const hostname = u.hostname.replace(/^www\./, '');
+    const host = ['m.youtube.com', 'music.youtube.com'].includes(hostname)
+      ? 'youtube.com'
+      : hostname;
     if (['youtube.com', 'youtube-nocookie.com', 'youtu.be'].includes(host)) {
       const pathId =
         host === 'youtu.be'

@@ -37,6 +37,11 @@ export default function Modal({
       document.body.style.overflow = overflow;
       if (trigger instanceof HTMLElement && trigger.isConnected) {
         trigger.focus({ preventScroll: true });
+      } else {
+        const content =
+          document.getElementById('admin-content') ||
+          document.getElementById('main-content');
+        content?.focus({ preventScroll: true });
       }
     };
   }, [isOpen]);

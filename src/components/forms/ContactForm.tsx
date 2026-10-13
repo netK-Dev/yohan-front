@@ -30,10 +30,11 @@ function fieldError(field: Field, value: string) {
 
 export default function ContactForm() {
   const quote = useSearchParams().get('type') === 'quote';
-  return <ContactFields key={quote ? 'quote' : 'contact'} quote={quote} />;
+  return <ContactFields quote={quote} />;
 }
 
 function ContactFields({ quote }: { quote: boolean }) {
+  const [previousQuote, setPreviousQuote] = useState(quote);
   const [values, setValues] = useState<Fields>(() => ({
     ...empty,
     subject: quote ? 'Demande de devis' : '',
@@ -44,8 +45,18 @@ function ContactFields({ quote }: { quote: boolean }) {
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
   const pending = state === 'submitting';
 
+  // Ajuste uniquement le sujet lors d'un changement de demande, sans remonter les champs.
+  if (quote !== previousQuote) {
+    setPreviousQuote(quote);
+    if (quote && !values.subject.trim() && !touched.subject) {
+      setValues({ ...values, subject: 'Demande de devis' });
+    }
+  }
+
   function change(field: Field, value: string) {
     setValues((previous) => ({ ...previous, [field]: value }));
+    if (field === 'subject')
+      setTouched((previous) => ({ ...previous, subject: true }));
     if (touched[field])
       setErrors((previous) => ({
         ...previous,

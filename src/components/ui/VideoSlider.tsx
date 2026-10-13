@@ -10,27 +10,6 @@ interface VideoSliderProps {
   posterImage?: string;
 }
 
-function embedSource(url: string) {
-  try {
-    const parsed = new URL(url);
-    if (!['https:', 'http:'].includes(parsed.protocol)) return null;
-    const host = parsed.hostname.replace('www.', '');
-    if (
-      [
-        'youtube.com',
-        'youtube-nocookie.com',
-        'youtu.be',
-        'vimeo.com',
-        'player.vimeo.com',
-      ].includes(host)
-    )
-      return getEmbedUrl(url);
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 export default function VideoSlider({
   videos,
   title,
@@ -40,7 +19,7 @@ export default function VideoSlider({
   if (videos.length === 0) return null;
   const index = selected % videos.length;
   const video = videos[index];
-  const embed = video.type === 'youtube' ? embedSource(video.url) : null;
+  const embed = video.type === 'youtube' ? getEmbedUrl(video.url) : null;
   return (
     <section className="mb-12" aria-label={`Vidéos du projet ${title}`}>
       <div className="mb-5 flex items-center justify-between gap-4">

@@ -25,24 +25,50 @@ function HeroActions({ content }: { content: HeroContent }) {
   );
 }
 
+function HeroMediaSkeleton() {
+  return (
+    <div role="status">
+      <figure className="border border-white/20 bg-[#111113]">
+        <div
+          aria-hidden="true"
+          className="aspect-[4/3] animate-pulse bg-white/10"
+        />
+        <figcaption className="flex min-h-16 items-center px-4 py-3 text-sm text-white/60">
+          Chargement des visuels…
+        </figcaption>
+      </figure>
+      <div aria-hidden="true" className="mt-3 flex gap-3 overflow-hidden p-1">
+        {Array.from({ length: 3 }, (_, index) => (
+          <div
+            key={index}
+            className="aspect-[3/2] w-24 shrink-0 animate-pulse border-2 border-transparent bg-white/10 sm:w-28"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function HeroSection({ content }: { content?: HeroContent }) {
   const c = content ?? DEFAULT_HERO_CONTENT;
-  const { sliderMedia } = useSliderMedia(true);
+  const { sliderMedia, isLoading } = useSliderMedia(true);
   const [selected, setSelected] = useState(0);
-  const media = sliderMedia.length
-    ? sliderMedia.map((item) => ({
-        id: String(item.id),
-        src: item.mediaUrl,
-        title: item.title,
-        category: item.category || '',
-      }))
-    : DEFAULT_SERVICES_CONTENT.services.map((service) => ({
-        id: service.categorySlug,
-        src: service.image,
-        title: service.title,
-        category: '',
-      }));
-  const index = selected % media.length;
+  const media = isLoading
+    ? []
+    : sliderMedia.length
+      ? sliderMedia.map((item) => ({
+          id: String(item.id),
+          src: item.mediaUrl,
+          title: item.title,
+          category: item.category || '',
+        }))
+      : DEFAULT_SERVICES_CONTENT.services.map((service) => ({
+          id: service.categorySlug,
+          src: service.image,
+          title: service.title,
+          category: '',
+        }));
+  const index = media.length ? selected % media.length : 0;
   const featured = media[index];
 
   return (
@@ -68,60 +94,66 @@ export default function HeroSection({ content }: { content?: HeroContent }) {
           </div>
         </div>
         <div className="order-2 min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
-          <figure className="border border-white/20 bg-[#111113]">
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <SafeImage
-                src={featured.src}
-                alt={featured.title}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1023px) 100vw, 560px"
-              />
-            </div>
-            <figcaption
-              className="flex min-h-16 items-center justify-between gap-4 px-4 py-3"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              <div className="min-w-0 break-words">
-                <p className="text-sm font-medium">{featured.title}</p>
-                {featured.category && (
-                  <p className="mt-1 text-xs text-white/60">
-                    {featured.category}
-                  </p>
-                )}
-              </div>
-              <span className="shrink-0 text-xs text-white/50 tabular-nums">
-                {String(index + 1).padStart(2, '0')} /{' '}
-                {String(media.length).padStart(2, '0')}
-              </span>
-            </figcaption>
-          </figure>
-          {media.length > 1 && (
-            <div
-              className="mt-3 flex gap-3 overflow-x-auto p-1"
-              aria-label="Choisir un visuel"
-            >
-              {media.map((item, i) => (
-                <button
-                  type="button"
-                  key={item.id}
-                  onClick={() => setSelected(i)}
-                  aria-label={`Afficher : ${item.title}`}
-                  aria-pressed={index === i}
-                  className={`relative aspect-[3/2] w-24 shrink-0 overflow-hidden border-2 sm:w-28 ${index === i ? 'border-[#ff5865]' : 'border-transparent opacity-60 hover:opacity-100'}`}
-                >
+          {isLoading ? (
+            <HeroMediaSkeleton />
+          ) : (
+            <>
+              <figure className="border border-white/20 bg-[#111113]">
+                <div className="relative aspect-[4/3] overflow-hidden">
                   <SafeImage
-                    src={getMediaPreview(item.src)}
-                    alt=""
+                    src={featured.src}
+                    alt={featured.title}
                     fill
+                    priority
                     className="object-cover"
-                    sizes="112px"
+                    sizes="(max-width: 1023px) 100vw, 560px"
                   />
-                </button>
-              ))}
-            </div>
+                </div>
+                <figcaption
+                  className="flex min-h-16 items-center justify-between gap-4 px-4 py-3"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <div className="min-w-0 break-words">
+                    <p className="text-sm font-medium">{featured.title}</p>
+                    {featured.category && (
+                      <p className="mt-1 text-xs text-white/60">
+                        {featured.category}
+                      </p>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-xs text-white/50 tabular-nums">
+                    {String(index + 1).padStart(2, '0')} /{' '}
+                    {String(media.length).padStart(2, '0')}
+                  </span>
+                </figcaption>
+              </figure>
+              {media.length > 1 && (
+                <div
+                  className="mt-3 flex gap-3 overflow-x-auto p-1"
+                  aria-label="Choisir un visuel"
+                >
+                  {media.map((item, i) => (
+                    <button
+                      type="button"
+                      key={item.id}
+                      onClick={() => setSelected(i)}
+                      aria-label={`Afficher : ${item.title}`}
+                      aria-pressed={index === i}
+                      className={`relative aspect-[3/2] w-24 shrink-0 overflow-hidden border-2 sm:w-28 ${index === i ? 'border-[#ff5865]' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                    >
+                      <SafeImage
+                        src={getMediaPreview(item.src)}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="112px"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
         <div className="order-3 min-w-0 lg:col-start-1 lg:row-start-2">
