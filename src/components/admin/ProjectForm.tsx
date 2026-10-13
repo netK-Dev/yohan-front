@@ -13,7 +13,7 @@ import {
   PROJECT_CATEGORIES,
   SOFTWARE_LIST,
 } from '@/lib/types/project';
-import { ProjectVideo } from '@/lib/types/video';
+import { ProjectVideo, getEmbedUrl } from '@/lib/types/video';
 
 interface ProjectFormProps {
   initialData?: Partial<UpdateProjectInput>;
@@ -150,6 +150,7 @@ export default function ProjectForm({
       const url = new URL(youtubeUrl.trim());
       if (!['http:', 'https:'].includes(url.protocol))
         throw new Error('URL invalide');
+      if (!getEmbedUrl(url.href)) throw new Error('Vidéo non prise en charge');
       addVideo({ type: 'youtube', url: url.href });
     } catch {
       setVideoError('Saisissez une URL YouTube ou Vimeo complète (https://…).');

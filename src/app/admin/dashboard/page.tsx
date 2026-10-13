@@ -133,7 +133,9 @@ export default function AdminDashboardPage() {
                           {project.title}
                         </h3>
                         <p className="mt-1 text-sm text-white/60">
-                          {new Date(project.date).toLocaleDateString('fr-FR')}
+                          {new Date(project.date).toLocaleDateString('fr-FR', {
+                            timeZone: 'UTC',
+                          })}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-2">
                           <Link

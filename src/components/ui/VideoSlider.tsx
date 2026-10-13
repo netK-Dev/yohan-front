@@ -16,13 +16,14 @@ function embedSource(url: string) {
     if (!['https:', 'http:'].includes(parsed.protocol)) return null;
     const host = parsed.hostname.replace('www.', '');
     if (
-      (host === 'youtube.com' || host === 'youtube-nocookie.com') &&
-      parsed.pathname.startsWith('/embed/')
+      [
+        'youtube.com',
+        'youtube-nocookie.com',
+        'youtu.be',
+        'vimeo.com',
+        'player.vimeo.com',
+      ].includes(host)
     )
-      return url;
-    if (host === 'player.vimeo.com' && parsed.pathname.startsWith('/video/'))
-      return url;
-    if (['youtube.com', 'youtu.be', 'vimeo.com'].includes(host))
       return getEmbedUrl(url);
     return null;
   } catch {

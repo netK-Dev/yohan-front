@@ -23,24 +23,31 @@ export interface ProjectVideo {
 export function getEmbedUrl(url: string): string | null {
   try {
     const u = new URL(url);
-    const host = u.hostname.replace('www.', '');
-
-    // YouTube
-    if (host.includes('youtube.com')) {
-      const id = u.searchParams.get('v');
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+    if (!['https:', 'http:'].includes(u.protocol)) return null;
+    const host = u.hostname.replace(/^www\./, '');
+    if (['youtube.com', 'youtube-nocookie.com', 'youtu.be'].includes(host)) {
+      const pathId =
+        host === 'youtu.be'
+          ? u.pathname.split('/')[1]
+          : /^\/(?:embed|shorts|live)\/([^/]+)/.exec(u.pathname)?.[1];
+      const id =
+        pathId || (u.pathname === '/watch' ? u.searchParams.get('v') : null);
+      const embedHost =
+        host === 'youtube-nocookie.com'
+          ? 'www.youtube-nocookie.com'
+          : 'www.youtube.com';
+      return id && /^[\w-]{11}$/.test(id)
+        ? `https://${embedHost}/embed/${id}`
+        : null;
     }
-    if (host.includes('youtu.be')) {
-      const id = u.pathname.replace('/', '');
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+    if (['vimeo.com', 'player.vimeo.com'].includes(host)) {
+      const match = /^\/(?:video\/)?(\d+)(?:\/([\w]+))?\/?$/.exec(u.pathname);
+      if (!match) return null;
+      const embed = new URL(`https://player.vimeo.com/video/${match[1]}`);
+      const hash = u.searchParams.get('h') || match[2];
+      if (hash) embed.searchParams.set('h', hash);
+      return embed.href;
     }
-
-    // Vimeo
-    if (host.includes('vimeo.com')) {
-      const id = u.pathname.split('/').filter(Boolean)[0];
-      return id ? `https://player.vimeo.com/video/${id}` : null;
-    }
-
     return null;
   } catch {
     return null;
