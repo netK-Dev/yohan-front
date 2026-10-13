@@ -13,15 +13,15 @@ export default async function Home() {
 
   return (
     <>
-      <Suspense fallback={<div className="h-20" />}>
+      <Suspense fallback={null}>
         <Header />
       </Suspense>
-      <main id="main-content" tabIndex={-1} className="h-full w-full">
+      <main className="h-full w-full">
         <HeroSection content={homeContent.hero} />
         <VideoBanner content={homeContent.showreel} />
         <ServicesSection content={homeContent.services} />
-        <CTASection content={homeContent.cta} />
       </main>
+      <CTASection content={homeContent.cta} />
       <Footer />
     </>
   );

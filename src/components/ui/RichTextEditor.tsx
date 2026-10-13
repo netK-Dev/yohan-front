@@ -1,60 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useEditor, EditorContent, Extension } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Plugin } from '@tiptap/pm/state';
-
-const CharacterLimit = Extension.create<{
-  maxLength: number;
-  onLimit?: () => void;
-}>({
-  name: 'characterLimit',
-  addOptions() {
-    return { maxLength: 5000 };
-  },
-  addProseMirrorPlugins() {
-    const limit = this.options.maxLength;
-    const onLimit = this.options.onLimit;
-    return [
-      new Plugin({
-        filterTransaction(transaction, state) {
-          if (!transaction.docChanged || transaction.getMeta('preventUpdate'))
-            return true;
-          const count = transaction.doc.textBetween(
-            0,
-            transaction.doc.content.size,
-            '\n\n'
-          ).length;
-          const previousCount = state.doc.textBetween(
-            0,
-            state.doc.content.size,
-            '\n\n'
-          ).length;
-          const allowed = count <= limit || count <= previousCount;
-          if (!allowed) onLimit?.();
-          return allowed;
-        },
-      }),
-    ];
-  },
-});
-
-function safeLink(url: string) {
-  try {
-    const parsed = new URL(url);
-    return (
-      ['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol) &&
-      !parsed.username &&
-      !parsed.password
-    );
-  } catch {
-    return false;
-  }
-}
 
 interface RichTextEditorProps {
   value: string;
@@ -63,10 +14,6 @@ interface RichTextEditorProps {
   disabled?: boolean;
   error?: boolean;
   maxLength?: number;
-  id?: string;
-  label?: string;
-  describedBy?: string;
-  required?: boolean;
 }
 
 const MenuButton = ({
@@ -87,11 +34,9 @@ const MenuButton = ({
     onClick={onClick}
     disabled={disabled}
     title={title}
-    aria-label={title}
-    aria-pressed={isActive}
-    className={`flex h-11 w-11 items-center justify-center rounded text-sm font-medium transition-colors ${
+    className={`flex h-8 w-8 items-center justify-center rounded text-sm font-medium transition-colors ${
       isActive
-        ? 'bg-white/20 text-white'
+        ? 'bg-[#ff0015] text-white'
         : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
     } disabled:cursor-not-allowed disabled:opacity-50`}
   >
@@ -108,24 +53,10 @@ export default function RichTextEditor({
   disabled = false,
   error = false,
   maxLength = 5000,
-  id,
-  label = 'Description du projet',
-  describedBy,
-  required = false,
 }: RichTextEditorProps) {
-  const [linkError, setLinkError] = React.useState('');
-  const [limitMessage, setLimitMessage] = React.useState('');
   const editor = useEditor({
-    shouldRerenderOnTransaction: true,
     immediatelyRender: false,
     extensions: [
-      CharacterLimit.configure({
-        maxLength,
-        onLimit: () =>
-          setLimitMessage(
-            `Ce texte dépasse la limite de ${maxLength} caractères. Raccourcissez-le avant de l’ajouter.`
-          ),
-      }),
       StarterKit.configure({
         link: false,
         underline: false,
@@ -136,9 +67,6 @@ export default function RichTextEditor({
       Underline,
       Link.configure({
         openOnClick: false,
-        protocols: ['http', 'https', 'mailto', 'tel'],
-        isAllowedUri: (url, context) =>
-          context.defaultValidate(url) && safeLink(url),
         HTMLAttributes: {
           class: 'text-[#ff0015] underline hover:text-[#cc0011]',
           rel: 'noopener noreferrer',
@@ -152,20 +80,14 @@ export default function RichTextEditor({
     editable: !disabled,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      setLimitMessage('');
-      onChange(html);
+      const textLength = editor.getText().length;
+      if (textLength <= maxLength) {
+        onChange(html);
+      }
     },
     editorProps: {
       attributes: {
-        class:
-          'min-h-[180px] px-3 py-3 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/50 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_h2]:text-xl [&_h3]:text-lg [&_a]:text-red-300',
-        ...(id ? { id } : {}),
-        role: 'textbox',
-        'aria-label': label,
-        'aria-multiline': 'true',
-        'aria-required': String(required),
-        'aria-invalid': String(error),
-        ...(describedBy ? { 'aria-describedby': describedBy } : {}),
+        class: 'outline-none min-h-[150px] px-3 py-2',
       },
     },
   });
@@ -182,54 +104,27 @@ export default function RichTextEditor({
     if (editor) {
       editor.setEditable(!disabled);
     }
-    if (editor)
-      editor.setOptions({
-        editorProps: {
-          attributes: {
-            ...editor.options.editorProps.attributes,
-            'aria-invalid': String(error),
-            'aria-describedby': describedBy ?? '',
-          },
-        },
-      });
-  }, [disabled, error, describedBy, editor]);
+  }, [disabled, editor]);
 
   const setLink = React.useCallback(() => {
     if (!editor) return;
-    setLinkError('');
 
     const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt(
-      'URL du lien (laissez vide pour le retirer) :',
-      previousUrl || 'https://'
-    );
+    const url = window.prompt('URL du lien:', previousUrl || 'https://');
 
     if (url === null) return;
 
-    if (url.trim() === '') {
+    if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
       return;
     }
 
-    const href = url.trim();
-    if (!safeLink(href)) {
-      setLinkError(
-        'Utilisez une URL http(s), mailto ou tel valide, sans identifiants.'
-      );
-      editor.commands.focus();
-      return;
-    }
-    editor.chain().focus().extendMarkRange('link').setLink({ href }).run();
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   }, [editor]);
 
   if (!editor) {
     return (
-      <div
-        role="status"
-        className="min-h-[240px] rounded-md border border-white/20 bg-black/60 p-4 text-sm text-white/65"
-      >
-        Chargement de l’éditeur…
-      </div>
+      <div className="h-[200px] animate-pulse rounded-md border border-white/10 bg-black/60" />
     );
   }
 
@@ -244,11 +139,7 @@ export default function RichTextEditor({
       }`}
     >
       {/* Barre d'outils */}
-      <div
-        role="group"
-        aria-label="Mise en forme de la description"
-        className="flex flex-wrap items-center gap-1 border-b border-white/10 bg-black/80 p-2"
-      >
+      <div className="flex flex-wrap items-center gap-1 border-b border-white/10 bg-black/80 p-2">
         {/* Formatage texte */}
         <MenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -354,7 +245,7 @@ export default function RichTextEditor({
         </MenuButton>
 
         {/* Compteur de caractères */}
-        <div className="ml-auto flex items-center text-xs text-white/65">
+        <div className="ml-auto flex items-center text-xs text-white/50">
           <span className={charCount > maxLength * 0.9 ? 'text-amber-400' : ''}>
             {charCount}
           </span>
@@ -363,24 +254,6 @@ export default function RichTextEditor({
         </div>
       </div>
 
-      {linkError && (
-        <p role="alert" className="px-3 py-2 text-sm text-red-300">
-          {linkError}
-        </p>
-      )}
-      <p
-        role="status"
-        className={
-          limitMessage || charCount >= maxLength
-            ? 'px-3 py-2 text-sm text-amber-300'
-            : 'sr-only'
-        }
-      >
-        {limitMessage ||
-          (charCount >= maxLength
-            ? `Limite de ${maxLength} caractères atteinte. Raccourcissez le texte pour continuer.`
-            : '')}
-      </p>
       {/* Zone d'édition */}
       <EditorContent
         editor={editor}

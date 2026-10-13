@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import SafeImage from '@/components/ui/SafeImage';
 import Modal from '@/components/ui/Modal';
-import FileUploader from '@/components/ui/FileUploader';
-import RichTextEditor from '@/components/ui/RichTextEditor';
+import { COLOR_COMBINATIONS } from '@/lib/colors';
+import Image from 'next/image';
 import {
   CreateProjectInput,
   UpdateProjectInput,
@@ -13,7 +12,9 @@ import {
   PROJECT_CATEGORIES,
   SOFTWARE_LIST,
 } from '@/lib/types/project';
-import { ProjectVideo, getEmbedUrl } from '@/lib/types/video';
+import { ProjectVideo } from '@/lib/types/video';
+import FileUploader from '@/components/ui/FileUploader';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 
 interface ProjectFormProps {
   initialData?: Partial<UpdateProjectInput>;
@@ -23,20 +24,6 @@ interface ProjectFormProps {
   mode: 'create' | 'edit';
 }
 
-const inputClass =
-  'min-h-11 w-full min-w-0 rounded-md border border-white/20 bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/50 focus:border-white/60 focus:ring-2 focus:ring-white/20 aria-invalid:border-red-400 disabled:opacity-50';
-const secondaryClass =
-  'inline-flex min-h-11 items-center justify-center rounded-md border border-white/20 px-4 text-sm font-medium text-white/85 hover:bg-white/10 disabled:opacity-50';
-
-function currentLocalDate() {
-  const now = new Date();
-  return [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0'),
-  ].join('-');
-}
-
 export default function ProjectForm({
   initialData,
   onSubmit,
@@ -44,12 +31,10 @@ export default function ProjectForm({
   isLoading = false,
   mode,
 }: ProjectFormProps) {
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const baseId = React.useId();
   const [formData, setFormData] = React.useState<CreateProjectInput>({
     title: initialData?.title || '',
     category: initialData?.category || PROJECT_CATEGORIES[0],
-    date: initialData?.date || currentLocalDate(),
+    date: initialData?.date || new Date().toISOString().split('T')[0],
     description: initialData?.description || '',
     images: initialData?.images || [],
     videos: initialData?.videos || [],
@@ -59,567 +44,806 @@ export default function ProjectForm({
     software: initialData?.software || [],
     link: initialData?.link || '',
   });
+
   const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [submitError, setSubmitError] = React.useState('');
-  const [uploading, setUploading] = React.useState(false);
   const [showGalleryUploader, setShowGalleryUploader] = React.useState(false);
+
+  // États pour la gestion des vidéos multiples
   const [showAddVideo, setShowAddVideo] = React.useState(false);
   const [videoType, setVideoType] = React.useState<'youtube' | 'upload'>(
     'youtube'
   );
   const [youtubeUrl, setYoutubeUrl] = React.useState('');
-  const [videoError, setVideoError] = React.useState('');
-  const busy = isLoading || uploading;
+  const [showVideoUpload, setShowVideoUpload] = React.useState(false);
 
-  function change(
+  const handleChange = (
     field: keyof CreateProjectInput,
     value: string | string[] | ProjectVideo[]
-  ) {
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: '' }));
-    setSubmitError('');
-  }
+    // Effacer l'erreur du champ modifié
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+  };
 
-  function fieldProps(field: string) {
-    return {
-      id: `${baseId}-${field}`,
-      'aria-invalid': !!errors[field],
-      'aria-describedby': errors[field]
-        ? `${baseId}-${field}-error`
-        : undefined,
-    };
-  }
-
-  function fieldError(field: string) {
-    return (
-      errors[field] && (
-        <p
-          id={`${baseId}-${field}-error`}
-          className="mt-2 text-sm text-red-300"
-        >
-          {errors[field]}
-        </p>
-      )
-    );
-  }
-
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (busy) return;
-    setSubmitError('');
-    const result = ProjectSchema.safeParse(formData);
-    const nextErrors: Record<string, string> = {};
-    if (!result.success)
-      for (const issue of result.error.issues)
-        nextErrors[String(issue.path[0])] = issue.message;
-    const plainDescription = formData.description
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .trim();
-    if (!plainDescription)
-      nextErrors.description = 'La description est requise.';
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) {
-      requestAnimationFrame(() => {
-        const firstInvalid = Array.from(
-          formRef.current?.querySelectorAll<HTMLElement>(
-            '[aria-invalid="true"], [data-invalid="true"]'
-          ) ?? []
-        ).find(
-          (element) =>
-            element.tabIndex >= 0 &&
-            element.getClientRects().length > 0 &&
-            !element.matches(':disabled')
+  const validateForm = () => {
+    try {
+      ProjectSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error: unknown) {
+      const fieldErrors: Record<string, string> = {};
+      if (error && typeof error === 'object' && 'issues' in error) {
+        (error.issues as Array<{ path?: string[]; message?: string }>)?.forEach(
+          (err) => {
+            if (err.path?.[0]) {
+              fieldErrors[err.path[0]] = err.message || 'Erreur de validation';
+            }
+          }
         );
-        firstInvalid?.focus();
-      });
-      return;
+      }
+      setErrors(fieldErrors);
+      return false;
     }
-    try {
-      await onSubmit(
-        mode === 'edit' && initialData?.id
-          ? { ...formData, id: initialData.id }
-          : formData
-      );
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error
-          ? err.message
-          : 'Le projet n’a pas été enregistré. Réessayez.'
-      );
-    }
-  }
+  };
 
-  function addVideo(video: ProjectVideo) {
-    const videos = formData.videos || [];
-    if (videos.length >= 8) {
-      setVideoError('Vous pouvez ajouter jusqu’à 8 vidéos.');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
       return;
     }
-    change('videos', [...videos, video]);
+
+    try {
+      if (mode === 'edit' && initialData?.id) {
+        await onSubmit({ ...formData, id: initialData.id });
+      } else {
+        await onSubmit(formData);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la soumission:', error);
+    }
+  };
+
+  const handleGalleryUploaded = (
+    files: Array<{ url: string; pathname: string }>
+  ) => {
+    const newImages = files.map((f) => f.url);
+    handleChange('images', [...formData.images, ...newImages]);
+    setShowGalleryUploader(false);
+  };
+
+  const removeGalleryImage = (index: number) => {
+    const newImages = formData.images.filter((_, i) => i !== index);
+    handleChange('images', newImages);
+  };
+
+  // Handlers pour la gestion des vidéos multiples
+  const handleAddYoutubeVideo = () => {
+    if (!youtubeUrl.trim()) {
+      alert('Veuillez entrer une URL YouTube/Vimeo');
+      return;
+    }
+
+    const currentVideos = formData.videos || [];
+    if (currentVideos.length >= 8) {
+      alert('Maximum 8 vidéos autorisées');
+      return;
+    }
+
+    const newVideo: ProjectVideo = {
+      type: 'youtube',
+      url: youtubeUrl.trim(),
+    };
+
+    handleChange('videos', [...currentVideos, newVideo]);
     setYoutubeUrl('');
-    setVideoError('');
     setShowAddVideo(false);
-  }
+    setShowVideoUpload(false);
+  };
 
-  function addLinkVideo() {
-    try {
-      const url = new URL(youtubeUrl.trim());
-      if (!['http:', 'https:'].includes(url.protocol))
-        throw new Error('URL invalide');
-      if (!getEmbedUrl(url.href)) throw new Error('Vidéo non prise en charge');
-      addVideo({ type: 'youtube', url: url.href });
-    } catch {
-      setVideoError('Saisissez une URL YouTube ou Vimeo complète (https://…).');
+  const handleVideoFileUploaded = (url: string) => {
+    const currentVideos = formData.videos || [];
+    if (currentVideos.length >= 8) {
+      alert('Maximum 8 vidéos autorisées');
+      return;
     }
-  }
+
+    const newVideo: ProjectVideo = {
+      type: 'upload',
+      url: url,
+    };
+
+    handleChange('videos', [...currentVideos, newVideo]);
+    setShowVideoUpload(false);
+    setShowAddVideo(false);
+  };
+
+  const removeVideo = (index: number) => {
+    const currentVideos = formData.videos || [];
+    const newVideos = currentVideos.filter((_, i) => i !== index);
+    handleChange('videos', newVideos);
+  };
+
+  const openAddVideoModal = () => {
+    setYoutubeUrl('');
+    setVideoType('youtube');
+    setShowVideoUpload(false);
+    setShowAddVideo(true);
+  };
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={handleSubmit}
-      noValidate
-      aria-busy={busy}
-      className="space-y-6"
-    >
-      <p className="text-sm text-white/65">
-        Les champs marqués * sont obligatoires. Les modifications sont publiées
-        après l’enregistrement.
-      </p>
-      {(submitError || Object.values(errors).some(Boolean)) && (
-        <div
-          role="alert"
-          className="rounded-md border border-red-400/30 bg-red-500/5 p-4 text-sm text-red-300"
-        >
-          {submitError ||
-            'Vérifiez les champs indiqués avant d’enregistrer le projet.'}
-        </div>
-      )}
-      <fieldset
-        disabled={busy}
-        className="min-w-0 space-y-4 rounded-lg border border-white/10 p-4 sm:p-5"
-      >
-        <legend className="px-2 text-base font-semibold">Présentation</legend>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor={`${baseId}-title`}
-              className="mb-2 block text-sm font-medium"
-            >
-              Titre du projet *
-            </label>
-            <input
-              {...fieldProps('title')}
-              type="text"
-              required
-              maxLength={100}
-              value={formData.title}
-              onChange={(event) => change('title', event.target.value)}
-              className={inputClass}
-            />
-            {fieldError('title')}
-          </div>
-          <div>
-            <label
-              htmlFor={`${baseId}-date`}
-              className="mb-2 block text-sm font-medium"
-            >
-              Date du projet *
-            </label>
-            <input
-              {...fieldProps('date')}
-              type="date"
-              required
-              value={formData.date}
-              onChange={(event) => change('date', event.target.value)}
-              className={inputClass}
-            />
-            {fieldError('date')}
-          </div>
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Titre, Catégorie et Date */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label
-            htmlFor={`${baseId}-category`}
-            className="mb-2 block text-sm font-medium"
-          >
-            Catégorie *
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            Titre du projet *
           </label>
-          <select
-            {...fieldProps('category')}
-            required
-            value={formData.category}
-            onChange={(event) => change('category', event.target.value)}
-            className={inputClass}
-          >
-            {PROJECT_CATEGORIES.map((category) => (
-              <option key={category} value={category} className="bg-[#111111]">
-                {category}
-              </option>
-            ))}
-          </select>
-          {fieldError('category')}
-        </div>
-        <div>
-          <p className="mb-2 text-sm font-medium">Description *</p>
-          <RichTextEditor
-            id={`${baseId}-description`}
-            label="Description du projet"
-            required
-            describedBy={
-              errors.description ? `${baseId}-description-error` : undefined
-            }
-            value={formData.description}
-            onChange={(html) => change('description', html)}
-            disabled={busy}
-            error={!!errors.description}
-            maxLength={5000}
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.title
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="Ex: Intro FX Neon"
+            disabled={isLoading}
           />
-          {fieldError('description')}
+          {errors.title && (
+            <p className="mt-1 text-xs text-red-400">{errors.title}</p>
+          )}
         </div>
-      </fieldset>
-      <fieldset
-        disabled={busy}
-        className="min-w-0 space-y-4 rounded-lg border border-white/10 p-4 sm:p-5"
-      >
-        <legend className="px-2 text-base font-semibold">
-          Images du projet *
-        </legend>
-        <p className="text-xs leading-5 text-white/65">
-          Ajoutez au moins une image. La première image sert de couverture.
-        </p>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">
+            Date du projet *
+          </label>
+          <input
+            type="date"
+            value={formData.date}
+            onChange={(e) => handleChange('date', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.date
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            disabled={isLoading}
+          />
+          {errors.date && (
+            <p className="mt-1 text-xs text-red-400">{errors.date}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Catégorie */}
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-white/80">
+          Catégorie *
+        </label>
+        <select
+          value={formData.category}
+          onChange={(e) => handleChange('category', e.target.value)}
+          className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+            errors.category
+              ? 'border-red-500 focus:border-red-400'
+              : 'border-white/10 focus:border-white/20'
+          }`}
+          disabled={isLoading}
+        >
+          {PROJECT_CATEGORIES.map((category) => (
+            <option key={category} value={category} className="bg-black">
+              {category}
+            </option>
+          ))}
+        </select>
+        {errors.category && (
+          <p className="mt-1 text-xs text-red-400">{errors.category}</p>
+        )}
+      </div>
+
+      {/* Description */}
+      <div>
+        <label className="mb-1.5 block text-sm font-medium text-white/80">
+          Description *
+        </label>
+        <RichTextEditor
+          value={formData.description}
+          onChange={(html) => handleChange('description', html)}
+          placeholder="Décrivez le projet en détail..."
+          disabled={isLoading}
+          error={!!errors.description}
+          maxLength={5000}
+        />
+        {errors.description && (
+          <p className="mt-1 text-xs text-red-400">{errors.description}</p>
+        )}
+      </div>
+
+      {/* Galerie d'images */}
+      <div>
+        <div className="mb-1.5 flex items-center gap-2">
+          <label className="text-sm font-medium text-white/80">
+            Images du projet *
+          </label>
+        </div>
+
         {formData.images.length > 0 && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {formData.images.map((url, index) => (
-              <div key={`${url}-${index}`} className="relative">
-                <div className="relative aspect-video overflow-hidden rounded-md border border-white/15">
+          <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-2">
+            {formData.images.map((imageUrl, index) => (
+              <div key={index} className="group relative">
+                <div className="relative h-24 w-full overflow-hidden rounded-md border border-white/10 sm:h-20">
                   <SafeImage
-                    src={url}
-                    alt={`Image ${index + 1} du projet`}
+                    src={imageUrl}
+                    alt={`Galerie ${index + 1}`}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 640px) 50vw, 240px"
+                    sizes="150px"
                   />
                 </div>
                 <button
                   type="button"
-                  disabled={busy}
-                  onClick={() =>
-                    change(
-                      'images',
-                      formData.images.filter((_, i) => i !== index)
-                    )
-                  }
-                  aria-label={`Retirer l’image ${index + 1} du projet`}
-                  className="absolute top-1 right-1 flex h-11 w-11 items-center justify-center rounded-md border border-white/30 bg-black/85 text-xl text-white hover:bg-black"
+                  onClick={() => removeGalleryImage(index)}
+                  className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white opacity-100 shadow-lg sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:opacity-0 sm:shadow-none sm:transition sm:group-hover:opacity-100"
                 >
                   ×
                 </button>
-                {index === 0 && (
-                  <p className="mt-1 text-xs text-white/65">Couverture</p>
-                )}
               </div>
             ))}
           </div>
         )}
+
         <button
           type="button"
-          id={`${baseId}-images`}
-          aria-describedby={
-            errors.images ? `${baseId}-images-error` : undefined
-          }
-          data-invalid={!!errors.images}
-          aria-expanded={showGalleryUploader}
-          aria-controls={`${baseId}-gallery`}
-          onClick={() => setShowGalleryUploader((value) => !value)}
-          className={`${secondaryClass} data-[invalid=true]:border-red-400`}
+          onClick={() => setShowGalleryUploader(true)}
+          className="w-full rounded-md border border-dashed border-white/20 bg-black/20 px-4 py-3 text-sm text-white/60 transition hover:border-white/40 hover:text-white/80"
         >
-          {showGalleryUploader
-            ? 'Fermer l’import d’images'
-            : '+ Ajouter des images'}
+          + Ajouter des images
         </button>
-        <div id={`${baseId}-gallery`} hidden={!showGalleryUploader}>
-          <FileUploader
-            label="Importer les images du projet"
-            required={!formData.images.length}
-            errorMessage={errors.images}
-            disabled={busy}
-            onBusyChange={setUploading}
-            accept="image/*"
-            maxSizeMb={10}
-            multiple
-            onMultipleUploaded={(files) =>
-              change('images', [
-                ...formData.images,
-                ...files.map((file) => file.url),
-              ])
-            }
-          />
-        </div>
-        {fieldError('images')}
-      </fieldset>
-      <fieldset
-        disabled={busy}
-        className="min-w-0 space-y-4 rounded-lg border border-white/10 p-4 sm:p-5"
-      >
-        <legend className="px-2 text-base font-semibold">
-          Vidéos{' '}
-          <span className="text-sm font-normal text-white/65">
-            (facultatif)
-          </span>
-        </legend>
-        <p className="text-xs text-white/65">
-          {formData.videos?.length || 0} / 8 vidéos · Liens YouTube/Vimeo ou
-          fichiers vidéo.
-        </p>
-        {formData.videos?.map((video, index) => (
-          <div
-            key={`${video.url}-${index}`}
-            className="flex min-w-0 items-center gap-3 rounded-md border border-white/15 p-3"
-          >
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium">
-                Vidéo {index + 1} ·{' '}
-                {video.type === 'youtube'
-                  ? 'YouTube / Vimeo'
-                  : 'Fichier importé'}
-              </p>
-              <p className="mt-1 text-xs break-all text-white/65">
-                {video.url}
-              </p>
-            </div>
+
+        {showGalleryUploader && (
+          <div className="mt-3">
+            <FileUploader
+              accept="image/*"
+              maxSizeMb={10}
+              multiple={true}
+              onMultipleUploaded={handleGalleryUploaded}
+            />
             <button
               type="button"
-              disabled={busy}
-              onClick={() =>
-                change(
-                  'videos',
-                  (formData.videos || []).filter((_, i) => i !== index)
-                )
-              }
-              aria-label={`Retirer la vidéo ${index + 1}`}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-xl text-red-300 hover:bg-red-500/10"
+              onClick={() => setShowGalleryUploader(false)}
+              className="mt-2 text-xs text-white/60 underline hover:text-white/80"
             >
-              ×
+              Annuler
             </button>
           </div>
-        ))}
+        )}
+
+        {errors.images && (
+          <p className="mt-1 text-xs text-red-400">{errors.images}</p>
+        )}
+      </div>
+
+      {/* Vidéos du projet (nouveau système) */}
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <svg
+              className="h-4 w-4 text-white/60"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+            <label className="text-sm font-medium text-white/80">
+              Vidéos du projet
+            </label>
+          </div>
+          <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/50">
+            {formData.videos?.length || 0} / 8
+          </span>
+        </div>
+
+        {/* Liste des vidéos existantes */}
+        {formData.videos && formData.videos.length > 0 && (
+          <div className="mb-3 space-y-2">
+            {formData.videos.map((video, index) => (
+              <div
+                key={index}
+                className="group relative flex items-center gap-3 rounded-lg border border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent p-3 transition hover:border-white/20"
+              >
+                <div
+                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${
+                    video.type === 'youtube'
+                      ? 'bg-red-500/10 text-red-400'
+                      : 'bg-blue-500/10 text-blue-400'
+                  }`}
+                >
+                  {video.type === 'youtube' ? (
+                    <svg
+                      className="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+                      />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-white/80">
+                      {video.type === 'youtube'
+                        ? 'YouTube / Vimeo'
+                        : 'Fichier uploadé'}
+                    </span>
+                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] tracking-wide text-white/40 uppercase">
+                      {video.type}
+                    </span>
+                  </div>
+                  <div className="mt-0.5 truncate text-xs text-white/40">
+                    {video.url}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeVideo(index)}
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-transparent text-white/30 transition hover:bg-red-500/10 hover:text-red-400 sm:h-8 sm:w-8"
+                  aria-label="Supprimer la vidéo"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Bouton ajouter vidéo */}
         {(!formData.videos || formData.videos.length < 8) && (
           <button
             type="button"
-            className={secondaryClass}
-            onClick={() => {
-              setYoutubeUrl('');
-              setVideoError('');
-              setVideoType('youtube');
-              setShowAddVideo(true);
-            }}
+            onClick={openAddVideoModal}
+            className="group flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-white/[0.02] px-4 py-4 text-sm text-white/50 transition hover:border-[#ff0015]/50 hover:bg-[#ff0015]/5 hover:text-white/80"
+            disabled={isLoading}
           >
-            + Ajouter une vidéo
+            <svg
+              className="h-5 w-5 transition group-hover:text-[#ff0015]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            <span>Ajouter une vidéo</span>
           </button>
         )}
-        {fieldError('videos')}
-      </fieldset>
-      <fieldset
-        disabled={busy}
-        className="min-w-0 space-y-4 rounded-lg border border-white/10 p-4 sm:p-5"
-      >
-        <legend className="px-2 text-base font-semibold">
-          Détails{' '}
-          <span className="text-sm font-normal text-white/65">
-            (facultatifs)
-          </span>
-        </legend>
-        <div>
-          <label
-            htmlFor={`${baseId}-skill`}
-            className="mb-2 block text-sm font-medium"
-          >
-            Compétences utilisées
-          </label>
-          <input
-            {...fieldProps('skill')}
-            type="text"
-            maxLength={200}
-            value={formData.skill}
-            onChange={(event) => change('skill', event.target.value)}
-            className={inputClass}
-            aria-describedby={`${baseId}-skill-help${errors.skill ? ` ${baseId}-skill-error` : ''}`}
-          />
-          <p id={`${baseId}-skill-help`} className="mt-2 text-xs text-white/65">
-            Séparez les compétences par une virgule, par exemple : modélisation,
-            animation, compositing.
-          </p>
-          {fieldError('skill')}
-        </div>
-        <fieldset className="min-w-0">
-          <legend className="mb-2 text-sm font-medium">
-            Logiciels utilisés
-          </legend>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {SOFTWARE_LIST.map((software) => (
-              <button
-                key={software.id}
-                type="button"
-                disabled={busy}
-                aria-pressed={formData.software.includes(software.id)}
-                onClick={() =>
-                  change(
-                    'software',
-                    formData.software.includes(software.id)
-                      ? formData.software.filter((id) => id !== software.id)
-                      : [...formData.software, software.id]
-                  )
-                }
-                className={`flex min-h-11 flex-col items-center justify-center gap-2 rounded-md border p-3 ${formData.software.includes(software.id) ? 'border-white/60 bg-white/10' : 'border-white/15 bg-black/20 hover:bg-white/5'}`}
-              >
-                <Image
-                  src={software.icon}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain"
+      </div>
+
+      {/* Modal d'ajout de vidéo */}
+      {showAddVideo && (
+        <Modal
+          isOpen={showAddVideo}
+          onClose={() => {
+            setShowAddVideo(false);
+            setShowVideoUpload(false);
+            setYoutubeUrl('');
+          }}
+          title="Ajouter une vidéo"
+        >
+          <div className="space-y-6">
+            {/* Sélection du type de source */}
+            <div>
+              <p className="mb-3 text-xs font-medium tracking-wider text-white/40 uppercase">
+                Source de la vidéo
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVideoType('youtube');
+                    setShowVideoUpload(false);
+                  }}
+                  className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition sm:gap-3 sm:p-5 ${
+                    videoType === 'youtube'
+                      ? 'border-[#ff0015] bg-[#ff0015]/5'
+                      : 'border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {videoType === 'youtube' && (
+                    <div className="absolute top-2 right-2">
+                      <svg
+                        className="h-5 w-5 text-[#ff0015]"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      videoType === 'youtube'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-white/5 text-white/40'
+                    }`}
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p
+                      className={`text-sm font-medium ${videoType === 'youtube' ? 'text-white' : 'text-white/70'}`}
+                    >
+                      Lien externe
+                    </p>
+                    <p className="mt-0.5 text-xs text-white/40">
+                      YouTube, Vimeo
+                    </p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVideoType('upload');
+                    setShowVideoUpload(true);
+                  }}
+                  className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition sm:gap-3 sm:p-5 ${
+                    videoType === 'upload'
+                      ? 'border-[#ff0015] bg-[#ff0015]/5'
+                      : 'border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  {videoType === 'upload' && (
+                    <div className="absolute top-2 right-2">
+                      <svg
+                        className="h-5 w-5 text-[#ff0015]"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      videoType === 'upload'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : 'bg-white/5 text-white/40'
+                    }`}
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                      />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p
+                      className={`text-sm font-medium ${videoType === 'upload' ? 'text-white' : 'text-white/70'}`}
+                    >
+                      Upload fichier
+                    </p>
+                    <p className="mt-0.5 text-xs text-white/40">
+                      MP4, WebM (max 50MB)
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Séparateur */}
+            <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+            {/* Formulaire selon le type */}
+            {videoType === 'youtube' && !showVideoUpload ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-sm font-medium text-white/70">
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                      />
+                    </svg>
+                    URL de la vidéo
+                  </label>
+                  <input
+                    type="url"
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-white/30 transition outline-none focus:border-[#ff0015]/50 focus:ring-1 focus:ring-[#ff0015]/20"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    autoFocus
+                  />
+                  <p className="mt-2 flex items-center gap-1.5 text-xs text-white/40">
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Collez l&apos;URL complète de YouTube ou Vimeo
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddYoutubeVideo}
+                  disabled={!youtubeUrl.trim()}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#ff0015] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#ff0015]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Ajouter cette vidéo
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p className="mb-3 flex items-center gap-2 text-sm font-medium text-white/70">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    />
+                  </svg>
+                  Sélectionnez un fichier vidéo
+                </p>
+                <FileUploader
+                  accept="video/*"
+                  maxSizeMb={500}
+                  onUploaded={handleVideoFileUploaded}
                 />
-                <span className="text-center text-xs text-white/85">
-                  {software.name}
-                </span>
-              </button>
-            ))}
+              </div>
+            )}
           </div>
-        </fieldset>
+        </Modal>
+      )}
+
+      {/* Champs optionnels */}
+      <div className="space-y-4">
         <div>
-          <label
-            htmlFor={`${baseId}-link`}
-            className="mb-2 block text-sm font-medium"
-          >
-            Lien du projet
-          </label>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Compétences utilisées
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
+
+          {/* Tutoriel */}
+          <div className="mb-3 rounded-md border border-blue-500/20 bg-blue-500/10 p-3">
+            <div className="flex items-start gap-2">
+              <svg
+                className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <div className="text-xs text-blue-300">
+                <p className="mb-1 font-medium">
+                  💡 Comment séparer les compétences :
+                </p>
+                <p className="text-blue-200/80">
+                  Séparez chaque compétence par une virgule.
+                </p>
+                <p className="mt-1 text-blue-200/70">
+                  Exemple : Blender, After Effects, Cinema 4D
+                </p>
+              </div>
+            </div>
+          </div>
+
           <input
-            {...fieldProps('link')}
+            type="text"
+            value={formData.skill}
+            onChange={(e) => handleChange('skill', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.skill
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="Ex: Blender, After Effects, Cinema 4D"
+            disabled={isLoading}
+          />
+          {errors.skill && (
+            <p className="mt-1 text-xs text-red-400">{errors.skill}</p>
+          )}
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Logiciels utilisés
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            {SOFTWARE_LIST.map((sw) => {
+              const selected = formData.software.includes(sw.id);
+              return (
+                <button
+                  key={sw.id}
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      software: prev.software.includes(sw.id)
+                        ? prev.software.filter((s) => s !== sw.id)
+                        : [...prev.software, sw.id],
+                    }))
+                  }
+                  className={`flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-all ${
+                    selected
+                      ? 'border-[#ff0015] bg-[#ff0015]/10'
+                      : 'border-white/10 opacity-50 hover:opacity-75'
+                  } disabled:cursor-not-allowed`}
+                >
+                  <Image
+                    src={sw.icon}
+                    alt={sw.name}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 object-contain"
+                  />
+                  <span className="text-center text-xs text-white/80">
+                    {sw.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-1.5 flex items-center gap-2">
+            <label className="text-sm font-medium text-white/80">
+              Lien du projet
+            </label>
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-xs text-red-400">
+              Optionnel
+            </span>
+          </div>
+          <input
             type="url"
             value={formData.link}
-            onChange={(event) => change('link', event.target.value)}
-            placeholder="https://…"
-            className={inputClass}
+            onChange={(e) => handleChange('link', e.target.value)}
+            className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
+              errors.link
+                ? 'border-red-500 focus:border-red-400'
+                : 'border-white/10 focus:border-white/20'
+            }`}
+            placeholder="https://..."
+            disabled={isLoading}
           />
-          {fieldError('link')}
+          {errors.link && (
+            <p className="mt-1 text-xs text-red-400">{errors.link}</p>
+          )}
         </div>
-      </fieldset>
-      <div className="flex flex-wrap justify-end gap-3 border-t border-white/10 pt-5">
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-3 border-t border-white/10 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          disabled={busy}
-          className={secondaryClass}
+          disabled={isLoading}
+          className={`flex-1 rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition disabled:opacity-50`}
         >
           Annuler
         </button>
         <button
           type="submit"
-          disabled={busy}
-          className="min-h-11 rounded-md bg-[#cc0009] px-5 text-sm font-semibold text-white hover:bg-[#b30006] disabled:opacity-50"
+          disabled={isLoading}
+          className={`flex-1 rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition disabled:opacity-50`}
         >
-          {uploading
-            ? 'Import en cours…'
-            : isLoading
-              ? 'Enregistrement…'
-              : mode === 'create'
-                ? 'Créer le projet'
-                : 'Enregistrer les modifications'}
+          {isLoading
+            ? 'Sauvegarde...'
+            : mode === 'create'
+              ? 'Créer le projet'
+              : 'Mettre à jour'}
         </button>
       </div>
-      <p role="status" className="sr-only">
-        {uploading
-          ? 'Import des médias en cours. Attendez avant d’enregistrer.'
-          : isLoading
-            ? 'Enregistrement du projet en cours…'
-            : ''}
-      </p>
-      <Modal
-        isOpen={showAddVideo}
-        onClose={() => {
-          if (!uploading) setShowAddVideo(false);
-        }}
-        title="Ajouter une vidéo"
-        maxWidth="md"
-      >
-        <div className="space-y-4">
-          <div
-            role="group"
-            aria-label="Source de la vidéo"
-            className="flex flex-wrap gap-2"
-          >
-            <button
-              type="button"
-              disabled={busy}
-              aria-pressed={videoType === 'youtube'}
-              onClick={() => setVideoType('youtube')}
-              className={secondaryClass}
-            >
-              YouTube / Vimeo
-            </button>
-            <button
-              type="button"
-              disabled={busy}
-              aria-pressed={videoType === 'upload'}
-              onClick={() => setVideoType('upload')}
-              className={secondaryClass}
-            >
-              Fichier vidéo
-            </button>
-          </div>
-          {videoType === 'youtube' ? (
-            <div>
-              <label
-                htmlFor={`${baseId}-video-url`}
-                className="mb-2 block text-sm font-medium"
-              >
-                URL de la vidéo
-              </label>
-              <input
-                id={`${baseId}-video-url`}
-                type="url"
-                value={youtubeUrl}
-                onChange={(event) => {
-                  setYoutubeUrl(event.target.value);
-                  setVideoError('');
-                }}
-                aria-invalid={!!videoError}
-                aria-describedby={`${baseId}-video-help`}
-                className={inputClass}
-                placeholder="https://www.youtube.com/watch?v=…"
-              />
-              <p
-                id={`${baseId}-video-help`}
-                className="mt-2 text-xs text-white/65"
-              >
-                Collez l’URL complète d’une vidéo YouTube ou Vimeo.
-              </p>
-              <button
-                type="button"
-                disabled={busy || !youtubeUrl.trim()}
-                onClick={addLinkVideo}
-                className={`${secondaryClass} mt-4`}
-              >
-                Ajouter cette vidéo
-              </button>
-            </div>
-          ) : (
-            <FileUploader
-              label="Importer une vidéo"
-              disabled={busy}
-              onBusyChange={setUploading}
-              accept="video/*"
-              maxSizeMb={500}
-              onUploaded={(url) => addVideo({ type: 'upload', url })}
-            />
-          )}
-          {videoError && (
-            <p role="alert" className="text-sm text-red-300">
-              {videoError}
-            </p>
-          )}
-        </div>
-      </Modal>
     </form>
   );
 }

@@ -4,9 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
+import { COLOR_COMBINATIONS } from '@/lib/colors';
 import SliderMediaForm from '@/components/admin/SliderMediaForm';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
-import { AdminError, AdminLoading } from '@/components/admin/AdminFeedback';
 import {
   SliderMedia,
   CreateSliderMediaInput,
@@ -22,26 +22,18 @@ export default function EditSliderMediaPage() {
   const [media, setMedia] = React.useState<SliderMedia | null>(null);
   const [isLoadingMedia, setIsLoadingMedia] = React.useState(true);
   const [loadError, setLoadError] = React.useState<string | null>(null);
-  const [loadedId, setLoadedId] = React.useState<string | null>(null);
-  const [retry, setRetry] = React.useState(0);
   const [formLoading, setFormLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (!isPending && !session?.user) {
-      router.replace(
-        `/admin/login?returnTo=${encodeURIComponent(window.location.pathname)}`
-      );
+      router.push('/admin/login');
     }
   }, [session, isPending, router]);
 
   React.useEffect(() => {
-    const controller = new AbortController();
     async function fetchMedia() {
       try {
-        const response = await fetch(`/api/slider-media/${mediaId}`, {
-          signal: controller.signal,
-        });
-        if (controller.signal.aborted) return;
+        const response = await fetch(`/api/slider-media/${mediaId}`);
         if (!response.ok) {
           if (response.status === 404) {
             setLoadError('Média non trouvé');
@@ -51,25 +43,18 @@ export default function EditSliderMediaPage() {
           return;
         }
         const data = await response.json();
-        if (controller.signal.aborted) return;
-        setLoadError(null);
         setMedia(data);
       } catch {
-        if (controller.signal.aborted) return;
         setLoadError('Erreur de connexion');
       } finally {
-        if (!controller.signal.aborted) {
-          setLoadedId(mediaId);
-          setIsLoadingMedia(false);
-        }
+        setIsLoadingMedia(false);
       }
     }
 
     if (mediaId && session?.user) {
       fetchMedia();
     }
-    return () => controller.abort();
-  }, [mediaId, session?.user, retry]);
+  }, [mediaId, session?.user]);
 
   const handleSubmit = async (
     data: CreateSliderMediaInput | UpdateSliderMediaInput
@@ -87,7 +72,10 @@ export default function EditSliderMediaPage() {
         throw new Error(errorData.error || 'Erreur lors de la mise à jour');
       }
 
-      router.replace('/admin/slider?saved=updated');
+      router.replace('/admin/slider');
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour:', error);
+      alert('Erreur lors de la mise à jour du média');
     } finally {
       setFormLoading(false);
     }
@@ -97,13 +85,16 @@ export default function EditSliderMediaPage() {
     router.push('/admin/slider');
   };
 
-  if (!isPending && !session?.user) return null;
-
   // Loading
-  if (isPending || isLoadingMedia || loadedId !== mediaId) {
+  if (isPending || isLoadingMedia) {
     return (
       <AdminPageLayout title="Chargement...">
-        <AdminLoading>Chargement du média…</AdminLoading>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
+            <p className="text-sm text-white/60">Chargement du média...</p>
+          </div>
+        </div>
       </AdminPageLayout>
     );
   }
@@ -118,18 +109,11 @@ export default function EditSliderMediaPage() {
           { label: 'Erreur' },
         ]}
       >
-        <div className="mx-auto max-w-lg">
-          <AdminError
-            message={loadError}
-            onRetry={() => {
-              setLoadError(null);
-              setIsLoadingMedia(true);
-              setRetry((value) => value + 1);
-            }}
-          />
+        <div className="mx-auto max-w-lg rounded-xl border border-red-500/20 bg-red-500/10 p-8 text-center">
+          <p className="text-red-400">{loadError}</p>
           <Link
             href="/admin/slider"
-            className="inline-flex min-h-11 items-center rounded-md border border-white/20 px-4 text-sm hover:bg-white/10"
+            className="mt-4 inline-block rounded-md bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
           >
             Retour au slider
           </Link>
@@ -150,10 +134,9 @@ export default function EditSliderMediaPage() {
     >
       <div className="mx-auto max-w-xl">
         <div
-          className={`rounded-xl border border-white/10 bg-[#111111] p-4 sm:p-6`}
+          className={`rounded-xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-xl backdrop-blur sm:p-6`}
         >
           <SliderMediaForm
-            key={media.id}
             sliderMedia={media}
             onSubmit={handleSubmit}
             onCancel={handleCancel}

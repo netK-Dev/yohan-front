@@ -1,123 +1,273 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import AnimatedGridBackground from '@/components/sections/AnimatedGridBackground';
+import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { signOut, useSession } from '@/lib/auth-client';
 
-const links = [
-  { href: '/admin/dashboard', label: 'Projets' },
-  { href: '/admin/slider', label: 'Slider' },
-  { href: '/admin/homepage', label: 'Accueil' },
-];
-
-export default function AdminHeader({
-  className = '',
-}: {
+type AdminHeaderProps = {
   className?: string;
-}) {
+};
+
+export default function AdminHeader({ className }: AdminHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [isLoggingOut, setLoggingOut] = useState(false);
-  const [error, setError] = useState('');
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [mobileOpen]);
 
   async function handleLogout() {
-    if (isLoggingOut) return;
-    setLoggingOut(true);
-    setError('');
     try {
-      const result = await signOut();
-      if (result.error) throw new Error('Déconnexion impossible');
-      router.replace('/admin/login');
-    } catch {
-      setError('La déconnexion a échoué. Veuillez réessayer.');
-      setLoggingOut(false);
+      await signOut();
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Erreur de déconnexion:', error);
+      router.push('/admin/login');
     }
   }
 
   return (
-    <header
-      className={`border-b border-white/10 bg-[#0a0a0a] text-white ${className}`}
-    >
-      <a
-        href="#admin-content"
-        className="sr-only focus:not-sr-only focus:inline-flex focus:min-h-11 focus:items-center focus:px-4"
+    <>
+      <header
+        className={`relative ${COLOR_COMBINATIONS.header.background} ${COLOR_COMBINATIONS.header.text} border-b border-white/10 ${className ?? ''}`}
       >
-        Aller au contenu
-      </a>
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
-        <Link
-          href="/admin/dashboard"
-          className="flex min-h-11 min-w-0 items-center gap-3"
-        >
-          <Image
-            src="/img/logo_yohan.png"
-            alt=""
-            width={36}
-            height={36}
-            className="h-9 w-9 object-contain"
-          />
-          <div className="min-w-0">
-            <p className="text-sm font-semibold">
-              Doens Production <span className="text-white/60">/ Admin</span>
-            </p>
-            {session?.user?.name && (
-              <p className="max-w-60 truncate text-xs text-white/60">
-                {session.user.name}
-              </p>
-            )}
+        <AnimatedGridBackground
+          className="pointer-events-none absolute inset-0 opacity-30"
+          density={0.35}
+          speed={1.2}
+        />
+
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex items-center gap-3"
+            >
+              <Image
+                src="/img/logo_yohan.png"
+                alt="Yohan Doens"
+                width={36}
+                height={36}
+                className="h-9 w-9 object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold tracking-wide text-white/90">
+                  Admin
+                </span>
+                {session?.user?.name && (
+                  <span className="max-w-[120px] truncate text-xs text-white/60">
+                    Connecté: {session.user.name}
+                  </span>
+                )}
+              </div>
+            </Link>
           </div>
-        </Link>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center rounded-md border border-white/15 px-3 text-sm text-white/80 hover:bg-white/5"
-          >
-            Voir le site <span className="sr-only">(nouvel onglet)</span>
-            <span aria-hidden="true" className="ml-2">
-              ↗
-            </span>
-          </Link>
+
+          {/* Navigation desktop */}
+          <nav className="hidden items-center gap-4 md:flex">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/admin/dashboard"
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                  pathname.startsWith('/admin/dashboard')
+                    ? 'border border-white/20 bg-white/15 text-white'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Projets
+              </Link>
+              <Link
+                href="/admin/slider"
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                  pathname.startsWith('/admin/slider')
+                    ? 'border border-white/20 bg-white/15 text-white'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Slider
+              </Link>
+              <Link
+                href="/admin/homepage"
+                className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                  pathname.startsWith('/admin/homepage')
+                    ? 'border border-white/20 bg-white/15 text-white'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Accueil
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                className={`rounded-md px-3 py-2 text-sm font-medium ${COLOR_COMBINATIONS.secondaryButton.background} ${COLOR_COMBINATIONS.secondaryButton.text} ${COLOR_COMBINATIONS.secondaryButton.border} ${COLOR_COMBINATIONS.secondaryButton.hover} transition`}
+              >
+                Retour au site
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={`rounded-md px-3 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition`}
+              >
+                Se déconnecter
+              </button>
+            </div>
+          </nav>
+
+          {/* Bouton hamburger mobile */}
           <button
-            type="button"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="min-h-11 rounded-md px-3 text-sm text-white/80 hover:bg-white/5 disabled:opacity-50"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-white transition hover:bg-white/10 md:hidden"
+            aria-label="Menu admin"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((prev) => !prev)}
           >
-            {isLoggingOut ? 'Déconnexion…' : 'Se déconnecter'}
+            {mobileOpen ? (
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
           </button>
         </div>
-        <nav
-          aria-label="Administration"
-          className="flex w-full gap-1 border-t border-white/10 pt-2 lg:order-none lg:w-auto lg:border-0 lg:pt-0"
+      </header>
+
+      {/* Drawer mobile */}
+      <div
+        className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        aria-hidden={!mobileOpen}
+      >
+        {/* Overlay */}
+        <div
+          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setMobileOpen(false)}
+        />
+        {/* Panel */}
+        <div
+          className={`absolute top-0 right-0 flex h-full w-72 flex-col bg-gradient-to-b from-[#0a0a0a] to-[#000002] shadow-2xl transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
-          {links.map(({ href, label }) => {
-            const active = pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? 'page' : undefined}
-                className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-md border px-4 text-sm font-medium lg:flex-none ${active ? 'border-white/15 bg-white/10 text-white' : 'border-transparent text-white/65 hover:bg-white/5 hover:text-white'}`}
+          {/* Header du drawer */}
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <span className="text-sm font-semibold text-white/90">Admin</span>
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-white hover:bg-white/10"
+              aria-label="Fermer le menu"
+              onClick={() => setMobileOpen(false)}
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-        <p
-          role={error ? 'alert' : 'status'}
-          className={
-            error || isLoggingOut ? 'w-full text-sm text-white/80' : 'sr-only'
-          }
-        >
-          {error || (isLoggingOut ? 'Déconnexion en cours…' : '')}
-        </p>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Liens de navigation */}
+          <nav className="mt-2 flex-1 space-y-1 px-3">
+            <Link
+              href="/admin/dashboard"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
+                pathname.startsWith('/admin/dashboard')
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              Projets
+            </Link>
+            <Link
+              href="/admin/slider"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
+                pathname.startsWith('/admin/slider')
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              Slider
+            </Link>
+            <Link
+              href="/admin/homepage"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
+                pathname.startsWith('/admin/homepage')
+                  ? 'bg-white/15 text-white'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              Accueil
+            </Link>
+          </nav>
+
+          {/* Actions en bas du drawer */}
+          <div className="space-y-2 border-t border-white/10 p-4">
+            {session?.user?.name && (
+              <p className="mb-3 truncate text-xs text-white/50">
+                Connecté: {session.user.name}
+              </p>
+            )}
+            <Link
+              href="/"
+              onClick={() => setMobileOpen(false)}
+              className="block w-full rounded-md border-2 border-white px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-white hover:text-[#000002]"
+            >
+              Retour au site
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                handleLogout();
+              }}
+              className="block w-full rounded-md bg-[#ff0015] px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-[#e6000c]"
+            >
+              Se déconnecter
+            </button>
+          </div>
+        </div>
       </div>
-    </header>
+    </>
   );
 }

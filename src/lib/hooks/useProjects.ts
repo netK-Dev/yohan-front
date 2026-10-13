@@ -13,33 +13,22 @@ export function useProjects() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const requestRef = React.useRef<AbortController | null>(null);
-
   // Récupérer tous les projets
-  const loadProjects = React.useCallback(() => {
-    requestRef.current?.abort();
-    const controller = new AbortController();
-    requestRef.current = controller;
-    return fetch('/api/projects', {
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error('Erreur lors du chargement des projets');
-        }
+  const loadProjects = React.useCallback(async () => {
+    try {
+      const response = await fetch('/api/projects');
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des projets');
+      }
 
-        const data = await response.json();
-        if (controller.signal.aborted) return;
-        setError(null);
-        setProjects(data);
-      })
-      .catch((err: unknown) => {
-        if (controller.signal.aborted) return;
-        setError(err instanceof Error ? err.message : 'Erreur inconnue');
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setIsLoading(false);
-      });
+      setError(null);
+      const data = await response.json();
+      setProjects(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const fetchProjects = React.useCallback(async () => {
@@ -51,22 +40,32 @@ export function useProjects() {
   // Créer un nouveau projet
   const createProject = React.useCallback(
     async (projectData: CreateProjectInput): Promise<Project> => {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(projectData),
-      });
+      setIsLoading(true);
+      setError(null);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la création');
+      try {
+        const response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erreur lors de la création');
+        }
+
+        const newProject = await response.json();
+        setProjects((prev) => [newProject, ...prev]);
+        return newProject;
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error ? err.message : 'Erreur lors de la création'
+        );
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
-
-      const newProject = await response.json();
-      requestRef.current?.abort();
-      setIsLoading(false);
-      setProjects((prev) => [newProject, ...prev]);
-      return newProject;
     },
     []
   );
@@ -77,50 +76,69 @@ export function useProjects() {
       id: number,
       projectData: Partial<UpdateProjectInput>
     ): Promise<Project> => {
-      const response = await fetch(`/api/projects/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(projectData),
-      });
+      setIsLoading(true);
+      setError(null);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la mise à jour');
+      try {
+        const response = await fetch(`/api/projects/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erreur lors de la mise à jour');
+        }
+
+        const updatedProject = await response.json();
+        setProjects((prev) =>
+          prev.map((p) => (p.id === id ? updatedProject : p))
+        );
+        return updatedProject;
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error ? err.message : 'Erreur lors de la mise à jour'
+        );
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
-
-      const updatedProject = await response.json();
-      requestRef.current?.abort();
-      setIsLoading(false);
-      setProjects((prev) =>
-        prev.map((p) => (p.id === id ? updatedProject : p))
-      );
-      return updatedProject;
     },
     []
   );
 
   // Supprimer un projet
   const deleteProject = React.useCallback(async (id: number): Promise<void> => {
-    const response = await fetch(`/api/projects/${id}`, {
-      method: 'DELETE',
-    });
+    setIsLoading(true);
+    setError(null);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erreur lors de la suppression');
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la suppression');
+      }
+
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : 'Erreur lors de la suppression'
+      );
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
-
-    requestRef.current?.abort();
-
-    setIsLoading(false);
-
-    setProjects((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
   // Charger les projets au montage (une seule fois)
   React.useEffect(() => {
+    // State changes in this loader follow awaited network I/O.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadProjects();
-    return () => requestRef.current?.abort();
   }, [loadProjects]);
 
   return {

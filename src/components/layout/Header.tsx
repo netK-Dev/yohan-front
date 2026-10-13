@@ -1,211 +1,361 @@
 'use client';
+// src/components/layout/Header.tsx
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import Modal from '@/components/ui/Modal';
-
-const pages = [
-  { label: 'Accueil', href: '/' },
-  { label: 'Réalisations', href: '/realisations' },
-  { label: 'À propos', href: '/about' },
-  { label: 'Contact', href: '/contact' },
-];
-const categories = [
-  { label: '3D/VFX et Compositing', slug: '3d-vfx' },
-  { label: 'Motion Design', slug: 'motion-design' },
-  { label: 'Court Métrage', slug: 'court-metrage' },
-];
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const pathname = usePathname();
-  const category = useSearchParams().get('category');
+  const searchParams = useSearchParams();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const disclosure = useRef<HTMLDivElement>(null);
-  const categoryButton = useRef<HTMLButtonElement>(null);
+  const isRealisations =
+    pathname?.startsWith('/realisations') ||
+    pathname?.startsWith('/realisation');
+  const isHome = pathname === '/';
+  const isAbout = pathname?.startsWith('/about');
+  const isContact = pathname?.startsWith('/contact');
+  const category = searchParams?.get('category');
+  const is3DVfx = isRealisations && category === '3d-vfx';
+  const isMotion = isRealisations && category === 'motion-design';
+  const isCourt = isRealisations && category === 'court-metrage';
 
+  // Empêcher le scroll du body quand le menu mobile est ouvert
   useEffect(() => {
-    if (!categoriesOpen) return;
-    const onPointer = (event: PointerEvent) => {
-      if (!disclosure.current?.contains(event.target as Node))
-        setCategoriesOpen(false);
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setCategoriesOpen(false);
-        categoryButton.current?.focus();
-      }
-    };
-    document.addEventListener('pointerdown', onPointer);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('pointerdown', onPointer);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [categoriesOpen]);
-
-  useEffect(() => {
-    const media = window.matchMedia('(min-width: 768px)');
-    const close = () => {
-      if (media.matches) setMobileOpen(false);
-    };
-    media.addEventListener('change', close);
-    return () => media.removeEventListener('change', close);
-  }, []);
-
-  const isActive = (href: string) =>
-    href === '/realisations' ? pathname.startsWith(href) : pathname === href;
-  const closeMenus = () => {
-    setMobileOpen(false);
-    setCategoriesOpen(false);
-  };
+    if (mobileOpen) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = previousOverflow;
+      };
+    }
+    return undefined;
+  }, [mobileOpen]);
   return (
-    <>
-      <a
-        href="#main-content"
-        className="fixed top-3 left-3 z-[120] -translate-y-24 bg-white px-5 py-3 font-medium text-black focus:translate-y-0"
-      >
-        Aller au contenu
-      </a>
-      <header className="sticky top-0 z-40 border-b border-white/15 bg-[#000002]/95 backdrop-blur-md">
-        <div className="site-container flex h-20 items-center justify-between gap-6">
-          <Link
-            href="/"
-            onClick={closeMenus}
-            aria-label="Doens Production — accueil"
-            className="flex min-h-11 shrink-0 items-center gap-3"
-          >
-            <Image
-              src="/img/logo_yohan.png"
-              alt=""
-              width={42}
-              height={37}
-              style={{ height: 'auto' }}
-              className="object-contain"
-            />
-            <span className="text-sm leading-tight font-semibold tracking-[0.08em] uppercase">
-              Doens
-              <span className="block text-[10px] font-normal tracking-[0.22em] text-white/60">
-                Production
-              </span>
-            </span>
-          </Link>
-          <nav
-            aria-label="Navigation principale"
-            className="hidden items-center gap-5 md:flex lg:gap-7"
-          >
-            {pages.map((page) => (
-              <div key={page.href} className="flex items-center">
+    <div className="fixed top-0 right-0 left-0 z-50 w-full bg-transparent px-2 py-2 sm:px-4 sm:py-4">
+      {/* Container avec effet de halo extérieur */}
+      <div className="relative mx-auto max-w-7xl">
+        {/* Halo extérieur uniforme - couche 1 */}
+        <div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-[#000002]/30 via-gray-950/40 to-[#000002]/30 blur-md sm:rounded-3xl" />
+
+        {/* Halo extérieur uniforme - couche 2 */}
+        <div className="absolute -inset-2 rounded-xl bg-gradient-to-r from-[#000002]/50 via-gray-950/60 to-[#000002]/50 blur-sm sm:rounded-2xl" />
+
+        {/* Header principal intact */}
+        <header className="relative rounded-xl bg-gradient-to-r from-[#000002] via-gray-950 to-[#000002] shadow-2xl sm:rounded-2xl">
+          <div className="px-4 sm:px-6 lg:px-8 xl:px-12">
+            <div className="flex h-16 items-center justify-between sm:h-20">
+              {/* Logo/Titre avec image et texte stylé */}
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <Link
-                  href={page.href}
-                  onClick={closeMenus}
-                  aria-current={isActive(page.href) ? 'page' : undefined}
-                  className={`flex min-h-11 items-center border-b text-sm transition-colors ${isActive(page.href) ? 'border-[#ff0015] text-white' : 'border-transparent text-white/65 hover:text-white'}`}
+                  href="/"
+                  className="group flex items-center space-x-2 sm:space-x-4"
                 >
-                  {page.label}
-                </Link>
-                {page.href === '/realisations' && (
-                  <div
-                    ref={disclosure}
-                    className="relative"
-                    onBlur={(event) => {
-                      if (!event.currentTarget.contains(event.relatedTarget))
-                        setCategoriesOpen(false);
-                    }}
-                  >
-                    <button
-                      ref={categoryButton}
-                      type="button"
-                      aria-label="Catégories de réalisations"
-                      aria-expanded={categoriesOpen}
-                      aria-controls="work-categories"
-                      onClick={() => setCategoriesOpen(!categoriesOpen)}
-                      className="flex min-h-11 min-w-11 items-center justify-center text-white/70 hover:text-white"
-                    >
-                      <span aria-hidden="true">⌄</span>
-                    </button>
-                    {categoriesOpen && (
-                      <div
-                        id="work-categories"
-                        className="absolute top-full left-0 w-64 border border-white/20 bg-[#111113] p-2"
-                      >
-                        {categories.map((item) => (
-                          <Link
-                            key={item.slug}
-                            href={`/realisations?category=${item.slug}`}
-                            onClick={closeMenus}
-                            aria-current={
-                              pathname === '/realisations' &&
-                              category === item.slug
-                                ? 'page'
-                                : undefined
-                            }
-                            className="block px-3 py-3 text-sm text-white/80 hover:bg-white/10"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                  {/* Logo image */}
+                  <div className="relative h-8 w-8 flex-shrink-0 transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
+                    <Image
+                      src="/img/logo_yohan.png"
+                      alt="Doens Production Logo"
+                      fill
+                      sizes="(max-width: 640px) 32px, 48px"
+                      className="object-contain"
+                    />
                   </div>
-                )}
+
+                  {/* Texte stylé "Doens Production" */}
+                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:space-x-2">
+                    <h1 className="text-lg font-bold text-[#ff0015] transition-all duration-300 group-hover:text-[#ff333b] sm:text-2xl lg:text-3xl">
+                      Doens
+                    </h1>
+                    <span className="text-sm font-light text-white opacity-90 transition-all duration-300 group-hover:opacity-100 sm:text-lg lg:text-xl">
+                      Production
+                    </span>
+                  </div>
+                </Link>
               </div>
-            ))}
-          </nav>
-          <button
-            type="button"
-            className="button-secondary px-4 md:hidden"
-            aria-haspopup="dialog"
-            aria-expanded={mobileOpen}
-            aria-controls={mobileOpen ? 'mobile-navigation' : undefined}
-            onClick={() => setMobileOpen(true)}
-          >
-            Menu <span aria-hidden="true">☰</span>
-          </button>
-        </div>
-      </header>
-      <Modal
-        isOpen={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        title="Navigation"
-        drawer
+
+              {/* Navigation principale */}
+              <nav className="hidden space-x-6 md:flex lg:space-x-8">
+                {/* Accueil */}
+                <Link
+                  href="/"
+                  className={`group relative text-base font-medium transition-all duration-300 lg:text-lg ${
+                    isHome
+                      ? 'text-[#ff0015]'
+                      : 'text-white hover:text-[#ff0015]'
+                  }`}
+                >
+                  Accueil
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-[#ff0015] transition-all duration-300 ${
+                      isHome ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
+                </Link>
+
+                {/* À propos */}
+                <Link
+                  href="/about"
+                  className={`group relative text-base font-medium transition-all duration-300 lg:text-lg ${
+                    isAbout
+                      ? 'text-[#ff0015]'
+                      : 'text-white hover:text-[#ff0015]'
+                  }`}
+                >
+                  À propos
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-[#ff0015] transition-all duration-300 ${
+                      isAbout ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
+                </Link>
+
+                {/* Réalisation avec menu déroulant */}
+                <div className="group relative">
+                  <button
+                    className={`flex items-center space-x-1 text-base font-medium transition-all duration-300 lg:text-lg ${
+                      isRealisations
+                        ? 'text-[#ff0015]'
+                        : 'text-white hover:text-[#ff0015]'
+                    }`}
+                  >
+                    <span>Réalisation</span>
+                    <svg
+                      className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Menu déroulant avec halo extérieur */}
+                  <div className="invisible absolute top-full left-0 z-50 mt-2 w-64 translate-y-2 transform opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                    {/* Halo extérieur pour dropdown */}
+                    <div className="relative">
+                      <div className="absolute -inset-2 rounded-xl bg-gradient-to-b from-gray-950/40 to-[#000002]/40 blur-sm" />
+                      <div className="absolute -inset-1 rounded-xl bg-gradient-to-b from-gray-950/60 to-[#000002]/60 blur-xs" />
+
+                      {/* Dropdown principal intact */}
+                      <div className="relative rounded-xl bg-gradient-to-b from-gray-950 to-[#000002] shadow-2xl">
+                        <div className="py-3">
+                          <Link
+                            href="/realisations"
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
+                              isRealisations
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
+                          >
+                            Toutes les réalisations
+                          </Link>
+                          <Link
+                            href="/realisations?category=3d-vfx"
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
+                              is3DVfx
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
+                          >
+                            3D/VFX et Compositing
+                          </Link>
+                          <Link
+                            href="/realisations?category=motion-design"
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
+                              isMotion
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
+                          >
+                            Motion Design
+                          </Link>
+                          <Link
+                            href="/realisations?category=court-metrage"
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
+                              isCourt
+                                ? 'bg-white/10 text-[#ff0015]'
+                                : 'text-white hover:text-[#ff0015]'
+                            }`}
+                          >
+                            Court Métrage
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact */}
+                <Link
+                  href="/contact"
+                  className={`group relative text-base font-medium transition-all duration-300 lg:text-lg ${
+                    isContact
+                      ? 'text-[#ff0015]'
+                      : 'text-white hover:text-[#ff0015]'
+                  }`}
+                >
+                  Contact
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-[#ff0015] transition-all duration-300 ${
+                      isContact ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
+                </Link>
+              </nav>
+
+              {/* Menu mobile (hamburger) - Version moderne */}
+              <div className="md:hidden">
+                <button
+                  className="hover:bg-opacity-10 rounded-lg p-1.5 text-white transition-all duration-300 hover:bg-white hover:text-[#ff0015] sm:p-2"
+                  aria-label="Menu mobile"
+                  aria-expanded={mobileOpen}
+                  aria-controls="mobile-menu-panel"
+                  onClick={() => setMobileOpen((prev) => !prev)}
+                >
+                  {mobileOpen ? (
+                    <svg
+                      className="h-6 w-6 sm:h-7 sm:w-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-6 w-6 sm:h-7 sm:w-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+      {/* Panneau de navigation mobile */}
+      <div
+        id="mobile-menu-panel"
+        className={`fixed inset-0 z-[60] md:hidden ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        aria-hidden={!mobileOpen}
       >
-        <nav
-          id="mobile-navigation"
-          aria-label="Navigation mobile"
-          className="flex flex-col"
+        {/* Overlay */}
+        <div
+          className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setMobileOpen(false)}
+        />
+
+        {/* Drawer */}
+        <div
+          className={`absolute top-0 right-0 h-full w-72 transform rounded-l-xl bg-gradient-to-b from-[#000002] via-gray-950 to-[#000002] shadow-2xl transition-transform duration-300 sm:w-80 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
-          {pages.map((page) => (
-            <Link
-              key={page.href}
-              href={page.href}
-              onClick={closeMenus}
-              aria-current={isActive(page.href) ? 'page' : undefined}
-              className={`border-b border-white/10 py-4 text-xl ${isActive(page.href) ? 'text-white' : 'text-white/65'}`}
+          <div className="flex items-center justify-between px-5 py-4">
+            <div className="flex items-center space-x-2">
+              <div className="relative h-8 w-8">
+                <Image
+                  src="/img/logo_yohan.png"
+                  alt="Doens Production Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-white">Menu</span>
+            </div>
+            <button
+              className="rounded-lg p-2 text-white hover:bg-white/10"
+              aria-label="Fermer le menu"
+              onClick={() => setMobileOpen(false)}
             >
-              {page.label}
-            </Link>
-          ))}
-          <p className="eyebrow mt-8 mb-2">Par discipline</p>
-          {categories.map((item) => (
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <nav className="mt-2 space-y-1 px-2 pb-6">
             <Link
-              key={item.slug}
-              href={`/realisations?category=${item.slug}`}
-              onClick={closeMenus}
-              aria-current={
-                pathname === '/realisations' && category === item.slug
-                  ? 'page'
-                  : undefined
-              }
-              className="py-3 text-sm text-white/75"
+              href="/"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isHome ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
             >
-              {item.label}
+              Accueil
             </Link>
-          ))}
-        </nav>
-      </Modal>
-    </>
+            <Link
+              href="/about"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isAbout ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              À propos
+            </Link>
+            <Link
+              href="/realisations"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isRealisations && !category ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Toutes les réalisations
+            </Link>
+            <Link
+              href="/realisations?category=3d-vfx"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${is3DVfx ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              3D/VFX et Compositing
+            </Link>
+            <Link
+              href="/realisations?category=motion-design"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isMotion ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Motion Design
+            </Link>
+            <Link
+              href="/realisations?category=court-metrage"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isCourt ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Court Métrage
+            </Link>
+            <Link
+              href="/contact"
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${isContact ? 'bg-white/10 text-[#ff0015]' : 'text-white hover:bg-white/10 hover:text-[#ff0015]'}`}
+            >
+              Contact
+            </Link>
+          </nav>
+        </div>
+      </div>
+    </div>
   );
 }

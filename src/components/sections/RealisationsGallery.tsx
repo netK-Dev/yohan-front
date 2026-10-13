@@ -1,289 +1,334 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import SafeImage from '@/components/ui/SafeImage';
+import SafeImage from '../ui/SafeImage';
+import { COLOR_COMBINATIONS } from '@/lib/colors';
 import Pagination from '@/components/ui/Pagination';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { parseSkills } from '@/lib/utils/skills';
 import { getSoftwareById } from '@/lib/types/project';
+import Image from 'next/image';
 
+type ProjectCategory = '3d-vfx' | 'motion-design' | 'court-metrage';
+
+type ProjectItem = {
+  id: string;
+  title: string;
+  category: ProjectCategory;
+  image: string;
+  description: string;
+  tags: string[];
+  software: string[];
+};
+
+// Type du projet renvoyé par l'API/DB
 type DbProject = {
   id: string | number;
   title: string;
   category?: string | null;
   images: string[];
+  description: string;
   skill?: string | null;
   software?: string[];
 };
-const CATEGORIES = [
-  { key: 'all', label: 'Tous les projets' },
+
+const CATEGORIES: Array<{ key: 'all' | ProjectCategory; label: string }> = [
+  { key: 'all', label: 'Tous' },
   { key: '3d-vfx', label: '3D/VFX' },
   { key: 'motion-design', label: 'Motion Design' },
   { key: 'court-metrage', label: 'Court Métrage' },
 ];
-const PAGE_SIZE = 12;
-function categoryKey(category: string) {
-  const value = category.toLowerCase();
-  if (value.includes('motion')) return 'motion-design';
-  if (value.includes('court')) return 'court-metrage';
-  if (value.includes('3d') || value.includes('vfx')) return '3d-vfx';
-  return '';
+
+// Map catégorie DB -> clé UI
+function mapDbCategoryToKey(dbCategory: string): ProjectCategory {
+  const c = dbCategory.toLowerCase();
+  if (c.includes('motion')) return 'motion-design';
+  if (c.includes('court')) return 'court-metrage';
+  return '3d-vfx';
 }
 
-export function GallerySkeleton() {
-  return (
-    <div role="status">
-      <span className="sr-only">Chargement des réalisations…</span>
-      <div
-        aria-hidden="true"
-        className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        {Array.from({ length: 6 }, (_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="aspect-[4/3] bg-white/10" />
-            <div className="mt-5 h-3 w-24 bg-white/10" />
-            <div className="mt-3 h-5 w-3/4 bg-white/10" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+// Transforme un projet DB en item UI
+function toProjectItem(p: DbProject): ProjectItem {
+  const tags = parseSkills(p.skill || '');
+  // utiliser la première image de la galerie comme couverture
+  const cover = p.images && p.images.length > 0 ? p.images[0] : '';
+  return {
+    id: String(p.id),
+    title: p.title,
+    category: mapDbCategoryToKey(p.category || ''),
+    image: cover,
+    description: p.description,
+    tags,
+    software: p.software || [],
+  };
 }
 
 export default function RealisationsGallery() {
-  const [projects, setProjects] = useState<DbProject[]>([]);
+  const PAGE_SIZE = 15;
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [attempt, setAttempt] = useState(0);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const category = searchParams.get('category');
   const active = CATEGORIES.find((item) => item.key === category)?.key ?? 'all';
 
+  // Charger les projets depuis l'API (optimisé - une seule fois)
   useEffect(() => {
-    const controller = new AbortController();
-    async function load() {
+    let cancelled = false;
+
+    const loadProjects = async () => {
       try {
-        const response = await fetch('/api/projects', {
+        const res = await fetch('/api/projects', {
           cache: 'no-store',
-          signal: controller.signal,
         });
-        if (!response.ok) throw new Error('Chargement impossible');
-        const data = await response.json();
-        if (!Array.isArray(data)) throw new Error('Réponse invalide');
-        if (!controller.signal.aborted) {
-          setProjects(data);
-          setError(false);
+
+        if (!res.ok) throw new Error('Erreur chargement projets');
+        const data = await res.json();
+
+        if (!cancelled) {
+          setProjects(Array.isArray(data) ? data.map(toProjectItem) : []);
         }
-      } catch {
-        if (!controller.signal.aborted) setError(true);
+      } catch (e) {
+        if (!cancelled) setProjects([]);
+        console.error('Erreur chargement projets:', e);
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    }
-    void load();
-    return () => controller.abort();
-  }, [attempt]);
+    };
 
-  const filtered = useMemo(
-    () =>
-      active === 'all'
-        ? projects
-        : projects.filter(
-            (project) => categoryKey(project.category || '') === active
-          ),
-    [active, projects]
-  );
+    loadProjects();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []); // Pas de dépendances pour éviter les re-renders
+
+  const filtered = useMemo(() => {
+    if (active === 'all') return projects;
+    return projects.filter((p) => p.category === active);
+  }, [active, projects]);
+
   const requestedPage = Number(searchParams.get('page') || '1');
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage =
-    Number.isInteger(requestedPage) && requestedPage > 0
-      ? Math.min(requestedPage, totalPages)
+    Number.isInteger(requestedPage) && requestedPage >= 1
+      ? Math.min(
+          requestedPage,
+          Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+        )
       : 1;
-  const query = searchParams.toString();
 
-  // Canonicalise les filtres invalides, sans ajouter une entrée d'historique.
-  useEffect(() => {
-    if (loading || error) return;
-    const params = new URLSearchParams(query);
-    if (
-      category &&
-      !CATEGORIES.some((item) => item.key === category && item.key !== 'all')
-    )
-      params.delete('category');
-    if (currentPage === 1) params.delete('page');
-    else params.set('page', String(currentPage));
-    const next = params.toString();
-    if (next !== query)
-      router.replace(next ? `${pathname}?${next}` : pathname, {
-        scroll: false,
-      });
-  }, [category, currentPage, error, loading, pathname, query, router]);
-
-  function filterHref(key: string) {
-    const params = new URLSearchParams(query);
-    if (key === 'all') params.delete('category');
-    else params.set('category', key);
-    params.delete('page');
-    return params.size ? `${pathname}?${params}` : pathname;
-  }
-  function changePage(page: number) {
-    const params = new URLSearchParams(query);
+  function setCurrentPage(page: number) {
+    const params = new URLSearchParams(searchParams.toString());
     if (page > 1) params.set('page', String(page));
     else params.delete('page');
-    router.push(params.size ? `${pathname}?${params}` : pathname, {
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
       scroll: false,
     });
-    document.getElementById('gallery-results')?.focus({ preventScroll: true });
-    document
-      .getElementById('gallery-results')
-      ?.scrollIntoView({ block: 'start' });
   }
-  const paginated = filtered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
+
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, currentPage]);
 
   return (
-    <section className="section-space" aria-label="Portfolio">
-      <div className="site-container">
-        <nav
-          aria-label="Filtrer les réalisations"
-          className="mb-8 flex flex-wrap gap-2 border-b border-white/15 pb-6"
-        >
-          {CATEGORIES.map((item) => (
-            <Link
-              key={item.key}
-              href={filterHref(item.key)}
-              scroll={false}
-              aria-current={active === item.key ? 'true' : undefined}
-              className={`inline-flex min-h-11 items-center rounded-sm border px-4 py-2 text-sm transition-colors ${active === item.key ? 'border-white/70 bg-white text-black' : 'border-white/20 text-white/65 hover:border-white/50 hover:text-white'}`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div
-          id="gallery-results"
-          tabIndex={-1}
-          className="scroll-mt-28"
-          aria-busy={loading}
-        >
-          {loading ? (
-            <GallerySkeleton />
-          ) : error ? (
-            <div role="alert" className="public-panel py-12 text-center">
-              <h2 className="text-xl font-medium">
-                Les réalisations ne sont pas disponibles pour le moment.
-              </h2>
-              <p className="mt-3 text-sm text-white/65">
-                Veuillez réessayer dans quelques instants.
-              </p>
-              <button
-                type="button"
-                className="button-secondary mt-6"
-                onClick={() => {
-                  setLoading(true);
-                  setError(false);
-                  setAttempt((value) => value + 1);
-                }}
-              >
-                Réessayer
-              </button>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="public-panel py-12 text-center" role="status">
-              <h2 className="text-2xl font-medium">
-                {projects.length
-                  ? 'Aucun projet dans cette catégorie'
-                  : 'Les réalisations arrivent bientôt'}
-              </h2>
-              <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-white/65">
-                {projects.length
-                  ? 'Explorez les autres disciplines pour découvrir les projets du portfolio.'
-                  : 'Découvrez les domaines de création ou échangeons autour de votre prochain projet.'}
-              </p>
-              <Link
-                className="button-secondary mt-6"
-                href={projects.length ? filterHref('all') : '/contact'}
-                scroll={projects.length ? false : undefined}
-              >
-                {projects.length
-                  ? 'Voir tous les projets'
-                  : 'Parlons de votre projet'}
-              </Link>
-            </div>
-          ) : (
-            <>
-              <p className="mb-6 text-xs text-white/55" role="status">
-                {filtered.length} projet{filtered.length > 1 ? 's' : ''} · Page{' '}
-                {currentPage} sur {totalPages}
-              </p>
-              <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-                {paginated.map((project, i) => {
-                  const tags = parseSkills(project.skill || '');
-                  return (
-                    <article key={project.id} className="min-w-0">
-                      <Link
-                        href={`/realisations/${project.id}`}
-                        className="group block"
-                        aria-label={`Voir le projet ${project.title}`}
-                      >
-                        <div className="relative aspect-[4/3] overflow-hidden bg-[#111113]">
-                          <SafeImage
-                            src={project.images?.[0] || ''}
-                            alt={project.title}
-                            fill
-                            priority={i < 3}
-                            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                          />
-                        </div>
-                        {project.category && (
-                          <p className="mt-4 text-xs text-white/55">
-                            {project.category}
-                          </p>
-                        )}
-                        <h2 className="mt-2 flex items-start justify-between gap-4 text-xl font-medium tracking-tight group-hover:underline group-hover:underline-offset-4">
-                          {project.title}
-                          <span
-                            className="text-base text-white/50"
-                            aria-hidden="true"
-                          >
-                            ↗
-                          </span>
-                        </h2>
-                      </Link>
-                      {tags.length > 0 && (
-                        <p className="mt-3 text-xs leading-6 text-white/55">
-                          {tags.slice(0, 3).join(' · ')}
-                          {tags.length > 3 ? ` · +${tags.length - 3}` : ''}
-                        </p>
-                      )}
-                      {(project.software?.length ?? 0) > 0 && (
-                        <p className="mt-2 text-xs leading-6 text-white/55">
-                          {project.software
-                            ?.map((id) => getSoftwareById(id)?.name || id)
-                            .join(' · ')}
-                        </p>
-                      )}
-                    </article>
-                  );
-                })}
-              </div>
-              <Pagination
-                currentPage={currentPage}
-                totalItems={filtered.length}
-                pageSize={PAGE_SIZE}
-                onPageChange={changePage}
-                className="mt-12"
-              />
-            </>
-          )}
+    <section
+      className={`relative py-14 sm:py-20 lg:py-24 ${COLOR_COMBINATIONS.page.background}`}
+    >
+      {/* Effets décoratifs subtils */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 -left-24 h-48 w-48 rounded-full bg-[#ff0015]/10 blur-3xl sm:h-64 sm:w-64" />
+        <div className="absolute -right-24 bottom-10 h-48 w-48 rounded-full bg-white/5 blur-3xl sm:h-64 sm:w-64" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Titre de section */}
+        <div className="mb-10 text-center sm:mb-14">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#ff0015]/10 px-3 py-1.5 text-xs font-medium text-[#ff0015] sm:mb-6 sm:px-4 sm:py-2 sm:text-sm">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#ff0015] sm:h-2 sm:w-2" />
+            Réalisations
+          </div>
+          <h1
+            className={`text-3xl font-bold sm:text-5xl ${COLOR_COMBINATIONS.page.text}`}
+          >
+            Explorez nos{' '}
+            <span className="bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
+              créations
+            </span>
+          </h1>
+          <p
+            className={`mx-auto mt-4 max-w-2xl text-sm opacity-80 sm:text-base ${COLOR_COMBINATIONS.page.text}`}
+          >
+            Une sélection de projets en 3D/VFX, Motion Design et Court Métrage.
+          </p>
         </div>
+
+        {/* Filtres */}
+        <div className="mx-auto mb-10 flex w-full flex-wrap items-center justify-center gap-2 sm:mb-12 sm:gap-3">
+          {CATEGORIES.map((cat) => {
+            const isActive = active === cat.key;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  if (cat.key === 'all') {
+                    params.delete('category');
+                  } else {
+                    params.set('category', cat.key);
+                  }
+                  params.delete('page');
+                  const qs = params.toString();
+                  router.replace(qs ? `${pathname}?${qs}` : `${pathname}`, {
+                    scroll: false,
+                  });
+                }}
+                className={[
+                  'rounded-full px-3 py-1.5 text-sm font-semibold transition-all sm:px-4 sm:py-2',
+                  'border backdrop-blur-sm',
+                  isActive
+                    ? 'border-[#ff0015]/60 bg-[#ff0015]/20 text-white shadow-lg shadow-[#ff0015]/20'
+                    : 'border-white/15 bg-white/5 text-white/80 hover:bg-white/10',
+                ].join(' ')}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Grille de cartes */}
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {(loading
+            ? Array.from({ length: 6 }).map((_, index) => ({
+                id: `skeleton-${index}`,
+                title: '',
+                category: '3d-vfx',
+                image: '',
+                description: '',
+                tags: [],
+                software: [],
+              }))
+            : paginated
+          ).map((project, index) => (
+            <article
+              key={project.id}
+              className={`group relative flex h-full min-h-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-[#ff0015]/10 sm:p-6`}
+              style={{ animationDelay: `${index * 120}ms` }}
+            >
+              {/* Accent gradient */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#ff0015]/10 via-transparent to-white/5 opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
+
+              <div className="relative z-10 flex h-full flex-col">
+                {/* Media */}
+                <div className="relative mb-4 h-48 overflow-hidden rounded-xl sm:mb-6 sm:h-56">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  {loading ? (
+                    <div className="h-full w-full animate-pulse bg-white/5" />
+                  ) : (
+                    <SafeImage
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={index < 3}
+                    />
+                  )}
+                  {/* Badge catégorie */}
+                  <div className="absolute top-2 left-2 flex gap-2">
+                    <span className="rounded-full bg-[#ff0015]/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
+                      {labelFromCategory(project.category)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Titre */}
+                <h3
+                  className={`mb-4 text-lg font-bold sm:text-xl ${COLOR_COMBINATIONS.card.text}`}
+                >
+                  {project.title}
+                </h3>
+
+                {/* Tags (max 3 visibles) */}
+                {project.tags.length > 0 && (
+                  <div className="mb-3 flex flex-wrap gap-1.5 sm:gap-2">
+                    {project.tags.slice(0, 3).map((tag, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/80 backdrop-blur-sm transition-colors group-hover:bg-[#ff0015]/20 group-hover:text-white sm:px-3 sm:py-1"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {project.tags.length > 3 && (
+                      <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-white/50 sm:px-3 sm:py-1">
+                        +{project.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Icônes logiciels (max 6 visibles) */}
+                {project.software.length > 0 && (
+                  <div className="mb-3 flex items-center gap-1.5">
+                    {project.software.slice(0, 6).map((swId) => {
+                      const sw = getSoftwareById(swId);
+                      if (!sw) return null;
+                      return (
+                        <Image
+                          key={swId}
+                          src={sw.icon}
+                          alt={sw.name}
+                          width={32}
+                          height={32}
+                          title={sw.name}
+                          className="h-8 w-8 rounded object-contain"
+                        />
+                      );
+                    })}
+                    {project.software.length > 6 && (
+                      <span className="text-xs text-white/50">
+                        +{project.software.length - 6}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* CTA - poussé vers le bas */}
+                <div className="mt-auto">
+                  <Link
+                    href={`/realisations/${project.id}`}
+                    className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-none ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
+                  >
+                    Voir le projet
+                  </Link>
+                </div>
+              </div>
+
+              {/* Ligne d’accent bas */}
+              <div className="absolute right-0 bottom-0 left-0 h-1 bg-gradient-to-r from-transparent via-[#ff0015] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            </article>
+          ))}
+        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalItems={filtered.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+          className="mt-10"
+        />
       </div>
     </section>
   );
+}
+
+function labelFromCategory(category: string): string {
+  if (category === '3d-vfx') return '3D/VFX';
+  if (category === 'motion-design') return 'Motion Design';
+  return 'Court Métrage';
 }
