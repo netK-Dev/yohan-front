@@ -1,6 +1,6 @@
 'use client';
+
 import React from 'react';
-import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { uploadToBlob } from '@/lib/blob';
 
 interface FileUploaderProps {
@@ -11,6 +11,12 @@ interface FileUploaderProps {
   accept?: string;
   maxSizeMb?: number;
   multiple?: boolean;
+  id?: string;
+  label?: string;
+  disabled?: boolean;
+  required?: boolean;
+  errorMessage?: string;
+  onBusyChange?: (busy: boolean) => void;
 }
 
 export default function FileUploader({
@@ -19,144 +25,184 @@ export default function FileUploader({
   accept = 'image/*',
   maxSizeMb = 10,
   multiple = false,
+  id,
+  label = 'Importer un média',
+  disabled = false,
+  required = false,
+  errorMessage,
+  onBusyChange,
 }: FileUploaderProps) {
+  const generatedId = React.useId();
+  const inputId = id ?? generatedId;
   const [isDragging, setDragging] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
-  const [uploadingFile, setUploadingFile] = React.useState<string | null>(null);
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const [uploadingFile, setUploadingFile] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [status, setStatus] = React.useState('');
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const busyRef = React.useRef(false);
+  const message = error || errorMessage;
 
-  function openPicker() {
-    inputRef.current?.click();
+  function accepted(file: File) {
+    return accept.split(',').some((token) => {
+      const format = token.trim().toLowerCase();
+      if (format.startsWith('.'))
+        return file.name.toLowerCase().endsWith(format);
+      if (format.endsWith('/*'))
+        return file.type.toLowerCase().startsWith(format.slice(0, -1));
+      return file.type.toLowerCase() === format;
+    });
   }
 
   async function handleFiles(files: FileList | null) {
-    if (!files || !files[0]) return;
-    setLoading(true);
-    setProgress(0);
-    try {
-      if (multiple) {
-        const uploaded: Array<{ url: string; pathname: string }> = [];
-        const validFiles = Array.from(files).filter(
-          (f) => f.size <= maxSizeMb * 1024 * 1024
-        );
-        for (let i = 0; i < validFiles.length; i++) {
-          const file = validFiles[i];
-          setUploadingFile(`${file.name} (${i + 1}/${validFiles.length})`);
-          setProgress(0);
-          const { url, pathname } = await uploadToBlob(file, {
-            onUploadProgress: (e) => setProgress(Math.round(e.percentage)),
-          });
-          uploaded.push({ url, pathname });
-        }
-        if (uploaded.length) onMultipleUploaded?.(uploaded);
-      } else {
-        const file = files[0];
-        if (file.size > maxSizeMb * 1024 * 1024) {
-          alert(`Fichier trop volumineux (max ${maxSizeMb}MB)`);
-          return;
-        }
-        setUploadingFile(file.name);
-        const { url, pathname } = await uploadToBlob(file, {
-          onUploadProgress: (e) => setProgress(Math.round(e.percentage)),
-        });
-        onUploaded?.(url, pathname);
-      }
-    } catch {
-      alert("Échec de l'upload");
-    } finally {
-      setLoading(false);
+    if (disabled || busyRef.current || !files?.length) return;
+    const selected = Array.from(files).slice(0, multiple ? undefined : 1);
+    setError('');
+    setStatus('');
+    const rejected = selected.filter(
+      (file) => !accepted(file) || file.size > maxSizeMb * 1024 * 1024
+    );
+    if (rejected.length) {
+      setError(
+        `Fichier${rejected.length > 1 ? 's' : ''} refusé${rejected.length > 1 ? 's' : ''} : ${rejected.map((file) => file.name).join(', ')}. Vérifiez le format et la limite de ${maxSizeMb} Mo par fichier. Aucun fichier envoyé.`
+      );
+      if (inputRef.current) inputRef.current.value = '';
       setDragging(false);
-      setProgress(0);
-      setUploadingFile(null);
+      return;
+    }
+    busyRef.current = true;
+    setLoading(true);
+    onBusyChange?.(true);
+    const uploaded: Array<{ url: string; pathname: string }> = [];
+    try {
+      for (let index = 0; index < selected.length; index++) {
+        const file = selected[index];
+        setUploadingFile(`${file.name} (${index + 1}/${selected.length})`);
+        setStatus(`Envoi du fichier ${index + 1} sur ${selected.length}.`);
+        setProgress(0);
+        const result = await uploadToBlob(file, {
+          onUploadProgress: (event) =>
+            setProgress(Math.round(event.percentage)),
+        });
+        uploaded.push(result);
+      }
+      setStatus(
+        `${uploaded.length} fichier${uploaded.length > 1 ? 's' : ''} importé${uploaded.length > 1 ? 's' : ''}. Enregistrez le formulaire pour publier les modifications.`
+      );
+    } catch {
+      setError(
+        `L’envoi a échoué. ${uploaded.length ? `${uploaded.length} fichier(s) déjà importé(s) conservé(s).` : 'Aucun fichier importé.'} Vérifiez votre connexion et réessayez avec les fichiers restants.`
+      );
+      setStatus('');
+    } finally {
+      if (multiple && uploaded.length) onMultipleUploaded?.(uploaded);
+      if (!multiple && uploaded[0])
+        onUploaded?.(uploaded[0].url, uploaded[0].pathname);
+      busyRef.current = false;
+      setLoading(false);
+      onBusyChange?.(false);
+      setDragging(false);
+      if (inputRef.current) inputRef.current.value = '';
     }
   }
 
   return (
     <div
-      className={`rounded-xl border transition-all ${
-        isDragging
-          ? 'border-[#ff0015] bg-[#ff0015]/10 ring-2 ring-[#ff0015]/30'
-          : 'border-white/10 bg-black/40'
-      } p-6 text-center`}
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragging(true);
+      className={`rounded-lg border border-dashed p-4 ${isDragging ? 'border-white/60 bg-white/10' : 'border-white/20 bg-black/20'}`}
+      aria-busy={isLoading}
+      onDragOver={(event) => {
+        event.preventDefault();
+        if (!disabled && !isLoading) setDragging(true);
       }}
-      onDragLeave={() => {
+      onDragLeave={() => setDragging(false)}
+      onDrop={(event) => {
+        event.preventDefault();
         setDragging(false);
-      }}
-      onDrop={(e) => {
-        e.preventDefault();
-        handleFiles(e.dataTransfer.files);
+        void handleFiles(event.dataTransfer.files);
       }}
     >
+      <label
+        htmlFor={inputId}
+        className="mb-2 block text-sm font-medium text-white/90"
+      >
+        {label}
+      </label>
       <input
+        id={inputId}
         ref={inputRef}
+        tabIndex={-1}
         type="file"
         accept={accept}
         multiple={multiple}
-        className="hidden"
-        onChange={(e) => handleFiles(e.target.files)}
+        disabled={disabled || isLoading}
+        className="sr-only"
+        aria-describedby={`${inputId}-help${message ? ` ${inputId}-error` : ''}`}
+        aria-required={required}
+        aria-invalid={!!message}
+        onChange={(event) => void handleFiles(event.target.files)}
       />
-
-      {isLoading ? (
-        <div className="flex flex-col items-center px-2">
-          {uploadingFile && (
-            <p className="mb-3 max-w-full truncate text-xs text-white/60">
-              {uploadingFile}
-            </p>
-          )}
-          <div className="mb-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
-            <div
-              className="h-full rounded-full bg-[#ff0015] transition-all duration-300 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="text-sm text-white/70">
-            {progress < 100
-              ? `Envoi en cours... ${progress}%`
-              : 'Finalisation...'}
-          </div>
+      <p
+        id={`${inputId}-help`}
+        className="mb-3 text-xs leading-5 text-white/65"
+      >
+        {multiple
+          ? 'Glissez vos fichiers ici, ou choisissez-les.'
+          : 'Glissez un fichier ici, ou choisissez-le.'}{' '}
+        Formats :{' '}
+        {accept
+          .split(',')
+          .map((format) =>
+            format
+              .trim()
+              .replace('image/*', 'images')
+              .replace('video/*', 'vidéos')
+              .replace('image/', '')
+              .replace('video/', '')
+          )
+          .join(', ')}{' '}
+        · {maxSizeMb} Mo maximum par fichier.
+      </p>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={disabled || isLoading}
+        aria-controls={inputId}
+        aria-describedby={`${inputId}-help${message ? ` ${inputId}-error` : ''}`}
+        className="min-h-11 rounded-md border border-white/25 bg-white/5 px-4 text-sm font-medium text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {multiple ? 'Choisir des fichiers' : 'Choisir un fichier'}
+      </button>
+      {isLoading && (
+        <div className="mt-4">
+          <p className="mb-2 text-xs break-words text-white/70">
+            {uploadingFile}
+          </p>
+          <progress
+            max={100}
+            value={progress}
+            aria-label="Progression de l’envoi"
+            className="h-2 w-full accent-[#ff0015]"
+          />
+          <p className="mt-1 text-sm text-white/70">
+            {progress < 100 ? `Envoi… ${progress} %` : 'Finalisation…'}
+          </p>
         </div>
-      ) : (
-        <>
-          <div className="mb-4">
-            <svg
-              className="mx-auto h-12 w-12 text-white/40"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-          </div>
-          <div className="mb-4 text-sm text-white/70">
-            {isDragging
-              ? 'Relâchez pour uploader'
-              : 'Glissez-déposez un fichier ici ou'}
-          </div>
-          <button
-            type="button"
-            onClick={openPicker}
-            disabled={isLoading}
-            className={`rounded-md px-4 py-2 text-sm font-medium ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.text} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.shadow} transition disabled:opacity-50`}
-          >
-            Choisir un fichier
-          </button>
-          <div className="mt-2 text-xs text-white/50">
-            Max {maxSizeMb}MB •{' '}
-            {accept
-              .split(',')
-              .map((a) => a.trim().replace('/*', ''))
-              .join(', ')}
-          </div>
-        </>
+      )}
+      <p
+        role="status"
+        className={status ? 'mt-3 text-sm text-white/80' : 'sr-only'}
+      >
+        {status}
+      </p>
+      {message && (
+        <p
+          id={`${inputId}-error`}
+          role="alert"
+          className="mt-3 text-sm break-words text-red-300"
+        >
+          {message}
+        </p>
       )}
     </div>
   );

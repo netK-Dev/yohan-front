@@ -7,7 +7,6 @@ import {
   UpdateSliderMediaInput,
   SLIDER_CATEGORIES,
 } from '@/lib/types/slider';
-import { COLOR_COMBINATIONS } from '@/lib/colors';
 import FileUploader from '@/components/ui/FileUploader';
 import SafeImage from '@/components/ui/SafeImage';
 
@@ -20,12 +19,16 @@ interface SliderMediaFormProps {
   isLoading?: boolean;
 }
 
+const inputClass =
+  'min-h-11 w-full rounded-md border border-white/20 bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/50 focus:border-white/60 focus:ring-2 focus:ring-white/20 aria-invalid:border-red-400 disabled:opacity-50';
+
 export default function SliderMediaForm({
   sliderMedia,
   onSubmit,
   onCancel,
   isLoading = false,
 }: SliderMediaFormProps) {
+  const id = React.useId();
   const [formData, setFormData] = React.useState({
     title: sliderMedia?.title || '',
     description: sliderMedia?.description || '',
@@ -36,205 +39,237 @@ export default function SliderMediaForm({
     order: sliderMedia?.order || 0,
     isActive: sliderMedia?.isActive ?? true,
   });
+  const [error, setError] = React.useState('');
+  const [uploading, setUploading] = React.useState(false);
+  const busy = isLoading || uploading;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.title.trim() || !formData.mediaUrl.trim()) {
-      alert('Titre et média requis');
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (busy) return;
+    setError('');
+    if (!formData.title.trim() || !formData.mediaUrl) {
+      setError(
+        'Renseignez un titre et importez une image ou un GIF avant d’enregistrer.'
+      );
       return;
     }
-
-    await onSubmit({
-      title: formData.title.trim(),
-      description: formData.description.trim() || undefined,
-      mediaUrl: formData.mediaUrl,
-      mediaPath: formData.mediaPath || undefined,
-      mediaType: formData.mediaType,
-      category: formData.category || undefined,
-      order: formData.order,
-      isActive: formData.isActive,
-    });
-  };
-
-  const handleMediaUpload = (url: string, pathname: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      mediaUrl: url,
-      mediaPath: pathname,
-      mediaType: url.toLowerCase().includes('.gif') ? 'gif' : 'image',
-    }));
-  };
+    try {
+      await onSubmit({
+        title: formData.title.trim(),
+        description: formData.description.trim() || undefined,
+        mediaUrl: formData.mediaUrl,
+        mediaPath: formData.mediaPath || undefined,
+        mediaType: formData.mediaType,
+        category: formData.category || undefined,
+        order: formData.order,
+        isActive: formData.isActive,
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Le média n’a pas été enregistré. Réessayez.'
+      );
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Titre */}
-      <div>
-        <label
-          className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
+    <form onSubmit={handleSubmit} aria-busy={busy} className="space-y-6">
+      <p className="text-sm text-white/65">
+        Les champs marqués * sont obligatoires. Enregistrez pour publier les
+        modifications.
+      </p>
+      {error && (
+        <p
+          id={`${id}-error`}
+          role="alert"
+          className="rounded-md border border-red-400/30 bg-red-500/5 p-4 text-sm text-red-300"
         >
-          Titre *
-        </label>
-        <input
-          type="text"
-          value={formData.title}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, title: e.target.value }))
-          }
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
-          placeholder="Titre du média"
-          required
-        />
-      </div>
-
-      {/* Description */}
-      <div>
-        <label
-          className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
-        >
-          Description
-        </label>
-        <textarea
-          value={formData.description}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, description: e.target.value }))
-          }
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
-          placeholder="Description du média (optionnel)"
-          rows={3}
-        />
-      </div>
-
-      {/* Upload de média */}
-      <div>
-        <label
-          className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
-        >
-          Média *
-        </label>
-
-        {formData.mediaUrl ? (
-          <div className="space-y-4">
-            {/* Prévisualisation */}
-            <div className="relative h-40 w-full overflow-hidden rounded-lg border border-white/10 sm:h-32 sm:w-32">
-              <SafeImage
-                src={formData.mediaUrl}
-                alt={formData.title || 'Média'}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 128px"
-              />
-            </div>
-
-            {/* Bouton pour changer */}
-            <FileUploader
-              onUploaded={handleMediaUpload}
-              accept="image/*"
-              maxSizeMb={10}
-            />
-          </div>
-        ) : (
-          <FileUploader
-            onUploaded={handleMediaUpload}
-            accept="image/*"
-            maxSizeMb={10}
-          />
-        )}
-      </div>
-
-      {/* Catégorie */}
-      <div>
-        <label
-          className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
-        >
-          Catégorie
-        </label>
-        <select
-          value={formData.category}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, category: e.target.value }))
-          }
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
-        >
-          <option value="">Sélectionner une catégorie</option>
-          {SLIDER_CATEGORIES.map((category) => (
-            <option key={category} value={category} className="bg-gray-900">
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Ordre et Statut */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {error}
+        </p>
+      )}
+      <fieldset disabled={busy} className="min-w-0 space-y-4">
         <div>
           <label
-            className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
+            htmlFor={`${id}-title`}
+            className="mb-2 block text-sm font-medium"
           >
-            Ordre d&apos;affichage
+            Titre *
           </label>
           <input
-            type="number"
-            value={formData.order}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                order: parseInt(e.target.value) || 0,
-              }))
+            id={`${id}-title`}
+            type="text"
+            required
+            value={formData.title}
+            aria-invalid={!!error && !formData.title.trim()}
+            aria-describedby={error ? `${id}-error` : undefined}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, title: event.target.value }))
             }
-            className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
-            min="0"
+            className={inputClass}
           />
         </div>
-
         <div>
           <label
-            className={`block text-sm font-medium ${COLOR_COMBINATIONS.page.text} mb-2`}
+            htmlFor={`${id}-description`}
+            className="mb-2 block text-sm font-medium"
           >
-            Statut
+            Description{' '}
+            <span className="font-normal text-white/65">(facultative)</span>
           </label>
-          <div className="flex items-center space-x-3 pt-3">
-            <input
-              type="checkbox"
-              id="isActive"
-              checked={formData.isActive}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, isActive: e.target.checked }))
-              }
-              className="h-4 w-4 rounded border-white/20 bg-white/5 text-[#ff0015] focus:ring-[#ff0015]/20"
-            />
-            <label
-              htmlFor="isActive"
-              className={`text-sm ${COLOR_COMBINATIONS.page.text}`}
-            >
-              Actif dans le slider
-            </label>
-          </div>
+          <textarea
+            id={`${id}-description`}
+            value={formData.description}
+            onChange={(event) =>
+              setFormData((prev) => ({
+                ...prev,
+                description: event.target.value,
+              }))
+            }
+            className={inputClass}
+            rows={3}
+          />
         </div>
-      </div>
-
-      {/* Boutons d'action */}
-      <div className="flex flex-col-reverse gap-3 pt-6 sm:flex-row sm:justify-end">
+        <fieldset className="min-w-0 space-y-3 rounded-lg border border-white/10 p-4">
+          <legend className="px-2 text-sm font-medium">Image ou GIF *</legend>
+          {formData.mediaUrl && (
+            <div className="relative aspect-video max-w-sm overflow-hidden rounded-md border border-white/15">
+              <SafeImage
+                src={formData.mediaUrl}
+                alt={formData.title || 'Aperçu du média'}
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 100vw, 384px"
+              />
+            </div>
+          )}
+          <FileUploader
+            label={
+              formData.mediaUrl ? 'Remplacer le média' : 'Importer le média'
+            }
+            disabled={busy}
+            required={!formData.mediaUrl}
+            errorMessage={
+              error && !formData.mediaUrl
+                ? 'Importez une image ou un GIF pour continuer.'
+                : undefined
+            }
+            onBusyChange={setUploading}
+            accept="image/*"
+            maxSizeMb={10}
+            onUploaded={(url, pathname) => {
+              setFormData((prev) => ({
+                ...prev,
+                mediaUrl: url,
+                mediaPath: pathname,
+                mediaType: url.toLowerCase().includes('.gif') ? 'gif' : 'image',
+              }));
+              setError('');
+            }}
+          />
+        </fieldset>
+        <div>
+          <label
+            htmlFor={`${id}-category`}
+            className="mb-2 block text-sm font-medium"
+          >
+            Catégorie{' '}
+            <span className="font-normal text-white/65">(facultative)</span>
+          </label>
+          <select
+            id={`${id}-category`}
+            value={formData.category}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, category: event.target.value }))
+            }
+            className={inputClass}
+          >
+            <option value="" className="bg-[#111111]">
+              Sans catégorie
+            </option>
+            {SLIDER_CATEGORIES.map((category) => (
+              <option key={category} value={category} className="bg-[#111111]">
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label
+            htmlFor={`${id}-order`}
+            className="mb-2 block text-sm font-medium"
+          >
+            Ordre d’affichage
+          </label>
+          <input
+            id={`${id}-order`}
+            type="number"
+            min={0}
+            step={1}
+            required
+            value={formData.order}
+            aria-describedby={`${id}-order-help`}
+            onChange={(event) =>
+              setFormData((prev) => ({
+                ...prev,
+                order: Number(event.target.value),
+              }))
+            }
+            className={inputClass}
+          />
+          <p id={`${id}-order-help`} className="mt-2 text-xs text-white/65">
+            Les plus petits nombres apparaissent en premier, à partir de 0.
+          </p>
+        </div>
+        <label
+          htmlFor={`${id}-active`}
+          className="flex min-h-11 cursor-pointer items-center gap-3 rounded-md border border-white/15 px-3 py-2"
+        >
+          <input
+            id={`${id}-active`}
+            type="checkbox"
+            checked={formData.isActive}
+            onChange={(event) =>
+              setFormData((prev) => ({
+                ...prev,
+                isActive: event.target.checked,
+              }))
+            }
+            className="h-5 w-5 accent-[#cc0009]"
+          />
+          <span className="text-sm">Afficher ce média dans le slider</span>
+        </label>
+      </fieldset>
+      <div className="flex flex-wrap justify-end gap-3 border-t border-white/10 pt-5">
         <button
           type="button"
           onClick={onCancel}
-          disabled={isLoading}
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-sm font-medium text-white transition-all duration-300 hover:bg-white/10 disabled:opacity-50 sm:w-auto sm:py-2"
+          disabled={busy}
+          className="min-h-11 rounded-md border border-white/20 px-4 text-sm hover:bg-white/10 disabled:opacity-50"
         >
           Annuler
         </button>
         <button
           type="submit"
-          disabled={isLoading}
-          className={`w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition-all duration-300 disabled:opacity-50 sm:w-auto sm:py-2 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover}`}
+          disabled={busy}
+          className="min-h-11 rounded-md bg-[#cc0009] px-5 text-sm font-semibold text-white hover:bg-[#b30006] disabled:opacity-50"
         >
-          {isLoading
-            ? 'Enregistrement...'
-            : sliderMedia
-              ? 'Mettre à jour'
-              : 'Créer'}
+          {uploading
+            ? 'Import en cours…'
+            : isLoading
+              ? 'Enregistrement…'
+              : sliderMedia
+                ? 'Enregistrer les modifications'
+                : 'Créer le média'}
         </button>
       </div>
+      <p role="status" className="sr-only">
+        {uploading
+          ? 'Import du média en cours.'
+          : isLoading
+            ? 'Enregistrement en cours…'
+            : ''}
+      </p>
     </form>
   );
 }

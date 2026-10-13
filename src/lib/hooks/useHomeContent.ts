@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type {
   HomeSection,
   HomeContentMap,
@@ -35,28 +35,42 @@ export function useHomeContent() {
     }
   );
 
+  const [saveErrors, setSaveErrors] = useState<
+    Partial<Record<HomeSection, string>>
+  >({});
+  const requestRef = useRef<AbortController | null>(null);
+
   // Charger tout le contenu
-  const loadContent = useCallback(async () => {
-    try {
-      const response = await fetch('/api/page-content?page=home');
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement du contenu');
-      }
+  const loadContent = useCallback(() => {
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
+    return fetch('/api/page-content?page=home', {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement du contenu');
+        }
 
-      setError(null);
-      const data: HomeContentResponse = await response.json();
+        const data: HomeContentResponse = await response.json();
+        if (controller.signal.aborted) return;
+        setError(null);
 
-      setContent({
-        hero: data.hero ?? DEFAULTS.hero,
-        showreel: data.showreel ?? DEFAULTS.showreel,
-        services: data.services ?? DEFAULTS.services,
-        cta: data.cta ?? DEFAULTS.cta,
+        setContent({
+          hero: data.hero ?? DEFAULTS.hero,
+          showreel: data.showreel ?? DEFAULTS.showreel,
+          services: data.services ?? DEFAULTS.services,
+          cta: data.cta ?? DEFAULTS.cta,
+        });
+      })
+      .catch((err: unknown) => {
+        if (controller.signal.aborted) return;
+        setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
       });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
-    } finally {
-      setIsLoading(false);
-    }
   }, []);
 
   const fetchContent = useCallback(async () => {
@@ -72,6 +86,7 @@ export function useHomeContent() {
       sectionContent: HomeContentMap[S]
     ): Promise<boolean> => {
       setSaveStatus((prev) => ({ ...prev, [section]: 'saving' }));
+      setSaveErrors((prev) => ({ ...prev, [section]: '' }));
 
       try {
         const response = await fetch(`/api/page-content/${section}`, {
@@ -95,25 +110,31 @@ export function useHomeContent() {
 
         setSaveStatus((prev) => ({ ...prev, [section]: 'success' }));
 
-        // Remettre à 'idle' après 3s
-        setTimeout(() => {
-          setSaveStatus((prev) => ({ ...prev, [section]: 'idle' }));
-        }, 3000);
-
         return true;
       } catch (err) {
-        console.error(`Erreur sauvegarde section ${section}:`, err);
+        setSaveErrors((prev) => ({
+          ...prev,
+          [section]:
+            err instanceof Error
+              ? err.message
+              : 'Enregistrement impossible. Vérifiez votre connexion et réessayez.',
+        }));
         setSaveStatus((prev) => ({ ...prev, [section]: 'error' }));
-
-        setTimeout(() => {
-          setSaveStatus((prev) => ({ ...prev, [section]: 'idle' }));
-        }, 5000);
 
         return false;
       }
     },
     []
   );
+
+  const markSectionDirty = useCallback((section: HomeSection) => {
+    setSaveStatus((prev) =>
+      prev[section] === 'idle' ? prev : { ...prev, [section]: 'idle' }
+    );
+    setSaveErrors((prev) =>
+      prev[section] ? { ...prev, [section]: '' } : prev
+    );
+  }, []);
 
   // Réinitialiser une section aux valeurs par défaut
   const resetSection = useCallback(
@@ -124,9 +145,8 @@ export function useHomeContent() {
   );
 
   useEffect(() => {
-    // State changes in this loader follow awaited network I/O.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadContent();
+    return () => requestRef.current?.abort();
   }, [loadContent]);
 
   return {
@@ -134,6 +154,8 @@ export function useHomeContent() {
     isLoading,
     error,
     saveStatus,
+    saveErrors,
+    markSectionDirty,
     saveSection,
     resetSection,
     refetch: fetchContent,
