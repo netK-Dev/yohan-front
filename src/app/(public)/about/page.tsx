@@ -29,75 +29,8 @@ export default function AboutPage() {
 
         {/* Corps de page type CV */}
         <section className="section-space">
-          <div className="site-container grid items-start gap-10 lg:grid-cols-[0.8fr_1.6fr] lg:gap-16">
-            {/* Colonne gauche: Infos clés */}
-            <aside className="public-panel">
-              <div className="relative z-10 space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Coordonnées
-                  </h2>
-                  <ul className="mt-3 space-y-2 text-white/80">
-                    <li>
-                      <a
-                        className="text-link break-all"
-                        href="mailto:contact@doensproduction.com"
-                      >
-                        contact@doensproduction.com
-                      </a>
-                    </li>
-                    <li>France</li>
-                  </ul>
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Compétences
-                  </h2>
-                  <ul className="mt-3 grid grid-cols-1 gap-2 text-white/80 sm:grid-cols-2">
-                    <li className="border-b border-white/10 py-2 text-sm">
-                      Modeling
-                    </li>
-                    <li className="border-b border-white/10 py-2 text-sm">
-                      Shading
-                    </li>
-                    <li className="border-b border-white/10 py-2 text-sm">
-                      Compositing
-                    </li>
-                    <li className="border-b border-white/10 py-2 text-sm">
-                      After Effects
-                    </li>
-                    <li className="border-b border-white/10 py-2 text-sm">
-                      Branding animé
-                    </li>
-                    <li className="border-b border-white/10 py-2 text-sm">
-                      Montage
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-white">Outils</h2>
-                  <div className="mt-3 flex flex-wrap gap-2 text-white/80">
-                    <span className="border-b border-white/10 py-2 text-sm">
-                      Blender
-                    </span>
-                    <span className="border-b border-white/10 py-2 text-sm">
-                      Nuke
-                    </span>
-                    <span className="border-b border-white/10 py-2 text-sm">
-                      After Effects
-                    </span>
-                    <span className="border-b border-white/10 py-2 text-sm">
-                      Photoshop
-                    </span>
-                    <span className="border-b border-white/10 py-2 text-sm">
-                      Illustrator
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </aside>
-
-            {/* Colonne droite: Expériences et parcours */}
+          <div className="site-container grid items-start gap-10 lg:grid-cols-[1.6fr_0.8fr] lg:gap-16">
+            {/* Présentation et parcours */}
             <div className="space-y-8">
               {/* À propos */}
               <div className="public-panel">
@@ -168,6 +101,72 @@ export default function AboutPage() {
                 </div>
               </div>
             </div>
+            {/* Informations complémentaires */}
+            <aside className="public-panel">
+              <div className="relative z-10 space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    Coordonnées
+                  </h2>
+                  <ul className="mt-3 space-y-2 text-white/80">
+                    <li>
+                      <a
+                        className="text-link break-all"
+                        href="mailto:contact@doensproduction.com"
+                      >
+                        contact@doensproduction.com
+                      </a>
+                    </li>
+                    <li>France</li>
+                  </ul>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">
+                    Compétences
+                  </h2>
+                  <ul className="mt-3 grid grid-cols-1 gap-2 text-white/80 sm:grid-cols-2">
+                    <li className="border-b border-white/10 py-2 text-sm">
+                      Modeling
+                    </li>
+                    <li className="border-b border-white/10 py-2 text-sm">
+                      Shading
+                    </li>
+                    <li className="border-b border-white/10 py-2 text-sm">
+                      Compositing
+                    </li>
+                    <li className="border-b border-white/10 py-2 text-sm">
+                      After Effects
+                    </li>
+                    <li className="border-b border-white/10 py-2 text-sm">
+                      Branding animé
+                    </li>
+                    <li className="border-b border-white/10 py-2 text-sm">
+                      Montage
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">Outils</h2>
+                  <div className="mt-3 flex flex-wrap gap-2 text-white/80">
+                    <span className="border-b border-white/10 py-2 text-sm">
+                      Blender
+                    </span>
+                    <span className="border-b border-white/10 py-2 text-sm">
+                      Nuke
+                    </span>
+                    <span className="border-b border-white/10 py-2 text-sm">
+                      After Effects
+                    </span>
+                    <span className="border-b border-white/10 py-2 text-sm">
+                      Photoshop
+                    </span>
+                    <span className="border-b border-white/10 py-2 text-sm">
+                      Illustrator
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
       </main>

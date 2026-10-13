@@ -6,13 +6,14 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
 export default function PublicError({
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
+  retry: () => void;
 }) {
   return (
     <>
+      <title>Page indisponible | Doens Production</title>
       <Suspense fallback={<div className="h-20" />}>
         <Header />
       </Suspense>
@@ -29,7 +30,7 @@ export default function PublicError({
           Veuillez réessayer ou revenir à l’accueil.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <button type="button" className="button-primary" onClick={reset}>
+          <button type="button" className="button-primary" onClick={retry}>
             Réessayer
           </button>
           <Link href="/" className="button-secondary">
