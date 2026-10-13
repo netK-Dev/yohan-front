@@ -4,9 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
-import { COLOR_COMBINATIONS } from '@/lib/colors';
 import ProjectForm from '@/components/admin/ProjectForm';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
+import { AdminError, AdminLoading } from '@/components/admin/AdminFeedback';
 import {
   Project,
   CreateProjectInput,
@@ -23,18 +23,26 @@ export default function EditProjectPage() {
   const [project, setProject] = React.useState<Project | null>(null);
   const [isLoadingProject, setIsLoadingProject] = React.useState(true);
   const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [loadedId, setLoadedId] = React.useState<string | null>(null);
+  const [retry, setRetry] = React.useState(0);
   const [formLoading, setFormLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (!isPending && !session?.user) {
-      router.push('/admin/login');
+      router.replace(
+        `/admin/login?returnTo=${encodeURIComponent(window.location.pathname)}`
+      );
     }
   }, [session, isPending, router]);
 
   React.useEffect(() => {
+    const controller = new AbortController();
     async function fetchProject() {
       try {
-        const response = await fetch(`/api/projects/${projectId}`);
+        const response = await fetch(`/api/projects/${projectId}`, {
+          signal: controller.signal,
+        });
+        if (controller.signal.aborted) return;
         if (!response.ok) {
           if (response.status === 404) {
             setLoadError('Projet non trouvé');
@@ -44,18 +52,25 @@ export default function EditProjectPage() {
           return;
         }
         const data = await response.json();
+        if (controller.signal.aborted) return;
+        setLoadError(null);
         setProject(data);
       } catch {
+        if (controller.signal.aborted) return;
         setLoadError('Erreur de connexion');
       } finally {
-        setIsLoadingProject(false);
+        if (!controller.signal.aborted) {
+          setLoadedId(projectId);
+          setIsLoadingProject(false);
+        }
       }
     }
 
     if (projectId && session?.user) {
       fetchProject();
     }
-  }, [projectId, session?.user]);
+    return () => controller.abort();
+  }, [projectId, session?.user, retry]);
 
   const formatProjectForEdit = (p: Project): UpdateProjectInput => ({
     id: p.id,
@@ -88,9 +103,7 @@ export default function EditProjectPage() {
         throw new Error(errorData.error || 'Erreur lors de la mise à jour');
       }
 
-      router.replace('/admin/dashboard');
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour:', error);
+      router.replace('/admin/dashboard?saved=updated');
     } finally {
       setFormLoading(false);
     }
@@ -100,16 +113,13 @@ export default function EditProjectPage() {
     router.push('/admin/dashboard');
   };
 
+  if (!isPending && !session?.user) return null;
+
   // Loading
-  if (isPending || isLoadingProject) {
+  if (isPending || isLoadingProject || loadedId !== projectId) {
     return (
       <AdminPageLayout title="Chargement...">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
-            <p className="text-sm text-white/60">Chargement du projet...</p>
-          </div>
-        </div>
+        <AdminLoading>Chargement du projet…</AdminLoading>
       </AdminPageLayout>
     );
   }
@@ -124,11 +134,18 @@ export default function EditProjectPage() {
           { label: 'Erreur' },
         ]}
       >
-        <div className="mx-auto max-w-lg rounded-xl border border-red-500/20 bg-red-500/10 p-8 text-center">
-          <p className="text-red-400">{loadError}</p>
+        <div className="mx-auto max-w-lg">
+          <AdminError
+            message={loadError}
+            onRetry={() => {
+              setLoadError(null);
+              setIsLoadingProject(true);
+              setRetry((value) => value + 1);
+            }}
+          />
           <Link
             href="/admin/dashboard"
-            className="mt-4 inline-block rounded-md bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
+            className="inline-flex min-h-11 items-center rounded-md border border-white/20 px-4 text-sm hover:bg-white/10"
           >
             Retour aux projets
           </Link>
@@ -149,9 +166,10 @@ export default function EditProjectPage() {
     >
       <div className="mx-auto max-w-3xl">
         <div
-          className={`rounded-xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-xl backdrop-blur sm:p-6`}
+          className={`rounded-xl border border-white/10 bg-[#111111] p-4 sm:p-6`}
         >
           <ProjectForm
+            key={project.id}
             mode="edit"
             initialData={formatProjectForEdit(project)}
             onSubmit={handleSubmit}

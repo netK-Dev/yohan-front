@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
+import { AdminError, AdminLoading } from '@/components/admin/AdminFeedback';
 import SectionAccordion from '@/components/admin/homepage/SectionAccordion';
 import HomepageHeroForm from '@/components/admin/homepage/HomepageHeroForm';
 import HomepageShowreelForm from '@/components/admin/homepage/HomepageShowreelForm';
@@ -14,12 +15,21 @@ import { useHomeContent } from '@/lib/hooks/useHomeContent';
 export default function AdminHomepagePage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  const { content, isLoading, saveStatus, saveSection, resetSection } =
-    useHomeContent();
+  const {
+    content,
+    isLoading,
+    error,
+    refetch,
+    saveStatus,
+    saveErrors,
+    markSectionDirty,
+    saveSection,
+    resetSection,
+  } = useHomeContent();
 
   React.useEffect(() => {
     if (!isPending && !session?.user) {
-      router.push('/admin/login');
+      router.replace('/admin/login?returnTo=%2Fadmin%2Fhomepage');
     }
   }, [session, isPending, router]);
 
@@ -29,7 +39,9 @@ export default function AdminHomepagePage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
-            <p className="text-sm text-white/60">Chargement...</p>
+            <p role="status" className="text-sm text-white/65">
+              Vérification de votre session…
+            </p>
           </div>
         </div>
       </AdminPageLayout>
@@ -42,15 +54,19 @@ export default function AdminHomepagePage() {
 
   return (
     <AdminPageLayout title="Page d'accueil">
+      <p className="mb-5 text-sm leading-6 text-white/65">
+        Modifiez les sections de la page d’accueil et enregistrez chacune pour
+        publier les changements.
+      </p>
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
-        </div>
+        <AdminLoading>Chargement du contenu…</AdminLoading>
+      ) : error ? (
+        <AdminError message={error} onRetry={() => void refetch()} />
       ) : (
         <div className="space-y-4">
           {/* Section Hero */}
           <SectionAccordion
-            title="Section Hero"
+            title="Présentation principale"
             description="Titre principal, sous-titre, description et statistiques"
             defaultOpen={true}
             saveStatus={saveStatus.hero}
@@ -71,18 +87,19 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageHeroForm
-              key={JSON.stringify(content.hero)}
               initialContent={content.hero}
+              onDirty={() => markSectionDirty('hero')}
               onSave={(c) => saveSection('hero', c)}
               onReset={() => resetSection('hero')}
+              errorMessage={saveErrors.hero}
               saveStatus={saveStatus.hero}
             />
           </SectionAccordion>
 
           {/* Section Showreel */}
           <SectionAccordion
-            title="Section Showreel"
-            description="Textes, videos (MP4/WebM) et poster de la section sous le hero"
+            title="Showreel"
+            description="Textes, vidéos MP4/WebM et affiche de la bande démo"
             saveStatus={saveStatus.showreel}
             icon={
               <svg
@@ -101,17 +118,18 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageShowreelForm
-              key={JSON.stringify(content.showreel)}
               initialContent={content.showreel}
+              onDirty={() => markSectionDirty('showreel')}
               onSave={(c) => saveSection('showreel', c)}
               onReset={() => resetSection('showreel')}
+              errorMessage={saveErrors.showreel}
               saveStatus={saveStatus.showreel}
             />
           </SectionAccordion>
 
           {/* Section Services */}
           <SectionAccordion
-            title="Section Services"
+            title="Services"
             description="Domaines d'expertise : titres, descriptions, tags et images"
             saveStatus={saveStatus.services}
             icon={
@@ -131,17 +149,18 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageServicesForm
-              key={JSON.stringify(content.services)}
               initialContent={content.services}
+              onDirty={() => markSectionDirty('services')}
               onSave={(c) => saveSection('services', c)}
               onReset={() => resetSection('services')}
+              errorMessage={saveErrors.services}
               saveStatus={saveStatus.services}
             />
           </SectionAccordion>
 
           {/* Section CTA */}
           <SectionAccordion
-            title="Appel à l'action (CTA)"
+            title="Appel à l’action"
             description="Titre, sous-titre et bouton de la section finale"
             saveStatus={saveStatus.cta}
             icon={
@@ -161,10 +180,11 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageCTAForm
-              key={JSON.stringify(content.cta)}
               initialContent={content.cta}
+              onDirty={() => markSectionDirty('cta')}
               onSave={(c) => saveSection('cta', c)}
               onReset={() => resetSection('cta')}
+              errorMessage={saveErrors.cta}
               saveStatus={saveStatus.cta}
             />
           </SectionAccordion>

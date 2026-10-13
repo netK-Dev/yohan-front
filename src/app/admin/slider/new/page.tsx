@@ -3,7 +3,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
-import { COLOR_COMBINATIONS } from '@/lib/colors';
 import SliderMediaForm from '@/components/admin/SliderMediaForm';
 import AdminPageLayout from '@/components/admin/AdminPageLayout';
 import {
@@ -18,7 +17,9 @@ export default function NewSliderMediaPage() {
 
   React.useEffect(() => {
     if (!isPending && !session?.user) {
-      router.push('/admin/login');
+      router.replace(
+        `/admin/login?returnTo=${encodeURIComponent(window.location.pathname)}`
+      );
     }
   }, [session, isPending, router]);
 
@@ -38,10 +39,7 @@ export default function NewSliderMediaPage() {
         throw new Error(errorData.error || 'Erreur lors de la création');
       }
 
-      router.replace('/admin/slider');
-    } catch (error) {
-      console.error('Erreur lors de la création:', error);
-      alert('Erreur lors de la création du média');
+      router.replace('/admin/slider?saved=created');
     } finally {
       setFormLoading(false);
     }
@@ -57,7 +55,9 @@ export default function NewSliderMediaPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
-            <p className="text-sm text-white/60">Chargement...</p>
+            <p role="status" className="text-sm text-white/65">
+              Chargement...
+            </p>
           </div>
         </div>
       </AdminPageLayout>
@@ -76,7 +76,7 @@ export default function NewSliderMediaPage() {
     >
       <div className="mx-auto max-w-xl">
         <div
-          className={`rounded-xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-xl backdrop-blur sm:p-6`}
+          className={`rounded-xl border border-white/10 bg-[#111111] p-4 sm:p-6`}
         >
           <SliderMediaForm
             onSubmit={handleSubmit}
