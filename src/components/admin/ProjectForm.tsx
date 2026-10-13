@@ -111,11 +111,19 @@ export default function ProjectForm({
       nextErrors.description = 'La description est requise.';
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
-      requestAnimationFrame(() =>
-        formRef.current
-          ?.querySelector<HTMLElement>('[aria-invalid="true"]')
-          ?.focus()
-      );
+      requestAnimationFrame(() => {
+        const firstInvalid = Array.from(
+          formRef.current?.querySelectorAll<HTMLElement>(
+            '[aria-invalid="true"], [data-invalid="true"]'
+          ) ?? []
+        ).find(
+          (element) =>
+            element.tabIndex >= 0 &&
+            element.getClientRects().length > 0 &&
+            !element.matches(':disabled')
+        );
+        firstInvalid?.focus();
+      });
       return;
     }
     try {
@@ -310,10 +318,11 @@ export default function ProjectForm({
           aria-describedby={
             errors.images ? `${baseId}-images-error` : undefined
           }
+          data-invalid={!!errors.images}
           aria-expanded={showGalleryUploader}
           aria-controls={`${baseId}-gallery`}
           onClick={() => setShowGalleryUploader((value) => !value)}
-          className={secondaryClass}
+          className={`${secondaryClass} data-[invalid=true]:border-red-400`}
         >
           {showGalleryUploader
             ? 'Fermer l’import d’images'
