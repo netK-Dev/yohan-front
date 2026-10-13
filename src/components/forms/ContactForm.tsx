@@ -50,6 +50,12 @@ function ContactFields({ quote }: { quote: boolean }) {
     setPreviousQuote(quote);
     if (quote && !values.subject.trim() && !touched.subject) {
       setValues({ ...values, subject: 'Demande de devis' });
+    } else if (
+      !quote &&
+      values.subject === 'Demande de devis' &&
+      !touched.subject
+    ) {
+      setValues({ ...values, subject: '' });
     }
   }
 
