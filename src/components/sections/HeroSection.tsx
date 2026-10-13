@@ -3,12 +3,27 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import SafeImage from '@/components/ui/SafeImage';
+import { getMediaPreview } from '@/lib/utils/media-preview';
 import { useSliderMedia } from '@/lib/hooks/useSliderMedia';
 import type { HeroContent } from '@/lib/types/page-content';
 import {
   DEFAULT_HERO_CONTENT,
   DEFAULT_SERVICES_CONTENT,
 } from '@/lib/defaults/home-defaults';
+
+function HeroActions({ content }: { content: HeroContent }) {
+  return (
+    <>
+      <Link href="/realisations" className="button-primary">
+        {content.ctaPrimaryText}
+        <span aria-hidden="true">↗</span>
+      </Link>
+      <Link href="/contact" className="button-secondary">
+        {content.ctaSecondaryText}
+      </Link>
+    </>
+  );
+}
 
 export default function HeroSection({ content }: { content?: HeroContent }) {
   const c = content ?? DEFAULT_HERO_CONTENT;
@@ -48,6 +63,9 @@ export default function HeroSection({ content }: { content?: HeroContent }) {
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85 sm:text-xl">
             {c.subtitle}
           </p>
+          <div className="mt-6 flex flex-wrap gap-3 lg:hidden">
+            <HeroActions content={c} />
+          </div>
         </div>
         <div className="order-2 min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
           <figure className="border border-white/20 bg-[#111113]">
@@ -95,7 +113,7 @@ export default function HeroSection({ content }: { content?: HeroContent }) {
                   className={`relative aspect-[3/2] w-24 shrink-0 overflow-hidden border-2 sm:w-28 ${index === i ? 'border-[#ff5865]' : 'border-transparent opacity-60 hover:opacity-100'}`}
                 >
                   <SafeImage
-                    src={item.src}
+                    src={getMediaPreview(item.src)}
                     alt=""
                     fill
                     className="object-cover"
@@ -110,14 +128,8 @@ export default function HeroSection({ content }: { content?: HeroContent }) {
           <p className="max-w-lg text-sm leading-7 text-white/60 sm:text-base">
             {c.description}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/realisations" className="button-primary">
-              {c.ctaPrimaryText}
-              <span aria-hidden="true">↗</span>
-            </Link>
-            <Link href="/contact" className="button-secondary">
-              {c.ctaSecondaryText}
-            </Link>
+          <div className="mt-8 hidden flex-wrap gap-3 lg:flex">
+            <HeroActions content={c} />
           </div>
           {c.stats.length > 0 && (
             <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/15 pt-6">

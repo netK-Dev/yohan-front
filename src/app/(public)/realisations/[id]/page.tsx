@@ -13,42 +13,21 @@ import {
 import { type ProjectVideo } from '@/lib/types/video';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
+import { cache, Suspense } from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
 
-async function fetchProject(id: string) {
-  try {
-    const projectId = parseInt(id, 10);
-
-    if (isNaN(projectId)) {
-      console.log(`❌ [DEBUG] Invalid ID format: ${id}`);
-      return null;
-    }
-
-    console.log(`🔍 [DEBUG] Searching for project with ID: ${projectId}`);
-
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-    });
-
-    if (!project) {
-      console.log(`❌ [DEBUG] Project not found for ID: ${projectId}`);
-      // Vérifions tous les projets existants pour debug
-      const allProjects = await prisma.project.findMany({
-        select: { id: true, title: true },
-      });
-      console.log(`📋 [DEBUG] Available projects:`, allProjects);
-      return null;
-    }
-
-    console.log(`✅ [DEBUG] Project found: ${project.title}`);
-    return project;
-  } catch (error) {
-    console.error(`❌ [DEBUG] Error fetching project:`, error);
+const fetchProject = cache(async (id: string) => {
+  const projectId = Number(id);
+  if (
+    !/^\d+$/.test(id) ||
+    !Number.isSafeInteger(projectId) ||
+    projectId <= 0 ||
+    projectId > 2_147_483_647
+  )
     return null;
-  }
-}
+  return prisma.project.findUnique({ where: { id: projectId } });
+});
 
 // Génération statique des pages pour tous les projets existants
 export async function generateStaticParams() {
@@ -56,10 +35,6 @@ export async function generateStaticParams() {
     const projects = await prisma.project.findMany({
       select: { id: true },
     });
-
-    console.log(
-      `🔧 [STATIC] Generating static params for ${projects.length} projects`
-    );
 
     return projects.map((project) => ({
       id: project.id.toString(),
@@ -145,6 +120,7 @@ export default async function ProjectDetailPage({
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
+                timeZone: 'UTC',
               })}
             </time>
           </div>

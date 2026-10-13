@@ -81,7 +81,8 @@ export default function Header() {
               src="/img/logo_yohan.png"
               alt=""
               width={42}
-              height={42}
+              height={37}
+              style={{ height: 'auto' }}
               className="object-contain"
             />
             <span className="text-sm leading-tight font-semibold tracking-[0.08em] uppercase">

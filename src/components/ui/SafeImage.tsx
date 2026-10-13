@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { getMediaPreview } from '@/lib/utils/media-preview';
 
 interface SafeImageProps {
   src: string;
@@ -51,37 +52,50 @@ function ImageWithFallback({
     );
   }
   return (
-    <>
+    <span
+      style={
+        fill
+          ? { position: 'absolute', inset: 0 }
+          : { position: 'relative', display: 'inline-block', width, height }
+      }
+    >
       {loading && (
-        <div
+        <span
           aria-hidden="true"
-          className="animate-pulse bg-white/10"
-          style={dimensions}
+          className="absolute inset-0 animate-pulse bg-white/10"
         />
       )}
-      <Image
-        src={src}
-        alt={alt}
-        fill={fill}
-        width={width}
-        height={height}
-        className={className}
-        sizes={sizes}
-        preload={priority}
-        onError={() => {
-          setError(true);
-          setLoading(false);
-          onError?.();
-        }}
-        onLoad={() => setLoading(false)}
-        unoptimized={
-          unoptimized ||
-          src.includes('blob.vercel-storage.com') ||
-          src.endsWith('.gif') ||
-          src === '/img/services/Hnet-image.webp' ||
-          src === '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp'
-        }
-      />
-    </>
+      <picture style={fill ? { position: 'absolute', inset: 0 } : undefined}>
+        {getMediaPreview(src) !== src && (
+          <source
+            media="(prefers-reduced-motion: reduce)"
+            srcSet={getMediaPreview(src)}
+          />
+        )}
+        <Image
+          src={src}
+          alt={alt}
+          fill={fill}
+          width={width}
+          height={height}
+          className={className}
+          sizes={sizes}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
+          onError={() => {
+            setError(true);
+            setLoading(false);
+            onError?.();
+          }}
+          onLoad={() => setLoading(false)}
+          unoptimized={
+            unoptimized ||
+            src.endsWith('.gif') ||
+            src === '/img/services/Hnet-image.webp' ||
+            src === '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp'
+          }
+        />
+      </picture>
+    </span>
   );
 }

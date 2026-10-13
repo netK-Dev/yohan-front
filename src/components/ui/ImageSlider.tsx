@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import SafeImage from '@/components/ui/SafeImage';
 import Modal from '@/components/ui/Modal';
+import { getMediaPreview } from '@/lib/utils/media-preview';
 
 interface ImageSliderProps {
   images: string[];
@@ -77,7 +78,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
               className={`relative h-16 w-24 shrink-0 overflow-hidden border-2 ${i === index ? 'border-[#ff5865]' : 'border-transparent opacity-60 hover:opacity-100'}`}
             >
               <SafeImage
-                src={src}
+                src={getMediaPreview(src)}
                 alt=""
                 fill
                 className="object-cover"

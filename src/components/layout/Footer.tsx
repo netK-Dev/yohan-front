@@ -11,7 +11,13 @@ export default function Footer() {
               href="/"
               className="mb-5 inline-flex min-h-11 items-center gap-3"
             >
-              <Image src="/img/logo_yohan.png" alt="" width={40} height={40} />
+              <Image
+                src="/img/logo_yohan.png"
+                alt=""
+                width={40}
+                height={35}
+                style={{ height: 'auto' }}
+              />
               <span className="text-base font-semibold">Doens Production</span>
             </Link>
             <p className="max-w-xs text-sm leading-7 text-white/60">
