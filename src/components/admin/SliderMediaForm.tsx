@@ -56,11 +56,11 @@ export default function SliderMediaForm({
     try {
       await onSubmit({
         title: formData.title.trim(),
-        description: formData.description.trim() || undefined,
+        description: formData.description.trim(),
         mediaUrl: formData.mediaUrl,
         mediaPath: formData.mediaPath || undefined,
         mediaType: formData.mediaType,
-        category: formData.category || undefined,
+        category: formData.category,
         order: formData.order,
         isActive: formData.isActive,
       });

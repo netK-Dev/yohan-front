@@ -169,7 +169,8 @@ export default function FileUploader({
         disabled={disabled || isLoading}
         aria-controls={inputId}
         aria-describedby={`${inputId}-help${message ? ` ${inputId}-error` : ''}`}
-        className="min-h-11 rounded-md border border-white/25 bg-white/5 px-4 text-sm font-medium text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+        data-invalid={!!message}
+        className="min-h-11 rounded-md border border-white/25 bg-white/5 px-4 text-sm font-medium text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 data-[invalid=true]:border-red-400"
       >
         {multiple ? 'Choisir des fichiers' : 'Choisir un fichier'}
       </button>
