@@ -28,6 +28,15 @@ const inputClass =
 const secondaryClass =
   'inline-flex min-h-11 items-center justify-center rounded-md border border-white/20 px-4 text-sm font-medium text-white/85 hover:bg-white/10 disabled:opacity-50';
 
+function currentLocalDate() {
+  const now = new Date();
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
 export default function ProjectForm({
   initialData,
   onSubmit,
@@ -40,7 +49,7 @@ export default function ProjectForm({
   const [formData, setFormData] = React.useState<CreateProjectInput>({
     title: initialData?.title || '',
     category: initialData?.category || PROJECT_CATEGORIES[0],
-    date: initialData?.date || new Date().toISOString().split('T')[0],
+    date: initialData?.date || currentLocalDate(),
     description: initialData?.description || '',
     images: initialData?.images || [],
     videos: initialData?.videos || [],
