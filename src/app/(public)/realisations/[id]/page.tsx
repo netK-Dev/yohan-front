@@ -4,7 +4,6 @@ import Footer from '@/components/layout/Footer';
 import ImageSlider from '@/components/ui/ImageSlider';
 import VideoSlider from '@/components/ui/VideoSlider';
 import RichTextDisplay from '@/components/ui/RichTextDisplay';
-import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
 import { getSoftwareById } from '@/lib/types/project';
 import {
@@ -71,29 +70,6 @@ export async function generateStaticParams() {
   }
 }
 
-function getExternalVideoEmbed(url: string | null | undefined): string | null {
-  if (!url) return null;
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace('www.', '');
-    if (host.includes('youtube.com')) {
-      const id = u.searchParams.get('v');
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-    if (host.includes('youtu.be')) {
-      const id = u.pathname.replace('/', '');
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-    if (host.includes('vimeo.com')) {
-      const id = u.pathname.split('/').filter(Boolean)[0];
-      return id ? `https://player.vimeo.com/video/${id}` : null;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 // Configuration pour ISR - revalidation toutes les 5 minutes
 export const revalidate = 300;
 
@@ -122,216 +98,139 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  console.log(
-    `🔍 [PAGE] Received ID from params: "${id}" (type: ${typeof id})`
-  );
-
   const project = await fetchProject(id);
-
-  if (!project) {
-    console.log(
-      `❌ [PAGE] Project not found, calling notFound() for ID: ${id}`
-    );
-    notFound();
-  }
-
-  const externalEmbed = getExternalVideoEmbed(project?.video);
-
-  // Générer les données structurées JSON-LD
+  if (!project) notFound();
   const structuredData = generateProjectStructuredData(project);
+  const storedVideos = Array.isArray(project.videos)
+    ? (project.videos as unknown as ProjectVideo[])
+    : [];
+  const videos: ProjectVideo[] = storedVideos.length
+    ? storedVideos
+    : [
+        ...(project.videoFile
+          ? [{ type: 'upload' as const, url: project.videoFile }]
+          : []),
+        ...(project.video
+          ? [{ type: 'youtube' as const, url: project.video }]
+          : []),
+      ];
+  const skills = parseSkills(project.skill || '');
 
   return (
     <>
-      {/* Données structurées JSON-LD pour le SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}
       />
-
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-20" />}>
         <Header />
       </Suspense>
-      <main
-        className={`min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text}`}
-      >
-        <section className="relative pt-24 pb-12 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-20">
-          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-4">
-              <Link
-                href="/realisations"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/80 transition hover:bg-white/10"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M9.53 4.47a.75.75 0 010 1.06L4.81 10.25H21a.75.75 0 010 1.5H4.81l4.72 4.72a.75.75 0 11-1.06 1.06l-6-6a.75.75 0 010-1.06l6-6a.75.75 0 011.06 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Retour aux réalisations
-              </Link>
-            </div>
-            <h1 className="mb-2 text-2xl font-bold sm:text-4xl">
+      <main id="main-content" tabIndex={-1}>
+        <section className="site-container py-10 sm:py-14">
+          <Link href="/realisations" className="text-link mb-8">
+            ← Toutes les réalisations
+          </Link>
+          <div className="mb-10 border-b border-white/15 pb-8">
+            <p className="eyebrow mb-4">{project.category}</p>
+            <h1 className="max-w-4xl text-3xl leading-tight font-semibold tracking-tight break-words sm:text-5xl lg:text-6xl">
               {project.title}
             </h1>
-            <p className="mb-6 text-sm text-white/60">
-              {new Date(project.date).toLocaleDateString('fr-FR')}
+            <time
+              dateTime={new Date(project.date).toISOString()}
+              className="mt-5 block text-sm text-white/55"
+            >
+              {new Date(project.date).toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </time>
+          </div>
+          {project.images.length > 0 && (
+            <ImageSlider images={project.images} title={project.title} />
+          )}
+          {videos.length > 0 && (
+            <VideoSlider
+              videos={videos}
+              title={project.title}
+              posterImage={project.images[0]}
+            />
+          )}
+          {project.images.length === 0 && videos.length === 0 && (
+            <p className="public-panel mb-10 text-sm text-white/65">
+              Les médias de ce projet ne sont pas encore disponibles.
             </p>
-
-            {/* Badge catégorie */}
-            <div className="mb-6 flex">
-              <span className="rounded-full bg-[#ff0015]/80 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm">
-                {project.category}
-              </span>
-            </div>
-
-            {/* Description */}
-            <div className="prose prose-invert mb-8 max-w-none">
-              <RichTextDisplay
-                html={project.description}
-                className="text-white/80"
-              />
-            </div>
-
-            {/* Galerie d'images */}
-            {project.images && project.images.length > 0 && (
-              <ImageSlider images={project.images} title={project.title} />
-            )}
-
-            {/* Vidéos (nouveau système avec VideoSlider) */}
-            {project.videos &&
-              (project.videos as unknown as ProjectVideo[]).length > 0 && (
-                <VideoSlider
-                  videos={project.videos as unknown as ProjectVideo[]}
-                  title={project.title}
-                  posterImage={
-                    project.images && project.images[0]
-                      ? project.images[0]
-                      : undefined
-                  }
+          )}
+          <div className="grid gap-10 border-t border-white/15 pt-10 lg:grid-cols-[1.6fr_1fr] lg:gap-16">
+            <section aria-labelledby="project-description">
+              <h2 id="project-description" className="mb-5 text-xl font-medium">
+                À propos du projet
+              </h2>
+              {project.description.trim() ? (
+                <RichTextDisplay
+                  html={project.description}
+                  className="text-base leading-8 text-white/70"
                 />
+              ) : (
+                <p className="text-sm text-white/60">
+                  La description de ce projet sera bientôt disponible.
+                </p>
               )}
-
-            {/* Fallback : Ancien système pour projets non migrés */}
-            {(!project.videos ||
-              (project.videos as unknown as ProjectVideo[]).length === 0) && (
-              <>
-                {/* Vidéo uploadée */}
-                {project.videoFile && (
-                  <div className="mb-8">
-                    <h2 className="mb-4 text-xl font-semibold text-white">
-                      Vidéo
-                    </h2>
-                    <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
-                      <video
-                        controls
-                        className="h-full w-full object-cover"
-                        poster={
-                          project.images && project.images[0]
-                            ? project.images[0]
-                            : undefined
-                        }
-                      >
-                        <source src={project.videoFile} type="video/mp4" />
-                        <source src={project.videoFile} type="video/webm" />
-                        Votre navigateur ne supporte pas la lecture vidéo.
-                      </video>
-                    </div>
-                  </div>
-                )}
-
-                {/* Vidéo externe (YouTube/Vimeo) */}
-                {externalEmbed && (
-                  <div className="mb-8">
-                    <h2 className="mb-4 text-xl font-semibold text-white">
-                      Vidéo
-                    </h2>
-                    <div className="relative aspect-video overflow-hidden rounded-lg">
-                      <iframe
-                        src={externalEmbed}
-                        className="h-full w-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title="Video player"
-                      />
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Compétences */}
-            {project.skill && (
-              <div className="mb-6">
-                <h3 className="mb-2 text-lg font-medium text-white">
-                  Compétences utilisées
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {parseSkills(project.skill).map(
-                    (skill: string, index: number) => (
-                      <span
-                        key={index}
-                        className="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70"
-                      >
-                        {skill}
-                      </span>
-                    )
-                  )}
+            </section>
+            <aside className="space-y-7">
+              {skills.length > 0 && (
+                <div>
+                  <h2 className="eyebrow mb-3">Compétences utilisées</h2>
+                  <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/80">
+                    {skills.map((skill, index) => (
+                      <li key={index}>{skill}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            )}
-
-            {/* Logiciels utilisés */}
-            {project.software && project.software.length > 0 && (
-              <div className="mb-6">
-                <h3 className="mb-2 text-lg font-medium text-white">
-                  Logiciels utilisés
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {(project.software as string[]).map((swId: string) => {
-                    const sw = getSoftwareById(swId);
-                    if (!sw) return null;
-                    return (
-                      <div
-                        key={swId}
-                        className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5"
-                      >
-                        <Image
-                          src={sw.icon}
-                          alt={sw.name}
-                          width={24}
-                          height={24}
-                          className="h-6 w-6 object-contain"
-                        />
-                        <span className="text-sm text-white/80">{sw.name}</span>
-                      </div>
-                    );
-                  })}
+              )}
+              {project.software.length > 0 && (
+                <div>
+                  <h2 className="eyebrow mb-3">Logiciels utilisés</h2>
+                  <ul className="flex flex-wrap gap-4">
+                    {project.software.map((id) => {
+                      const software = getSoftwareById(id);
+                      return (
+                        <li
+                          key={id}
+                          className="flex items-center gap-2 text-sm text-white/80"
+                        >
+                          {software && (
+                            <Image
+                              src={software.icon}
+                              alt=""
+                              width={24}
+                              height={24}
+                              className="object-contain"
+                            />
+                          )}
+                          <span>{software?.name || id}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
-              </div>
-            )}
-
-            {/* Lien vers le projet (si fourni) */}
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {project.link ? (
+              )}
+              {project.link && (
                 <a
                   href={project.link}
                   target="_blank"
-                  rel="noreferrer"
-                  className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/80 transition hover:bg-white/10"
+                  rel="noopener noreferrer"
+                  className="text-link"
                 >
-                  🔗 Lien du projet
+                  Voir le projet en ligne ↗
                 </a>
-              ) : null}
-            </div>
+              )}
+              <Link href="/contact?type=quote" className="button-secondary">
+                Discutons de votre projet ↗
+              </Link>
+            </aside>
           </div>
         </section>
       </main>

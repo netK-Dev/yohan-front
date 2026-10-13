@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import ContactForm from '@/components/forms/ContactForm';
 import IntroBanner from '@/components/sections/IntroBanner';
-import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 export const metadata = {
   title: 'Contact | Doens Production',
@@ -14,143 +13,93 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <>
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-20" />}>
         <Header />
       </Suspense>
-      <main className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}>
+      <main id="main-content" tabIndex={-1}>
         <IntroBanner
           title="Entrons en contact"
           subtitle="Discutons de vos idées et transformons-les en créations visuelles marquantes."
         />
-
-        {/* Section contenu */}
-        <section className="relative py-12 sm:py-16 lg:py-20">
-          {/* décor */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff0015]/5 blur-3xl" />
-          </div>
-
-          <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:px-8">
-            {/* Infos + highlights */}
-            <div
-              className={`relative overflow-hidden rounded-2xl border border-white/10 ${COLOR_COMBINATIONS.gradients.subtle} p-6 shadow-2xl sm:rounded-3xl sm:p-8`}
-            >
-              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-20" />
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/50 via-white/20 to-transparent" />
-              <div className="relative z-10 space-y-6">
-                <div>
-                  <span className="inline-flex items-center rounded-md bg-white/10 px-2 py-1 text-xs font-medium text-white/80">
-                    Infos
-                  </span>
-                  <h2 className="text-2xl font-bold text-white sm:text-3xl">
-                    Parlez-moi de votre projet
-                  </h2>
-                  <p className="mt-2 text-white/80">
-                    Je réponds rapidement avec des propositions concrètes et
-                    adaptées à vos objectifs.
-                  </p>
-                </div>
-                <ul className="grid gap-4 sm:grid-cols-2">
-                  <li className="rounded-xl border border-white/10 bg-white/5 p-4 text-white/80 backdrop-blur-sm">
-                    <span className="text-white">3D/VFX</span> • Modeling,
-                    Shading, Compositing
-                  </li>
-                  <li className="rounded-xl border border-white/10 bg-white/5 p-4 text-white/80 backdrop-blur-sm">
-                    <span className="text-white">Motion Design</span> • Branding
-                    animé, Kinetic type
-                  </li>
-                  <li className="rounded-xl border border-white/10 bg-white/5 p-4 text-white/80 backdrop-blur-sm">
-                    <span className="text-white">Court Métrage</span> •
-                    Réalisation, Montage
-                  </li>
-                  <li className="rounded-xl border border-white/10 bg-white/5 p-4 text-white/80 backdrop-blur-sm">
-                    Devis rapide • Conseil et accompagnement
-                  </li>
-                </ul>
-
-                <div className="mt-2 grid gap-4 sm:grid-cols-2">
-                  <a
-                    href="mailto:contact@doensproduction.com"
-                    className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/10"
-                  >
-                    contact@doensproduction.com
-                  </a>
-                  <a
-                    href="https://www.linkedin.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/10"
-                  >
-                    LinkedIn
-                  </a>
-                </div>
-
-                {/* FAQ courte */}
-                <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-white/5">
-                  <details className="group p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between text-white/90">
-                      Délais de réponse
-                      <span className="transition-transform group-open:rotate-180">
+        <section className="section-space">
+          <div className="site-container grid items-start gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+            <div>
+              <p className="eyebrow mb-4">Un projet, une idée</p>
+              <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">
+                Parlez-moi de votre projet
+              </h2>
+              <p className="mt-4 text-base leading-7 text-white/65">
+                Je réponds rapidement avec des propositions concrètes et
+                adaptées à vos objectifs.
+              </p>
+              <a
+                href="mailto:contact@doensproduction.com"
+                className="text-link mt-5 break-all"
+              >
+                contact@doensproduction.com ↗
+              </a>
+              <ul className="my-8 space-y-4 border-y border-white/15 py-6 text-sm leading-7 text-white/65">
+                <li>
+                  <span className="text-white">3D/VFX</span> · Modeling,
+                  Shading, Compositing
+                </li>
+                <li>
+                  <span className="text-white">Motion Design</span> · Branding
+                  animé, Kinetic type
+                </li>
+                <li>
+                  <span className="text-white">Court Métrage</span> ·
+                  Réalisation, Montage
+                </li>
+                <li>Devis rapide · Conseil et accompagnement</li>
+              </ul>
+              <div className="divide-y divide-white/15">
+                {[
+                  [
+                    'Délais de réponse',
+                    'Je réponds sous 24 à 48h ouvrées, souvent le jour même.',
+                  ],
+                  [
+                    'Devis et budget',
+                    'Après un premier échange, je fournis un devis clair et détaillé.',
+                  ],
+                  [
+                    'Processus',
+                    'Brief, moodboard, itérations créatives, puis livraison finale conforme.',
+                  ],
+                ].map(([question, answer]) => (
+                  <details key={question} className="group py-3">
+                    <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium">
+                      {question}
+                      <span
+                        aria-hidden="true"
+                        className="text-lg text-white/50 group-open:rotate-180"
+                      >
                         ⌄
                       </span>
                     </summary>
-                    <p className="mt-2 text-sm text-white/70">
-                      Je réponds sous 24 à 48h ouvrées, souvent le jour même.
+                    <p className="mt-2 pb-3 text-sm leading-7 text-white/65">
+                      {answer}
                     </p>
                   </details>
-                  <details className="group p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between text-white/90">
-                      Devis et budget
-                      <span className="transition-transform group-open:rotate-180">
-                        ⌄
-                      </span>
-                    </summary>
-                    <p className="mt-2 text-sm text-white/70">
-                      Après un premier échange, je fournis un devis clair et
-                      détaillé.
-                    </p>
-                  </details>
-                  <details className="group p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between text-white/90">
-                      Processus
-                      <span className="transition-transform group-open:rotate-180">
-                        ⌄
-                      </span>
-                    </summary>
-                    <p className="mt-2 text-sm text-white/70">
-                      Brief, moodboard, itérations créatives, puis livraison
-                      finale conforme.
-                    </p>
-                  </details>
-                </div>
+                ))}
               </div>
             </div>
-
-            {/* Formulaire */}
-            <div
-              className={`relative overflow-hidden rounded-2xl border border-[#ff0015]/30 ${COLOR_COMBINATIONS.gradients.card} p-6 shadow-2xl sm:rounded-3xl sm:p-8`}
-            >
-              <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-[#ff0015]/10 to-transparent opacity-20" />
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#ff0015] via-[#e6000c] to-transparent opacity-80" />
-              <div className="relative z-10">
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-md bg-[#ff0015]/20 px-2 py-1 text-xs font-medium text-white">
-                      Formulaire
-                    </span>
-                    <h3 className="text-sm font-semibold text-white/90">
-                      Contact
-                    </h3>
-                  </div>
-                </div>
-                <Suspense fallback={null}>
-                  <ContactForm />
-                </Suspense>
-                <p className="mt-4 text-center text-xs text-white/50">
-                  Protégé par détection anti-spam silencieuse. Vos données ne
-                  sont jamais revendues.
-                </p>
-              </div>
+            <div className="public-panel">
+              <h2 className="mb-6 text-xl font-medium">Votre message</h2>
+              <Suspense
+                fallback={
+                  <p role="status" className="text-white/65">
+                    Chargement du formulaire…
+                  </p>
+                }
+              >
+                <ContactForm />
+              </Suspense>
+              <p className="mt-6 border-t border-white/15 pt-5 text-xs leading-6 text-white/55">
+                Vos coordonnées servent uniquement à vous répondre. Vos données
+                ne sont jamais revendues.
+              </p>
             </div>
           </div>
         </section>

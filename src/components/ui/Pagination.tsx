@@ -1,5 +1,3 @@
-import { COLOR_COMBINATIONS } from '@/lib/colors';
-
 type PaginationProps = {
   currentPage: number;
   totalItems: number;
@@ -85,24 +83,26 @@ export default function Pagination({
   const isLast = currentPage === totalPages;
 
   const baseBtn =
-    'rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-white/80 backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white sm:px-4 sm:py-2.5';
-  const activeBtn = `${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} text-white border-[#ff0015]/60`;
+    'min-h-11 min-w-11 rounded-sm border border-white/20 px-3 py-2 text-sm text-white/75 transition-colors hover:border-white/60 hover:text-white disabled:hover:border-white/20';
+  const activeBtn = 'border-white bg-white text-black!';
 
   return (
     <nav
       className={[
-        'mt-8 flex items-center justify-center gap-2 sm:gap-3',
+        'mt-8 flex flex-wrap items-center justify-center gap-2',
         className || '',
       ].join(' ')}
       aria-label="Pagination"
     >
       <button
+        type="button"
         className={`${baseBtn} ${isFirst ? 'cursor-not-allowed opacity-50' : ''}`}
         onClick={() => !isFirst && onPageChange(currentPage - 1)}
         aria-label="Page précédente"
         disabled={isFirst}
       >
-        Précédent
+        <span aria-hidden="true">←</span>
+        <span className="sr-only sm:not-sr-only sm:ml-2">Précédent</span>
       </button>
 
       {range.map((item, idx) => {
@@ -117,6 +117,7 @@ export default function Pagination({
         const isActive = pageNum === currentPage;
         return (
           <button
+            type="button"
             key={pageNum}
             className={[baseBtn, isActive ? activeBtn : ''].join(' ')}
             onClick={() => onPageChange(pageNum)}
@@ -129,12 +130,14 @@ export default function Pagination({
       })}
 
       <button
+        type="button"
         className={`${baseBtn} ${isLast ? 'cursor-not-allowed opacity-50' : ''}`}
         onClick={() => !isLast && onPageChange(currentPage + 1)}
         aria-label="Page suivante"
         disabled={isLast}
       >
-        Suivant
+        <span className="sr-only sm:not-sr-only sm:mr-2">Suivant</span>
+        <span aria-hidden="true">→</span>
       </button>
     </nav>
   );

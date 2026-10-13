@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
-import SafeImage from './SafeImage';
+import { useState } from 'react';
+import SafeImage from '@/components/ui/SafeImage';
+import Modal from '@/components/ui/Modal';
 
 interface ImageSliderProps {
   images: string[];
@@ -9,118 +10,100 @@ interface ImageSliderProps {
 }
 
 export default function ImageSlider({ images, title }: ImageSliderProps) {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
-  if (images.length === 0) return null;
-
-  return (
-    <div className="mb-8">
-      <h2 className="mb-4 text-xl font-semibold text-white">
-        Galerie ({images.length} image{images.length > 1 ? 's' : ''})
-      </h2>
-
-      <div className="relative">
-        {/* Image principale */}
-        <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
-          <SafeImage
-            src={images[currentIndex]}
-            alt={`${title} - Image ${currentIndex + 1}`}
-            fill
-            className="object-cover transition-opacity duration-300"
-            sizes="100vw"
-            priority={currentIndex === 0}
-          />
-
-          {/* Navigation - seulement si plus d'une image */}
-          {images.length > 1 && (
-            <>
-              {/* Bouton précédent */}
-              <button
-                onClick={goToPrev}
-                className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition hover:bg-black/70"
-                aria-label="Image précédente"
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-
-              {/* Bouton suivant */}
-              <button
-                onClick={goToNext}
-                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition hover:bg-black/70"
-                aria-label="Image suivante"
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-
-              {/* Indicateur de position */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-2 py-1 text-xs text-white backdrop-blur-sm">
-                {currentIndex + 1} / {images.length}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Vignettes - seulement si plus d'une image */}
-        {images.length > 1 && (
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
-            {images.map((imageUrl, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`relative h-16 w-24 flex-shrink-0 overflow-hidden rounded transition ${
-                  index === currentIndex
-                    ? 'ring-2 ring-[#ff0015]'
-                    : 'opacity-60 hover:opacity-80'
-                }`}
-              >
-                <SafeImage
-                  src={imageUrl}
-                  alt={`Vignette ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="96px"
-                />
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+  const [selected, setSelected] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  if (!images.length) return null;
+  const index = selected % images.length;
+  const controls = (
+    <div className="flex flex-wrap items-center justify-between gap-3 py-3">
+      <button
+        type="button"
+        className="button-secondary"
+        disabled={images.length === 1}
+        onClick={() => setSelected((index - 1 + images.length) % images.length)}
+        aria-label="Image précédente"
+      >
+        ← <span className="hidden sm:inline">Précédente</span>
+      </button>
+      <span className="text-xs text-white/65" aria-live="polite">
+        Image {index + 1} / {images.length}
+      </span>
+      <button
+        type="button"
+        className="button-secondary"
+        disabled={images.length === 1}
+        onClick={() => setSelected((index + 1) % images.length)}
+        aria-label="Image suivante"
+      >
+        <span className="hidden sm:inline">Suivante</span> →
+      </button>
     </div>
+  );
+  return (
+    <section className="mb-12" aria-label={`Galerie du projet ${title}`}>
+      <h2 className="mb-5 text-xl font-medium">Galerie</h2>
+      <button
+        type="button"
+        onClick={() => setExpanded(true)}
+        aria-haspopup="dialog"
+        aria-label={`Agrandir l’image ${index + 1} de ${title}`}
+        className="group relative block aspect-video w-full overflow-hidden bg-[#111113]"
+      >
+        <SafeImage
+          src={images[index]}
+          alt={`${title} — image ${index + 1}`}
+          fill
+          className="object-contain"
+          sizes="(max-width: 1200px) 100vw, 1120px"
+          priority={index === 0}
+        />
+        <span className="absolute right-3 bottom-3 border border-white/30 bg-black/80 px-3 py-2 text-xs text-white">
+          Agrandir ↗
+        </span>
+      </button>
+      {controls}
+      {images.length > 1 && (
+        <div
+          className="flex gap-3 overflow-x-auto p-1"
+          aria-label="Choisir une image"
+        >
+          {images.map((src, i) => (
+            <button
+              type="button"
+              key={i}
+              onClick={() => setSelected(i)}
+              aria-label={`Afficher l’image ${i + 1}`}
+              aria-pressed={i === index}
+              className={`relative h-16 w-24 shrink-0 overflow-hidden border-2 ${i === index ? 'border-[#ff5865]' : 'border-transparent opacity-60 hover:opacity-100'}`}
+            >
+              <SafeImage
+                src={src}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="96px"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+      <Modal
+        isOpen={expanded}
+        onClose={() => setExpanded(false)}
+        title={`${title} — galerie`}
+        maxWidth="screen"
+      >
+        <div className="relative h-[min(60dvh,650px)]">
+          <SafeImage
+            src={images[index]}
+            alt={`${title} — image ${index + 1}`}
+            fill
+            className="object-contain"
+            sizes="100vw"
+          />
+        </div>
+        {controls}
+      </Modal>
+    </section>
   );
 }

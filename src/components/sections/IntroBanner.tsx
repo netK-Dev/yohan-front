@@ -1,8 +1,4 @@
-'use client';
-
 import clsx from 'clsx';
-import React from 'react';
-import AnimatedGridBackground from './AnimatedGridBackground';
 
 type IntroBannerProps = {
   title: string;
@@ -18,31 +14,23 @@ export default function IntroBanner({
   return (
     <section
       className={clsx(
-        'intro-banner-halo relative overflow-hidden bg-[#000002] pt-28 pb-10 sm:pt-36 sm:pb-12',
+        'border-b border-white/15 py-12 sm:py-16 lg:py-20',
         className
       )}
     >
-      {/* Canvas performant: cadrillage + cases rouges aléatoires */}
-      <AnimatedGridBackground />
-
-      {/* Streak subtil diagonal qui balaye la zone */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="intro-streak" />
-      </div>
-
-      {/* Léger voile noir pour contrôler le contraste global */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20" />
-
-      {/* Contenu */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold text-white sm:text-5xl">{title}</h1>
-          {subtitle ? (
-            <p className="mt-4 text-sm text-white/80 sm:text-base">
-              {subtitle}
-            </p>
-          ) : null}
-        </div>
+      <div className="site-container">
+        <p className="eyebrow mb-5 flex items-center gap-3">
+          <span className="h-px w-8 bg-[#ff0015]" aria-hidden="true" />
+          Doens Production
+        </p>
+        <h1 className="max-w-4xl text-4xl leading-[1.1] font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="mt-5 max-w-2xl text-base leading-7 text-white/65 sm:text-lg">
+            {subtitle}
+          </p>
+        )}
       </div>
     </section>
   );

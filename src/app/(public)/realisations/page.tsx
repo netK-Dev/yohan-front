@@ -1,6 +1,8 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import RealisationsGallery from '@/components/sections/RealisationsGallery';
+import RealisationsGallery, {
+  GallerySkeleton,
+} from '@/components/sections/RealisationsGallery';
 import IntroBanner from '@/components/sections/IntroBanner';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { generateRealisationsListingMetadata } from '@/lib/utils/seo';
@@ -94,16 +96,26 @@ export default async function RealisationsPage() {
         }}
       />
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-20" />}>
         <Header />
       </Suspense>
-      <main className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className={`min-h-screen ${COLOR_COMBINATIONS.page.background}`}
+      >
         <IntroBanner
           title="Réalisations"
           subtitle="Des projets qui allient exigence technique et direction artistique."
         />
 
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <div className="site-container section-space">
+              <GallerySkeleton />
+            </div>
+          }
+        >
           <RealisationsGallery />
         </Suspense>
       </main>

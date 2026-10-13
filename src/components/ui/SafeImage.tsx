@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 interface SafeImageProps {
@@ -13,9 +13,15 @@ interface SafeImageProps {
   width?: number;
   height?: number;
   onError?: () => void;
+  unoptimized?: boolean;
 }
 
-export default function SafeImage({
+export default function SafeImage(props: SafeImageProps) {
+  // Chaque source possède son propre état de chargement et d'erreur.
+  return <ImageWithFallback key={props.src} {...props} />;
+}
+
+function ImageWithFallback({
   src,
   alt,
   fill,
@@ -25,40 +31,32 @@ export default function SafeImage({
   width,
   height,
   onError,
+  unoptimized,
 }: SafeImageProps) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const handleError = () => {
-    setError(true);
-    setLoading(false);
-    onError?.();
-  };
-
-  const handleLoad = () => {
-    setLoading(false);
-  };
-
-  if (error) {
+  const dimensions = fill
+    ? { position: 'absolute' as const, inset: 0 }
+    : { width, height };
+  if (error || !src) {
     return (
       <div
-        className={`flex items-center justify-center bg-gray-800/50 text-white/50 ${className || ''}`}
-        style={fill ? { position: 'absolute', inset: 0 } : { width, height }}
+        role="img"
+        aria-label={`${alt} — image indisponible`}
+        className={`flex items-center justify-center bg-[#161619] p-4 text-center text-xs text-white/60 ${className || ''}`}
+        style={dimensions}
       >
-        <div className="text-center">
-          <div className="mb-1 text-2xl">📷</div>
-          <div className="text-xs">Image indisponible</div>
-        </div>
+        Image indisponible
       </div>
     );
   }
-
   return (
     <>
       {loading && (
         <div
-          className={`animate-pulse bg-white/5 ${className || ''}`}
-          style={fill ? { position: 'absolute', inset: 0 } : { width, height }}
+          aria-hidden="true"
+          className="animate-pulse bg-white/10"
+          style={dimensions}
         />
       )}
       <Image
@@ -69,12 +67,20 @@ export default function SafeImage({
         height={height}
         className={className}
         sizes={sizes}
-        priority={priority}
-        onError={handleError}
-        onLoad={handleLoad}
-        style={loading ? { opacity: 0 } : { opacity: 1 }}
-        // Désactiver l'optimisation pour éviter les timeouts sur Vercel Blob
-        unoptimized={src.includes('blob.vercel-storage.com')}
+        preload={priority}
+        onError={() => {
+          setError(true);
+          setLoading(false);
+          onError?.();
+        }}
+        onLoad={() => setLoading(false)}
+        unoptimized={
+          unoptimized ||
+          src.includes('blob.vercel-storage.com') ||
+          src.endsWith('.gif') ||
+          src === '/img/services/Hnet-image.webp' ||
+          src === '/img/services/00a4567a-5ad4-4fcc-b13c-a9b9601849a5.webp'
+        }
       />
     </>
   );
