@@ -41,12 +41,12 @@ export default function SafeImage({
 
   if (error) {
     return (
-      <div 
+      <div
         className={`flex items-center justify-center bg-gray-800/50 text-white/50 ${className || ''}`}
         style={fill ? { position: 'absolute', inset: 0 } : { width, height }}
       >
         <div className="text-center">
-          <div className="text-2xl mb-1">📷</div>
+          <div className="mb-1 text-2xl">📷</div>
           <div className="text-xs">Image indisponible</div>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function SafeImage({
   return (
     <>
       {loading && (
-        <div 
+        <div
           className={`animate-pulse bg-white/5 ${className || ''}`}
           style={fill ? { position: 'absolute', inset: 0 } : { width, height }}
         />

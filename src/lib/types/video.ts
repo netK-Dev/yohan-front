@@ -59,6 +59,8 @@ export function isValidExternalVideoUrl(url: string): boolean {
  */
 export function extractBlobUrlsFromVideos(videos: ProjectVideo[]): string[] {
   return videos
-    .filter(v => v.type === 'upload' && v.url.includes('blob.vercel-storage.com'))
-    .map(v => v.url);
+    .filter(
+      (v) => v.type === 'upload' && v.url.includes('blob.vercel-storage.com')
+    )
+    .map((v) => v.url);
 }

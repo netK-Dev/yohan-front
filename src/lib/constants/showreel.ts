@@ -11,10 +11,9 @@ export const DEFAULT_SHOWREEL_ASSETS = {
   posterPathname: '/showreel/yohan-showreel-poster.jpg',
 } as const;
 
-export const PROTECTED_SHOWREEL_PATHNAMES: ReadonlySet<string> = new Set<
-  string
->([
-  DEFAULT_SHOWREEL_ASSETS.mp4Pathname,
-  DEFAULT_SHOWREEL_ASSETS.webmPathname,
-  DEFAULT_SHOWREEL_ASSETS.posterPathname,
-]);
+export const PROTECTED_SHOWREEL_PATHNAMES: ReadonlySet<string> =
+  new Set<string>([
+    DEFAULT_SHOWREEL_ASSETS.mp4Pathname,
+    DEFAULT_SHOWREEL_ASSETS.webmPathname,
+    DEFAULT_SHOWREEL_ASSETS.posterPathname,
+  ]);

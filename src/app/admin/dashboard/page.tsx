@@ -14,11 +14,7 @@ import { PROJECT_CATEGORIES } from '@/lib/types/project';
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  const {
-    projects,
-    isLoading: projectsLoading,
-    deleteProject,
-  } = useProjects();
+  const { projects, isLoading: projectsLoading, deleteProject } = useProjects();
 
   React.useEffect(() => {
     if (!isPending && !session?.user) {
@@ -84,8 +80,8 @@ export default function AdminDashboardPage() {
               </Link>
             </div>
           ) : (
-            PROJECT_CATEGORIES.map(category => {
-              const items = projects.filter(p => p.category === category);
+            PROJECT_CATEGORIES.map((category) => {
+              const items = projects.filter((p) => p.category === category);
               if (items.length === 0) return null;
               return (
                 <div key={category} className="space-y-4">
@@ -95,7 +91,7 @@ export default function AdminDashboardPage() {
                     </h2>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {items.map(project => (
+                    {items.map((project) => (
                       <div
                         key={project.id}
                         className="group relative h-40 overflow-hidden rounded-lg border border-white/10 bg-black/30 shadow-lg backdrop-blur transition-colors hover:border-white/20 sm:h-32"

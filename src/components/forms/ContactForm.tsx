@@ -1,7 +1,7 @@
 'use client';
 
 // import
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
@@ -20,11 +20,6 @@ export default function ContactForm() {
     subject: false,
     message: false,
   });
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const isSubmitting = state === 'submitting';
 
@@ -96,41 +91,6 @@ export default function ContactForm() {
     'w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#ff0015]/30 focus:border-[#ff0015]/60';
   const errorText = 'mt-1 text-xs text-[#ff666c]';
 
-  if (!isMounted) {
-    return (
-      <div className="space-y-5 sm:space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm text-white/80">
-              Nom complet
-            </label>
-            <div className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
-              Chargement...
-            </div>
-          </div>
-          <div>
-            <label className="mb-2 block text-sm text-white/80">Email</label>
-            <div className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
-              Chargement...
-            </div>
-          </div>
-        </div>
-        <div>
-          <label className="mb-2 block text-sm text-white/80">Sujet</label>
-          <div className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
-            Chargement...
-          </div>
-        </div>
-        <div>
-          <label className="mb-2 block text-sm text-white/80">Message</label>
-          <div className="min-h-[140px] w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/60 backdrop-blur-sm">
-            Chargement...
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <form
       onSubmit={onSubmit}
@@ -145,7 +105,7 @@ export default function ContactForm() {
         autoComplete="off"
         className="hidden"
         value={honeypot}
-        onChange={e => setHoneypot(e.target.value)}
+        onChange={(e) => setHoneypot(e.target.value)}
         aria-hidden="true"
       />
       <div className="grid gap-4 sm:grid-cols-2">
@@ -160,12 +120,12 @@ export default function ContactForm() {
             type="text"
             id="fullName"
             value={fullName}
-            onChange={e => {
+            onChange={(e) => {
               setFullName(e.target.value);
               if (touched.fullName) validate();
             }}
             onBlur={() => {
-              setTouched(prev => ({ ...prev, fullName: true }));
+              setTouched((prev) => ({ ...prev, fullName: true }));
               validate();
             }}
             className={inputBase}
@@ -191,12 +151,12 @@ export default function ContactForm() {
             type="email"
             id="email"
             value={email}
-            onChange={e => {
+            onChange={(e) => {
               setEmail(e.target.value);
               if (touched.email) validate();
             }}
             onBlur={() => {
-              setTouched(prev => ({ ...prev, email: true }));
+              setTouched((prev) => ({ ...prev, email: true }));
               validate();
             }}
             className={inputBase}
@@ -226,13 +186,13 @@ export default function ContactForm() {
           type="text"
           id="subject"
           value={subject}
-          onChange={e => {
+          onChange={(e) => {
             const value = e.target.value.slice(0, SUBJECT_MAX);
             setSubject(value);
             if (touched.subject) validate();
           }}
           onBlur={() => {
-            setTouched(prev => ({ ...prev, subject: true }));
+            setTouched((prev) => ({ ...prev, subject: true }));
             validate();
           }}
           className={inputBase}
@@ -264,13 +224,13 @@ export default function ContactForm() {
         <textarea
           id="message"
           value={message}
-          onChange={e => {
+          onChange={(e) => {
             const value = e.target.value.slice(0, MESSAGE_MAX);
             setMessage(value);
             if (touched.message) validate();
           }}
           onBlur={() => {
-            setTouched(prev => ({ ...prev, message: true }));
+            setTouched((prev) => ({ ...prev, message: true }));
             validate();
           }}
           className={`${inputBase} min-h-[140px]`}

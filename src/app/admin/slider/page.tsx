@@ -70,13 +70,13 @@ export default function AdminSliderPage() {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {sliderMedia.map(media => (
+          {sliderMedia.map((media) => (
             <div
               key={media.id}
               className={`group relative overflow-hidden rounded-xl border border-white/10 ${COLOR_COMBINATIONS.card.background} p-4 shadow-lg transition-all duration-300 hover:shadow-xl`}
             >
               {/* Statut badge */}
-              <div className="absolute right-2 top-2 z-10">
+              <div className="absolute top-2 right-2 z-10">
                 <span
                   className={`rounded-full px-2 py-1 text-xs font-medium ${
                     media.isActive
@@ -111,16 +111,14 @@ export default function AdminSliderPage() {
                   <p className="text-xs text-white/60">{media.category}</p>
                 )}
 
-                <p className="text-xs text-white/60">
-                  Ordre: {media.order}
-                </p>
+                <p className="text-xs text-white/60">Ordre: {media.order}</p>
               </div>
 
               {/* Actions */}
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <Link
                   href={`/admin/slider/${media.id}/edit`}
-                  className="min-h-[44px] rounded-lg bg-white/10 px-3 py-2 text-center text-xs font-medium text-white transition-all duration-300 hover:bg-white/20 flex items-center justify-center"
+                  className="flex min-h-[44px] items-center justify-center rounded-lg bg-white/10 px-3 py-2 text-center text-xs font-medium text-white transition-all duration-300 hover:bg-white/20"
                 >
                   Modifier
                 </Link>

@@ -50,7 +50,9 @@ export default function ProjectForm({
 
   // États pour la gestion des vidéos multiples
   const [showAddVideo, setShowAddVideo] = React.useState(false);
-  const [videoType, setVideoType] = React.useState<'youtube' | 'upload'>('youtube');
+  const [videoType, setVideoType] = React.useState<'youtube' | 'upload'>(
+    'youtube'
+  );
   const [youtubeUrl, setYoutubeUrl] = React.useState('');
   const [showVideoUpload, setShowVideoUpload] = React.useState(false);
 
@@ -58,10 +60,10 @@ export default function ProjectForm({
     field: keyof CreateProjectInput,
     value: string | string[] | ProjectVideo[]
   ) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Effacer l'erreur du champ modifié
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -72,9 +74,9 @@ export default function ProjectForm({
       return true;
     } catch (error: unknown) {
       const fieldErrors: Record<string, string> = {};
-      if (error && typeof error === 'object' && 'errors' in error) {
-        (error.errors as Array<{ path?: string[]; message?: string }>)?.forEach(
-          err => {
+      if (error && typeof error === 'object' && 'issues' in error) {
+        (error.issues as Array<{ path?: string[]; message?: string }>)?.forEach(
+          (err) => {
             if (err.path?.[0]) {
               fieldErrors[err.path[0]] = err.message || 'Erreur de validation';
             }
@@ -107,7 +109,7 @@ export default function ProjectForm({
   const handleGalleryUploaded = (
     files: Array<{ url: string; pathname: string }>
   ) => {
-    const newImages = files.map(f => f.url);
+    const newImages = files.map((f) => f.url);
     handleChange('images', [...formData.images, ...newImages]);
     setShowGalleryUploader(false);
   };
@@ -182,7 +184,7 @@ export default function ProjectForm({
           <input
             type="text"
             value={formData.title}
-            onChange={e => handleChange('title', e.target.value)}
+            onChange={(e) => handleChange('title', e.target.value)}
             className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
               errors.title
                 ? 'border-red-500 focus:border-red-400'
@@ -203,7 +205,7 @@ export default function ProjectForm({
           <input
             type="date"
             value={formData.date}
-            onChange={e => handleChange('date', e.target.value)}
+            onChange={(e) => handleChange('date', e.target.value)}
             className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
               errors.date
                 ? 'border-red-500 focus:border-red-400'
@@ -224,7 +226,7 @@ export default function ProjectForm({
         </label>
         <select
           value={formData.category}
-          onChange={e => handleChange('category', e.target.value)}
+          onChange={(e) => handleChange('category', e.target.value)}
           className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
             errors.category
               ? 'border-red-500 focus:border-red-400'
@@ -232,7 +234,7 @@ export default function ProjectForm({
           }`}
           disabled={isLoading}
         >
-          {PROJECT_CATEGORIES.map(category => (
+          {PROJECT_CATEGORIES.map((category) => (
             <option key={category} value={category} className="bg-black">
               {category}
             </option>
@@ -250,7 +252,7 @@ export default function ProjectForm({
         </label>
         <RichTextEditor
           value={formData.description}
-          onChange={html => handleChange('description', html)}
+          onChange={(html) => handleChange('description', html)}
           placeholder="Décrivez le projet en détail..."
           disabled={isLoading}
           error={!!errors.description}
@@ -285,7 +287,7 @@ export default function ProjectForm({
                 <button
                   type="button"
                   onClick={() => removeGalleryImage(index)}
-                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white opacity-100 shadow-lg sm:-right-1 sm:-top-1 sm:h-5 sm:w-5 sm:opacity-0 sm:shadow-none sm:transition sm:group-hover:opacity-100"
+                  className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs text-white opacity-100 shadow-lg sm:-top-1 sm:-right-1 sm:h-5 sm:w-5 sm:opacity-0 sm:shadow-none sm:transition sm:group-hover:opacity-100"
                 >
                   ×
                 </button>
@@ -329,8 +331,18 @@ export default function ProjectForm({
       <div>
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <svg className="h-4 w-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            <svg
+              className="h-4 w-4 text-white/60"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
             </svg>
             <label className="text-sm font-medium text-white/80">
               Vidéos du projet
@@ -349,27 +361,45 @@ export default function ProjectForm({
                 key={index}
                 className="group relative flex items-center gap-3 rounded-lg border border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent p-3 transition hover:border-white/20"
               >
-                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${
-                  video.type === 'youtube'
-                    ? 'bg-red-500/10 text-red-400'
-                    : 'bg-blue-500/10 text-blue-400'
-                }`}>
+                <div
+                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${
+                    video.type === 'youtube'
+                      ? 'bg-red-500/10 text-red-400'
+                      : 'bg-blue-500/10 text-blue-400'
+                  }`}
+                >
                   {video.type === 'youtube' ? (
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    <svg
+                      className="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+                      />
                     </svg>
                   )}
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-medium text-white/80">
-                      {video.type === 'youtube' ? 'YouTube / Vimeo' : 'Fichier uploadé'}
+                      {video.type === 'youtube'
+                        ? 'YouTube / Vimeo'
+                        : 'Fichier uploadé'}
                     </span>
-                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-white/40">
+                    <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] tracking-wide text-white/40 uppercase">
                       {video.type}
                     </span>
                   </div>
@@ -383,8 +413,18 @@ export default function ProjectForm({
                   className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-transparent text-white/30 transition hover:bg-red-500/10 hover:text-red-400 sm:h-8 sm:w-8"
                   aria-label="Supprimer la vidéo"
                 >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
                   </svg>
                 </button>
               </div>
@@ -400,8 +440,18 @@ export default function ProjectForm({
             className="group flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-white/[0.02] px-4 py-4 text-sm text-white/50 transition hover:border-[#ff0015]/50 hover:bg-[#ff0015]/5 hover:text-white/80"
             disabled={isLoading}
           >
-            <svg className="h-5 w-5 transition group-hover:text-[#ff0015]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            <svg
+              className="h-5 w-5 transition group-hover:text-[#ff0015]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
             </svg>
             <span>Ajouter une vidéo</span>
           </button>
@@ -422,7 +472,7 @@ export default function ProjectForm({
           <div className="space-y-6">
             {/* Sélection du type de source */}
             <div>
-              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-white/40">
+              <p className="mb-3 text-xs font-medium tracking-wider text-white/40 uppercase">
                 Source de la vidéo
               </p>
               <div className="grid grid-cols-2 gap-3">
@@ -439,21 +489,39 @@ export default function ProjectForm({
                   }`}
                 >
                   {videoType === 'youtube' && (
-                    <div className="absolute right-2 top-2">
-                      <svg className="h-5 w-5 text-[#ff0015]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <div className="absolute top-2 right-2">
+                      <svg
+                        className="h-5 w-5 text-[#ff0015]"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                   )}
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                    videoType === 'youtube' ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-white/40'
-                  }`}>
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      videoType === 'youtube'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-white/5 text-white/40'
+                    }`}
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                     </svg>
                   </div>
                   <div className="text-center">
-                    <p className={`text-sm font-medium ${videoType === 'youtube' ? 'text-white' : 'text-white/70'}`}>
+                    <p
+                      className={`text-sm font-medium ${videoType === 'youtube' ? 'text-white' : 'text-white/70'}`}
+                    >
                       Lien externe
                     </p>
                     <p className="mt-0.5 text-xs text-white/40">
@@ -475,21 +543,45 @@ export default function ProjectForm({
                   }`}
                 >
                   {videoType === 'upload' && (
-                    <div className="absolute right-2 top-2">
-                      <svg className="h-5 w-5 text-[#ff0015]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <div className="absolute top-2 right-2">
+                      <svg
+                        className="h-5 w-5 text-[#ff0015]"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                   )}
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                    videoType === 'upload' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-white/40'
-                  }`}>
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${
+                      videoType === 'upload'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : 'bg-white/5 text-white/40'
+                    }`}
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                      />
                     </svg>
                   </div>
                   <div className="text-center">
-                    <p className={`text-sm font-medium ${videoType === 'upload' ? 'text-white' : 'text-white/70'}`}>
+                    <p
+                      className={`text-sm font-medium ${videoType === 'upload' ? 'text-white' : 'text-white/70'}`}
+                    >
                       Upload fichier
                     </p>
                     <p className="mt-0.5 text-xs text-white/40">
@@ -508,22 +600,42 @@ export default function ProjectForm({
               <div className="space-y-4">
                 <div>
                   <label className="mb-2 flex items-center gap-2 text-sm font-medium text-white/70">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                      />
                     </svg>
                     URL de la vidéo
                   </label>
                   <input
                     type="url"
                     value={youtubeUrl}
-                    onChange={e => setYoutubeUrl(e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#ff0015]/50 focus:ring-1 focus:ring-[#ff0015]/20"
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-white/30 transition outline-none focus:border-[#ff0015]/50 focus:ring-1 focus:ring-[#ff0015]/20"
                     placeholder="https://www.youtube.com/watch?v=..."
                     autoFocus
                   />
                   <p className="mt-2 flex items-center gap-1.5 text-xs text-white/40">
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                     Collez l&apos;URL complète de YouTube ou Vimeo
                   </p>
@@ -534,8 +646,18 @@ export default function ProjectForm({
                   disabled={!youtubeUrl.trim()}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#ff0015] px-4 py-3 text-sm font-medium text-white transition hover:bg-[#ff0015]/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
                   Ajouter cette vidéo
                 </button>
@@ -543,8 +665,18 @@ export default function ProjectForm({
             ) : (
               <div>
                 <p className="mb-3 flex items-center gap-2 text-sm font-medium text-white/70">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                    />
                   </svg>
                   Sélectionnez un fichier vidéo
                 </p>
@@ -602,7 +734,7 @@ export default function ProjectForm({
           <input
             type="text"
             value={formData.skill}
-            onChange={e => handleChange('skill', e.target.value)}
+            onChange={(e) => handleChange('skill', e.target.value)}
             className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
               errors.skill
                 ? 'border-red-500 focus:border-red-400'
@@ -626,7 +758,7 @@ export default function ProjectForm({
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-            {SOFTWARE_LIST.map(sw => {
+            {SOFTWARE_LIST.map((sw) => {
               const selected = formData.software.includes(sw.id);
               return (
                 <button
@@ -634,10 +766,10 @@ export default function ProjectForm({
                   type="button"
                   disabled={isLoading}
                   onClick={() =>
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       software: prev.software.includes(sw.id)
-                        ? prev.software.filter(s => s !== sw.id)
+                        ? prev.software.filter((s) => s !== sw.id)
                         : [...prev.software, sw.id],
                     }))
                   }
@@ -675,7 +807,7 @@ export default function ProjectForm({
           <input
             type="url"
             value={formData.link}
-            onChange={e => handleChange('link', e.target.value)}
+            onChange={(e) => handleChange('link', e.target.value)}
             className={`w-full rounded-md border bg-black/60 px-3 py-2 text-sm text-white outline-none ${
               errors.link
                 ? 'border-red-500 focus:border-red-400'

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { ServicesContent, ServiceItem } from '@/lib/types/page-content';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import SafeImage from '@/components/ui/SafeImage';
@@ -22,11 +22,6 @@ export default function HomepageServicesForm({
   const [form, setForm] = useState<ServicesContent>(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
-
-  useEffect(() => {
-    setForm(initialContent);
-    setHasChanges(false);
-  }, [initialContent]);
 
   function updateHeader<K extends keyof Omit<ServicesContent, 'services'>>(
     key: K,
@@ -85,7 +80,7 @@ export default function HomepageServicesForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* En-tête de section */}
       <div className="rounded-lg border border-white/5 bg-white/5 p-4">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/50">
+        <h4 className="mb-3 text-xs font-semibold tracking-wider text-white/50 uppercase">
           En-tête de la section
         </h4>
         <div className="space-y-4">
@@ -138,7 +133,7 @@ export default function HomepageServicesForm({
 
       {/* Cartes de services */}
       <div className="space-y-3">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-white/50">
+        <h4 className="text-xs font-semibold tracking-wider text-white/50 uppercase">
           Cartes de services ({form.services.length})
         </h4>
 
@@ -220,7 +215,10 @@ export default function HomepageServicesForm({
                   </p>
                 </FieldGroup>
 
-                <FieldGroup label="Slug catégorie" hint="Utilisé dans le lien (ex: 3d-vfx)">
+                <FieldGroup
+                  label="Slug catégorie"
+                  hint="Utilisé dans le lien (ex: 3d-vfx)"
+                >
                   <input
                     type="text"
                     value={service.categorySlug}
@@ -248,9 +246,7 @@ export default function HomepageServicesForm({
                   <FileUploader
                     accept="image/*"
                     maxSizeMb={5}
-                    onUploaded={(url) =>
-                      updateService(index, { image: url })
-                    }
+                    onUploaded={(url) => updateService(index, { image: url })}
                   />
                 </FieldGroup>
 

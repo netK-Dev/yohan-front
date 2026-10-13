@@ -29,12 +29,9 @@ export async function deleteFromBlob(pathname: string): Promise<void> {
   const { del } = await import('@vercel/blob');
 
   try {
-    // Construire l'URL complète si c'est juste un pathname
-    const blobUrl = pathname.startsWith('http')
-      ? pathname
-      : `https://blob.vercel-storage.com${pathname}`;
-
-    await del(blobUrl);
+    // The SDK accepts a full URL or a pathname in the configured store.
+    // Do not invent a hostname: each Blob store has its own hostname.
+    await del(pathname.startsWith('/') ? pathname.slice(1) : pathname);
   } catch (error) {
     console.warn(`Échec suppression blob ${pathname}:`, error);
     // Ne pas faire échouer l'opération pour des problèmes de nettoyage
@@ -45,7 +42,10 @@ export async function deleteFromBlob(pathname: string): Promise<void> {
 export function extractBlobPathname(url: string): string | null {
   try {
     const urlObj = new URL(url);
-    if (urlObj.hostname.includes('blob.vercel-storage.com')) {
+    if (
+      urlObj.protocol === 'https:' &&
+      urlObj.hostname.endsWith('.public.blob.vercel-storage.com')
+    ) {
       return urlObj.pathname;
     }
     return null;
@@ -56,14 +56,12 @@ export function extractBlobPathname(url: string): string | null {
 
 // Supprimer plusieurs fichiers Blob
 export async function deleteManyFromBlob(urls: string[]): Promise<void> {
-  const pathnames = urls
-    .map(extractBlobPathname)
-    .filter((pathname): pathname is string => pathname !== null);
+  const pathnames = urls.filter((url) => extractBlobPathname(url) !== null);
 
   if (pathnames.length === 0) return;
 
   const results = await Promise.allSettled(
-    pathnames.map(pathname => deleteFromBlob(pathname))
+    pathnames.map((pathname) => deleteFromBlob(pathname))
   );
 
   // Log les erreurs mais ne pas faire échouer l'opération

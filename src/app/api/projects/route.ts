@@ -19,7 +19,7 @@ export async function GET() {
 }
 
 // POST /api/projects - Créer un nouveau projet (admin only)
-export const POST = withAuth(async request => {
+export const POST = withAuth(async (request) => {
   try {
     const body = await request.json();
 
@@ -56,7 +56,7 @@ export const POST = withAuth(async request => {
       return NextResponse.json(
         {
           error: 'Données invalides',
-          details: (error as unknown as { errors: unknown }).errors,
+          details: (error as unknown as { issues: unknown }).issues,
         },
         { status: 400 }
       );

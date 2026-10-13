@@ -14,28 +14,60 @@ export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 
 // Liste des logiciels disponibles avec icônes
 export const SOFTWARE_LIST = [
-  { id: 'after-effects', name: 'After Effects', icon: '/Icone_400x400/Icone_After_Effect_400x400.png' },
-  { id: 'arnold', name: 'Arnold', icon: '/Icone_400x400/Icone_Arnold_400x400.png' },
-  { id: 'blender', name: 'Blender', icon: '/Icone_400x400/Icone_Blender_400x400.png' },
-  { id: 'houdini', name: 'Houdini', icon: '/Icone_400x400/Icone_Houdini_400x400.png' },
+  {
+    id: 'after-effects',
+    name: 'After Effects',
+    icon: '/Icone_400x400/Icone_After_Effect_400x400.png',
+  },
+  {
+    id: 'arnold',
+    name: 'Arnold',
+    icon: '/Icone_400x400/Icone_Arnold_400x400.png',
+  },
+  {
+    id: 'blender',
+    name: 'Blender',
+    icon: '/Icone_400x400/Icone_Blender_400x400.png',
+  },
+  {
+    id: 'houdini',
+    name: 'Houdini',
+    icon: '/Icone_400x400/Icone_Houdini_400x400.png',
+  },
   { id: 'maya', name: 'Maya', icon: '/Icone_400x400/Icone_Maya_400x400.png' },
   { id: 'nuke', name: 'Nuke', icon: '/Icone_400x400/Icone_Nuke_400x400.png' },
-  { id: 'photoshop', name: 'Photoshop', icon: '/Icone_400x400/Icone_Photoshop_400x400.png' },
-  { id: 'premiere-pro', name: 'Premiere Pro', icon: '/Icone_400x400/Icone_Premiere_Pro_400x400.png' },
-  { id: 'substance-painter', name: 'Substance Painter', icon: '/Icone_400x400/Icone_Substance_Painter_400x400.png' },
-  { id: 'zbrush', name: 'ZBrush', icon: '/Icone_400x400/Icone_Zbrush_400x400.png' },
+  {
+    id: 'photoshop',
+    name: 'Photoshop',
+    icon: '/Icone_400x400/Icone_Photoshop_400x400.png',
+  },
+  {
+    id: 'premiere-pro',
+    name: 'Premiere Pro',
+    icon: '/Icone_400x400/Icone_Premiere_Pro_400x400.png',
+  },
+  {
+    id: 'substance-painter',
+    name: 'Substance Painter',
+    icon: '/Icone_400x400/Icone_Substance_Painter_400x400.png',
+  },
+  {
+    id: 'zbrush',
+    name: 'ZBrush',
+    icon: '/Icone_400x400/Icone_Zbrush_400x400.png',
+  },
 ] as const;
 
 export type SoftwareId = (typeof SOFTWARE_LIST)[number]['id'];
 
 export function getSoftwareById(id: string) {
-  return SOFTWARE_LIST.find(sw => sw.id === id) ?? null;
+  return SOFTWARE_LIST.find((sw) => sw.id === id) ?? null;
 }
 
 // Schema pour une vidéo individuelle
 const ProjectVideoSchema = z.object({
   type: z.enum(['youtube', 'upload'], {
-    errorMap: () => ({ message: 'Type de vidéo invalide' }),
+    error: 'Type de vidéo invalide',
   }),
   url: z.string().url('URL de vidéo invalide'),
 });
@@ -43,7 +75,7 @@ const ProjectVideoSchema = z.object({
 export const ProjectSchema = z.object({
   title: z.string().min(1, 'Le titre est requis').max(100, 'Titre trop long'),
   category: z.enum(PROJECT_CATEGORIES, {
-    errorMap: () => ({ message: 'Catégorie invalide' }),
+    error: 'Catégorie invalide',
   }),
   date: z.string().min(1, 'La date est requise'),
   description: z
@@ -79,6 +111,10 @@ export const ProjectSchema = z.object({
 export const CreateProjectSchema = ProjectSchema;
 
 export const UpdateProjectSchema = ProjectSchema.partial().extend({
+  // Zod 4 applies inner defaults even inside optional fields. An omitted field
+  // in a partial update must never clear existing videos or software.
+  videos: ProjectSchema.shape.videos.removeDefault().optional(),
+  software: ProjectSchema.shape.software.removeDefault().optional(),
   id: z.number().int().positive('ID invalide'),
 });
 
@@ -105,8 +141,10 @@ export interface Project {
 }
 
 // Type pour les projets dans l'interface (dates en string)
-export interface ProjectUI
-  extends Omit<Project, 'date' | 'createdAt' | 'updatedAt'> {
+export interface ProjectUI extends Omit<
+  Project,
+  'date' | 'createdAt' | 'updatedAt'
+> {
   date: string;
   createdAt: string;
   updatedAt: string;

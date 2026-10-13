@@ -33,7 +33,7 @@ export default function Header() {
     return undefined;
   }, [mobileOpen]);
   return (
-    <div className="fixed left-0 right-0 top-0 z-50 w-full bg-transparent px-2 py-2 sm:px-4 sm:py-4">
+    <div className="fixed top-0 right-0 left-0 z-50 w-full bg-transparent px-2 py-2 sm:px-4 sm:py-4">
       {/* Container avec effet de halo extérieur */}
       <div className="relative mx-auto max-w-7xl">
         {/* Halo extérieur uniforme - couche 1 */}
@@ -58,6 +58,7 @@ export default function Header() {
                       src="/img/logo_yohan.png"
                       alt="Doens Production Logo"
                       fill
+                      sizes="(max-width: 640px) 32px, 48px"
                       className="object-contain"
                     />
                   </div>
@@ -136,18 +137,18 @@ export default function Header() {
                   </button>
 
                   {/* Menu déroulant avec halo extérieur */}
-                  <div className="invisible absolute left-0 top-full z-50 mt-2 w-64 translate-y-2 transform opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="invisible absolute top-full left-0 z-50 mt-2 w-64 translate-y-2 transform opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                     {/* Halo extérieur pour dropdown */}
                     <div className="relative">
                       <div className="absolute -inset-2 rounded-xl bg-gradient-to-b from-gray-950/40 to-[#000002]/40 blur-sm" />
-                      <div className="blur-xs absolute -inset-1 rounded-xl bg-gradient-to-b from-gray-950/60 to-[#000002]/60" />
+                      <div className="absolute -inset-1 rounded-xl bg-gradient-to-b from-gray-950/60 to-[#000002]/60 blur-xs" />
 
                       {/* Dropdown principal intact */}
                       <div className="relative rounded-xl bg-gradient-to-b from-gray-950 to-[#000002] shadow-2xl">
                         <div className="py-3">
                           <Link
                             href="/realisations"
-                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
                               isRealisations
                                 ? 'bg-white/10 text-[#ff0015]'
                                 : 'text-white hover:text-[#ff0015]'
@@ -157,7 +158,7 @@ export default function Header() {
                           </Link>
                           <Link
                             href="/realisations?category=3d-vfx"
-                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
                               is3DVfx
                                 ? 'bg-white/10 text-[#ff0015]'
                                 : 'text-white hover:text-[#ff0015]'
@@ -167,7 +168,7 @@ export default function Header() {
                           </Link>
                           <Link
                             href="/realisations?category=motion-design"
-                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
                               isMotion
                                 ? 'bg-white/10 text-[#ff0015]'
                                 : 'text-white hover:text-[#ff0015]'
@@ -177,7 +178,7 @@ export default function Header() {
                           </Link>
                           <Link
                             href="/realisations?category=court-metrage"
-                            className={`block px-6 py-3 font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10 ${
+                            className={`hover:bg-opacity-10 block px-6 py-3 font-medium transition-all duration-200 hover:bg-white ${
                               isCourt
                                 ? 'bg-white/10 text-[#ff0015]'
                                 : 'text-white hover:text-[#ff0015]'
@@ -212,11 +213,11 @@ export default function Header() {
               {/* Menu mobile (hamburger) - Version moderne */}
               <div className="md:hidden">
                 <button
-                  className="rounded-lg p-1.5 text-white transition-all duration-300 hover:bg-white hover:bg-opacity-10 hover:text-[#ff0015] sm:p-2"
+                  className="hover:bg-opacity-10 rounded-lg p-1.5 text-white transition-all duration-300 hover:bg-white hover:text-[#ff0015] sm:p-2"
                   aria-label="Menu mobile"
                   aria-expanded={mobileOpen}
                   aria-controls="mobile-menu-panel"
-                  onClick={() => setMobileOpen(prev => !prev)}
+                  onClick={() => setMobileOpen((prev) => !prev)}
                 >
                   {mobileOpen ? (
                     <svg
@@ -267,7 +268,7 @@ export default function Header() {
 
         {/* Drawer */}
         <div
-          className={`absolute right-0 top-0 h-full w-72 transform rounded-l-xl bg-gradient-to-b from-[#000002] via-gray-950 to-[#000002] shadow-2xl transition-transform duration-300 sm:w-80 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute top-0 right-0 h-full w-72 transform rounded-l-xl bg-gradient-to-b from-[#000002] via-gray-950 to-[#000002] shadow-2xl transition-transform duration-300 sm:w-80 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
           <div className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center space-x-2">

@@ -97,6 +97,10 @@ async function fetchHomeContent(): Promise<HomeContent> {
  * Le cache est invalidé via revalidateTag('home-content') lors des mises à jour admin.
  * En production : 0 requête DB pour les visiteurs tant que le contenu n'a pas changé.
  */
-export const getHomeContent = unstable_cache(fetchHomeContent, ['home-content'], {
-  tags: ['home-content'],
-});
+export const getHomeContent = unstable_cache(
+  fetchHomeContent,
+  ['home-content'],
+  {
+    tags: ['home-content'],
+  }
+);

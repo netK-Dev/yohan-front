@@ -64,8 +64,8 @@ export default function Footer() {
 
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-[#ff0015]/5 blur-3xl" />
-        <div className="bg-white/3 absolute -right-32 bottom-0 h-64 w-64 rounded-full blur-3xl" />
+        <div className="absolute top-0 -left-32 h-64 w-64 rounded-full bg-[#ff0015]/5 blur-3xl" />
+        <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-white/3 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
@@ -103,12 +103,12 @@ export default function Footer() {
           {/* Services */}
           <div className="lg:col-span-1">
             <h3
-              className={`mb-4 text-sm font-semibold uppercase tracking-wider ${COLOR_COMBINATIONS.page.text} opacity-90`}
+              className={`mb-4 text-sm font-semibold tracking-wider uppercase ${COLOR_COMBINATIONS.page.text} opacity-90`}
             >
               Services
             </h3>
             <ul className="space-y-2">
-              {navigation.services.map(item => (
+              {navigation.services.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
@@ -124,12 +124,12 @@ export default function Footer() {
           {/* Pages */}
           <div className="lg:col-span-1">
             <h3
-              className={`mb-4 text-sm font-semibold uppercase tracking-wider ${COLOR_COMBINATIONS.page.text} opacity-90`}
+              className={`mb-4 text-sm font-semibold tracking-wider uppercase ${COLOR_COMBINATIONS.page.text} opacity-90`}
             >
               Navigation
             </h3>
             <ul className="space-y-2">
-              {navigation.pages.map(item => (
+              {navigation.pages.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
@@ -145,7 +145,7 @@ export default function Footer() {
           {/* Contact & Social */}
           <div className="lg:col-span-1">
             <h3
-              className={`mb-4 text-sm font-semibold uppercase tracking-wider ${COLOR_COMBINATIONS.page.text} opacity-90`}
+              className={`mb-4 text-sm font-semibold tracking-wider uppercase ${COLOR_COMBINATIONS.page.text} opacity-90`}
             >
               Contact
             </h3>
@@ -162,7 +162,7 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex gap-3">
-              {navigation.social.map(item => (
+              {navigation.social.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}

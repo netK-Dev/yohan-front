@@ -27,7 +27,7 @@ export default function ContactPage() {
         <section className="relative py-12 sm:py-16 lg:py-20">
           {/* décor */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff0015]/5 blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff0015]/5 blur-3xl" />
           </div>
 
           <div className="relative z-10 mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:px-8">

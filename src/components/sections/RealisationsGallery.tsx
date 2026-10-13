@@ -65,32 +65,28 @@ function toProjectItem(p: DbProject): ProjectItem {
 }
 
 export default function RealisationsGallery() {
-  const [active, setActive] =
-    useState<(typeof CATEGORIES)[number]['key']>('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 15;
   const [projects, setProjects] = useState<ProjectItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const category = searchParams.get('category');
+  const active = CATEGORIES.find((item) => item.key === category)?.key ?? 'all';
 
   // Charger les projets depuis l'API (optimisé - une seule fois)
   useEffect(() => {
     let cancelled = false;
-    
+
     const loadProjects = async () => {
-      setLoading(true);
       try {
         const res = await fetch('/api/projects', {
-          // Cache pour éviter les re-fetches inutiles
-          cache: 'force-cache',
-          next: { revalidate: 300 }, // 5 minutes
+          cache: 'no-store',
         });
-        
+
         if (!res.ok) throw new Error('Erreur chargement projets');
         const data = await res.json();
-        
+
         if (!cancelled) {
           setProjects(Array.isArray(data) ? data.map(toProjectItem) : []);
         }
@@ -103,7 +99,7 @@ export default function RealisationsGallery() {
     };
 
     loadProjects();
-    
+
     return () => {
       cancelled = true;
     };
@@ -111,53 +107,32 @@ export default function RealisationsGallery() {
 
   const filtered = useMemo(() => {
     if (active === 'all') return projects;
-    return projects.filter(p => p.category === active);
+    return projects.filter((p) => p.category === active);
   }, [active, projects]);
 
-  // Réinitialiser la page lors d'un changement de filtre
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [active]);
+  const requestedPage = Number(searchParams.get('page') || '1');
+  const currentPage =
+    Number.isInteger(requestedPage) && requestedPage >= 1
+      ? Math.min(
+          requestedPage,
+          Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+        )
+      : 1;
 
-  // Init du filtre depuis l'URL (?category=...)
-  useEffect(() => {
-    const category = searchParams.get('category');
-    if (
-      category === '3d-vfx' ||
-      category === 'motion-design' ||
-      category === 'court-metrage'
-    ) {
-      setActive(category);
-    } else if (category === 'all' || category === null) {
-      setActive('all');
-    }
-  }, [searchParams]);
+  function setCurrentPage(page: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page > 1) params.set('page', String(page));
+    else params.delete('page');
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
 
   const paginated = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return filtered.slice(start, start + PAGE_SIZE);
   }, [filtered, currentPage]);
-
-  // Sync page -> URL (?page=...)
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (currentPage > 1) {
-      params.set('page', String(currentPage));
-    } else {
-      params.delete('page');
-    }
-    const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : `${pathname}`, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
-
-  // Init page depuis l'URL
-  useEffect(() => {
-    const page = Number(searchParams.get('page') || '1');
-    if (Number.isFinite(page) && page >= 1) {
-      setCurrentPage(page);
-    }
-  }, [searchParams]);
 
   return (
     <section
@@ -165,7 +140,7 @@ export default function RealisationsGallery() {
     >
       {/* Effets décoratifs subtils */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-24 top-10 h-48 w-48 rounded-full bg-[#ff0015]/10 blur-3xl sm:h-64 sm:w-64" />
+        <div className="absolute top-10 -left-24 h-48 w-48 rounded-full bg-[#ff0015]/10 blur-3xl sm:h-64 sm:w-64" />
         <div className="absolute -right-24 bottom-10 h-48 w-48 rounded-full bg-white/5 blur-3xl sm:h-64 sm:w-64" />
       </div>
 
@@ -193,13 +168,12 @@ export default function RealisationsGallery() {
 
         {/* Filtres */}
         <div className="mx-auto mb-10 flex w-full flex-wrap items-center justify-center gap-2 sm:mb-12 sm:gap-3">
-          {CATEGORIES.map(cat => {
+          {CATEGORIES.map((cat) => {
             const isActive = active === cat.key;
             return (
               <button
                 key={cat.key}
                 onClick={() => {
-                  setActive(cat.key);
                   const params = new URLSearchParams(searchParams.toString());
                   if (cat.key === 'all') {
                     params.delete('category');
@@ -265,7 +239,7 @@ export default function RealisationsGallery() {
                     />
                   )}
                   {/* Badge catégorie */}
-                  <div className="absolute left-2 top-2 flex gap-2">
+                  <div className="absolute top-2 left-2 flex gap-2">
                     <span className="rounded-full bg-[#ff0015]/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
                       {labelFromCategory(project.category)}
                     </span>
@@ -301,7 +275,7 @@ export default function RealisationsGallery() {
                 {/* Icônes logiciels (max 6 visibles) */}
                 {project.software.length > 0 && (
                   <div className="mb-3 flex items-center gap-1.5">
-                    {project.software.slice(0, 6).map(swId => {
+                    {project.software.slice(0, 6).map((swId) => {
                       const sw = getSoftwareById(swId);
                       if (!sw) return null;
                       return (
@@ -328,7 +302,7 @@ export default function RealisationsGallery() {
                 <div className="mt-auto">
                   <Link
                     href={`/realisations/${project.id}`}
-                    className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
+                    className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-none ${COLOR_COMBINATIONS.primaryButton.background} ${COLOR_COMBINATIONS.primaryButton.hover} ${COLOR_COMBINATIONS.primaryButton.focus}`}
                   >
                     Voir le projet
                   </Link>
@@ -336,7 +310,7 @@ export default function RealisationsGallery() {
               </div>
 
               {/* Ligne d’accent bas */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff0015] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute right-0 bottom-0 left-0 h-1 bg-gradient-to-r from-transparent via-[#ff0015] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
             </article>
           ))}
         </div>

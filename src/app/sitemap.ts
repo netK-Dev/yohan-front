@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     });
 
-    const projectPages = projects.map(project => ({
+    const projectPages = projects.map((project) => ({
       url: `${baseUrl}/realisations/${project.id}`,
       lastModified: project.updatedAt,
       changeFrequency: 'monthly' as const,

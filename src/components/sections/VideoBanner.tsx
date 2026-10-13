@@ -11,7 +11,7 @@ interface VideoBannerProps {
 
 export default function VideoBanner({ content }: VideoBannerProps) {
   const c = content ?? DEFAULT_SHOWREEL_CONTENT;
-  const displayTitle = 'Showreel 2025';
+  const displayTitle = c.title;
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const expandedVideoRef = useRef<HTMLVideoElement>(null);
@@ -28,13 +28,15 @@ export default function VideoBanner({ content }: VideoBannerProps) {
     }
 
     if (typeof IntersectionObserver === 'undefined') {
+      // One-time hydration fallback for browsers without the observer API.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldLoad(true);
       return;
     }
 
     const observer = new IntersectionObserver(
-      entries => {
-        if (entries.some(entry => entry.isIntersecting)) {
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
           setShouldLoad(true);
           observer.disconnect();
         }
@@ -130,9 +132,7 @@ export default function VideoBanner({ content }: VideoBannerProps) {
     setTouchStartY(event.touches[0]?.clientY ?? null);
   };
 
-  const handleExpandedTouchEnd = (
-    event: React.TouchEvent<HTMLDivElement>
-  ) => {
+  const handleExpandedTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
     if (touchStartY === null) {
       return;
     }
@@ -155,12 +155,12 @@ export default function VideoBanner({ content }: VideoBannerProps) {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#000002] to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#000002] to-transparent" />
-        <div className="absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff0015]/12 blur-3xl sm:h-[34rem] sm:w-[34rem]" />
+        <div className="absolute top-1/2 left-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff0015]/12 blur-3xl sm:h-[34rem] sm:w-[34rem]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative -mx-4 overflow-hidden border-y border-white/15 bg-black/70 shadow-[0_35px_90px_rgba(0,0,0,0.55)] sm:mx-0 sm:rounded-[1.75rem] sm:border">
-          <div className="relative h-[72dvh] min-h-[28rem] sm:h-auto sm:aspect-video">
+          <div className="relative h-[72dvh] min-h-[28rem] sm:aspect-video sm:h-auto">
             <video
               ref={videoRef}
               autoPlay
@@ -174,7 +174,9 @@ export default function VideoBanner({ content }: VideoBannerProps) {
             >
               {shouldLoad ? (
                 <>
-                  {c.webmUrl ? <source src={c.webmUrl} type="video/webm" /> : null}
+                  {c.webmUrl ? (
+                    <source src={c.webmUrl} type="video/webm" />
+                  ) : null}
                   <source src={c.mp4Url} type="video/mp4" />
                 </>
               ) : null}
@@ -211,9 +213,9 @@ export default function VideoBanner({ content }: VideoBannerProps) {
               className="absolute inset-0 z-[1]"
             />
 
-            <div className="absolute bottom-0 left-0 right-0 z-10 flex items-end justify-between gap-3 p-4 sm:p-6">
+            <div className="absolute right-0 bottom-0 left-0 z-10 flex items-end justify-between gap-3 p-4 sm:p-6">
               <div>
-                <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-white/70 sm:text-sm">
+                <h2 className="text-xs font-medium tracking-[0.2em] text-white/70 uppercase sm:text-sm">
                   {displayTitle}
                 </h2>
               </div>
@@ -249,7 +251,7 @@ export default function VideoBanner({ content }: VideoBannerProps) {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 sm:rounded-[1.75rem]" />
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-white/10 ring-inset sm:rounded-[1.75rem]" />
         </div>
       </div>
 
@@ -274,7 +276,9 @@ export default function VideoBanner({ content }: VideoBannerProps) {
             >
               {shouldLoad ? (
                 <>
-                  {c.webmUrl ? <source src={c.webmUrl} type="video/webm" /> : null}
+                  {c.webmUrl ? (
+                    <source src={c.webmUrl} type="video/webm" />
+                  ) : null}
                   <source src={c.mp4Url} type="video/mp4" />
                 </>
               ) : null}
@@ -286,18 +290,18 @@ export default function VideoBanner({ content }: VideoBannerProps) {
             <button
               type="button"
               onClick={closeExpanded}
-              className="absolute right-3 top-3 z-10 rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs font-medium text-white/85 transition hover:border-white/40 hover:text-white sm:right-6 sm:top-6"
+              className="absolute top-3 right-3 z-10 rounded-lg border border-white/20 bg-black/50 px-3 py-2 text-xs font-medium text-white/85 transition hover:border-white/40 hover:text-white sm:top-6 sm:right-6"
               aria-label="Fermer le plein ecran"
             >
               Fermer
             </button>
 
-            <div className="absolute left-3 top-3 z-10 rounded-lg border border-white/20 bg-black/45 px-3 py-2 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-white/75 sm:left-6 sm:top-6 sm:text-xs">
+            <div className="absolute top-3 left-3 z-10 rounded-lg border border-white/20 bg-black/45 px-3 py-2 text-[0.68rem] font-medium tracking-[0.16em] text-white/75 uppercase sm:top-6 sm:left-6 sm:text-xs">
               {displayTitle}
             </div>
 
-            <div className="absolute bottom-4 left-0 right-0 z-10 text-center sm:hidden">
-              <p className="text-[0.68rem] uppercase tracking-[0.16em] text-white/55">
+            <div className="absolute right-0 bottom-4 left-0 z-10 text-center sm:hidden">
+              <p className="text-[0.68rem] tracking-[0.16em] text-white/55 uppercase">
                 Glissez vers le bas pour fermer
               </p>
             </div>

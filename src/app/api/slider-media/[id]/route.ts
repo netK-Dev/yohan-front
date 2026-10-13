@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth-server';
 import { UpdateSliderMediaInput } from '@/lib/types/slider';
 import { deleteFromBlob } from '@/lib/blob';
 
@@ -39,6 +40,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
     const { id } = await params;
     const sliderMediaId = parseInt(id, 10);
@@ -98,6 +101,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
     const { id } = await params;
     const sliderMediaId = parseInt(id, 10);

@@ -71,6 +71,7 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageHeroForm
+              key={JSON.stringify(content.hero)}
               initialContent={content.hero}
               onSave={(c) => saveSection('hero', c)}
               onReset={() => resetSection('hero')}
@@ -100,6 +101,7 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageShowreelForm
+              key={JSON.stringify(content.showreel)}
               initialContent={content.showreel}
               onSave={(c) => saveSection('showreel', c)}
               onReset={() => resetSection('showreel')}
@@ -129,6 +131,7 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageServicesForm
+              key={JSON.stringify(content.services)}
               initialContent={content.services}
               onSave={(c) => saveSection('services', c)}
               onReset={() => resetSection('services')}
@@ -158,6 +161,7 @@ export default function AdminHomepagePage() {
             }
           >
             <HomepageCTAForm
+              key={JSON.stringify(content.cta)}
               initialContent={content.cta}
               onSave={(c) => saveSection('cta', c)}
               onReset={() => resetSection('cta')}

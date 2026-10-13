@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ShowreelContent } from '@/lib/types/page-content';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import FileUploader from '@/components/ui/FileUploader';
@@ -22,16 +22,11 @@ export default function HomepageShowreelForm({
   const [form, setForm] = useState<ShowreelContent>(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
 
-  useEffect(() => {
-    setForm(initialContent);
-    setHasChanges(false);
-  }, [initialContent]);
-
   function updateField<K extends keyof ShowreelContent>(
     key: K,
     value: ShowreelContent[K]
   ) {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
   }
 
@@ -58,7 +53,7 @@ export default function HomepageShowreelForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/50">
+        <h4 className="mb-3 text-xs font-semibold tracking-wider text-white/50 uppercase">
           Textes de la section
         </h4>
         <div className="space-y-4">
@@ -66,7 +61,7 @@ export default function HomepageShowreelForm({
             <input
               type="text"
               value={form.badge}
-              onChange={e => updateField('badge', e.target.value)}
+              onChange={(e) => updateField('badge', e.target.value)}
               className="admin-input"
               maxLength={30}
               disabled={isSaving}
@@ -77,7 +72,7 @@ export default function HomepageShowreelForm({
             <input
               type="text"
               value={form.title}
-              onChange={e => updateField('title', e.target.value)}
+              onChange={(e) => updateField('title', e.target.value)}
               className="admin-input"
               maxLength={80}
               disabled={isSaving}
@@ -87,7 +82,7 @@ export default function HomepageShowreelForm({
           <FieldGroup label="Description">
             <textarea
               value={form.description}
-              onChange={e => updateField('description', e.target.value)}
+              onChange={(e) => updateField('description', e.target.value)}
               className="admin-input min-h-[80px] resize-y"
               maxLength={240}
               rows={3}
@@ -102,7 +97,7 @@ export default function HomepageShowreelForm({
             <input
               type="url"
               value={form.youtubeUrl}
-              onChange={e => updateField('youtubeUrl', e.target.value)}
+              onChange={(e) => updateField('youtubeUrl', e.target.value)}
               className="admin-input"
               placeholder="https://www.youtube.com/watch?v=..."
               disabled={isSaving}
@@ -112,7 +107,7 @@ export default function HomepageShowreelForm({
       </div>
 
       <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/50">
+        <h4 className="mb-3 text-xs font-semibold tracking-wider text-white/50 uppercase">
           Video MP4 (obligatoire)
         </h4>
         {form.mp4Url ? (
@@ -134,7 +129,7 @@ export default function HomepageShowreelForm({
             <input
               type="url"
               value={form.mp4Url}
-              onChange={e => {
+              onChange={(e) => {
                 updateField('mp4Url', e.target.value);
                 updateField('mp4Pathname', '');
               }}
@@ -156,7 +151,7 @@ export default function HomepageShowreelForm({
       </div>
 
       <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/50">
+        <h4 className="mb-3 text-xs font-semibold tracking-wider text-white/50 uppercase">
           Video WebM (recommande)
         </h4>
         {form.webmUrl ? (
@@ -178,7 +173,7 @@ export default function HomepageShowreelForm({
             <input
               type="url"
               value={form.webmUrl}
-              onChange={e => {
+              onChange={(e) => {
                 updateField('webmUrl', e.target.value);
                 updateField('webmPathname', '');
               }}
@@ -200,7 +195,7 @@ export default function HomepageShowreelForm({
       </div>
 
       <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/50">
+        <h4 className="mb-3 text-xs font-semibold tracking-wider text-white/50 uppercase">
           Image poster
         </h4>
         {form.posterUrl ? (
@@ -220,7 +215,7 @@ export default function HomepageShowreelForm({
             <input
               type="url"
               value={form.posterUrl}
-              onChange={e => {
+              onChange={(e) => {
                 updateField('posterUrl', e.target.value);
                 updateField('posterPathname', '');
               }}

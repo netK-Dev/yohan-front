@@ -21,7 +21,7 @@ export default function VideoSlider({
 
   // Fonction pour mettre en pause toutes les vidéos HTML5
   const pauseAllVideos = () => {
-    videoRefs.current.forEach(video => {
+    videoRefs.current.forEach((video) => {
       if (video) {
         video.pause();
       }
@@ -35,12 +35,12 @@ export default function VideoSlider({
 
   const goToNext = () => {
     pauseAllVideos();
-    setCurrentIndex(prev => (prev + 1) % videos.length);
+    setCurrentIndex((prev) => (prev + 1) % videos.length);
   };
 
   const goToPrev = () => {
     pauseAllVideos();
-    setCurrentIndex(prev => (prev - 1 + videos.length) % videos.length);
+    setCurrentIndex((prev) => (prev - 1 + videos.length) % videos.length);
   };
 
   const goToSlide = (index: number) => {
@@ -81,7 +81,7 @@ export default function VideoSlider({
             // Vidéo uploadée (HTML5)
             <video
               key={`upload-${currentIndex}`}
-              ref={el => {
+              ref={(el) => {
                 videoRefs.current[currentIndex] = el;
               }}
               controls
@@ -100,7 +100,7 @@ export default function VideoSlider({
               {/* Bouton précédent */}
               <button
                 onClick={goToPrev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur-sm transition-all hover:bg-black/80 hover:text-white"
+                className="absolute top-1/2 left-3 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur-sm transition-all hover:bg-black/80 hover:text-white"
                 aria-label="Vidéo précédente"
               >
                 <svg
@@ -121,7 +121,7 @@ export default function VideoSlider({
               {/* Bouton suivant */}
               <button
                 onClick={goToNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur-sm transition-all hover:bg-black/80 hover:text-white"
+                className="absolute top-1/2 right-3 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white/80 backdrop-blur-sm transition-all hover:bg-black/80 hover:text-white"
                 aria-label="Vidéo suivante"
               >
                 <svg
@@ -140,18 +140,32 @@ export default function VideoSlider({
               </button>
 
               {/* Badge source (discret, en haut à droite) */}
-              <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white/70 backdrop-blur-sm">
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-xs text-white/70 backdrop-blur-sm">
                 {currentVideo.type === 'youtube' ? (
                   <>
-                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      className="h-3 w-3"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
                     </svg>
                     <span>YouTube</span>
                   </>
                 ) : (
                   <>
-                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <svg
+                      className="h-3 w-3"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
                     </svg>
                     <span>Vidéo</span>
                   </>
@@ -186,12 +200,26 @@ export default function VideoSlider({
                 >
                   {/* Icône de type */}
                   {video.type === 'youtube' ? (
-                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                    <svg
+                      className="h-3.5 w-3.5"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
                     </svg>
                   ) : (
-                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <svg
+                      className="h-3.5 w-3.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
                     </svg>
                   )}
                   {/* Numéro */}

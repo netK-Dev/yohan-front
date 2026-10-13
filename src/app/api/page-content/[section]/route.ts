@@ -96,7 +96,7 @@ export const PUT = withAuth(async (request: NextRequest) => {
           extractBlobPathnamesFromShowreel(oldParsed.data)
         );
 
-        removedBlobUrls = oldUrls.filter(urlValue => {
+        removedBlobUrls = oldUrls.filter((urlValue) => {
           if (newUrls.has(urlValue)) return false;
 
           let pathname = '';
@@ -123,11 +123,11 @@ export const PUT = withAuth(async (request: NextRequest) => {
       create: { page, section, content: normalizedContent as object },
     });
 
-    revalidateTag('home-content');
+    revalidateTag('home-content', { expire: 0 });
     revalidatePath('/');
 
     if (removedBlobUrls.length > 0) {
-      deleteManyFromBlob(removedBlobUrls).catch(error => {
+      deleteManyFromBlob(removedBlobUrls).catch((error) => {
         console.warn(
           '[page-content] Echec suppression anciens assets showreel:',
           error

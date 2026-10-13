@@ -3,8 +3,6 @@ import { YohanNotificationTemplate } from '../../../email/templates/yohan-notifi
 import { Resend } from 'resend';
 import { z } from 'zod';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // Schema de validation pour les données du formulaire
 const contactFormSchema = z.object({
   fullName: z.string().min(1, 'Le nom est requis'),
@@ -22,6 +20,14 @@ export async function POST(request: Request) {
     // Validation des données
     const validatedData = contactFormSchema.parse(body);
     const { fullName, email, subject, message } = validatedData;
+
+    if (!process.env.RESEND_API_KEY) {
+      return Response.json(
+        { error: "Le service d'envoi d'emails n'est pas configuré." },
+        { status: 503 }
+      );
+    }
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Email de confirmation pour le client
     const confirmationResult = await resend.emails.send({
@@ -80,7 +86,7 @@ export async function POST(request: Request) {
       return Response.json(
         {
           error: 'Données invalides',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

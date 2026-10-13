@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth-server';
 import { CreateSliderMediaInput } from '@/lib/types/slider';
 
 // GET - Récupérer tous les médias slider
@@ -22,6 +23,8 @@ export async function GET(request: NextRequest) {
 
 // POST - Créer un nouveau média slider
 export async function POST(request: NextRequest) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
     const body: CreateSliderMediaInput = await request.json();
 

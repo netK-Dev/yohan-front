@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth-server';
 import { UpdateProjectSchema } from '@/lib/types/project';
 import { deleteManyFromBlob } from '@/lib/blob';
-import { extractBlobUrlsFromVideos, type ProjectVideo } from '@/lib/types/video';
+import {
+  extractBlobUrlsFromVideos,
+  type ProjectVideo,
+} from '@/lib/types/video';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
@@ -104,13 +107,16 @@ export const PUT = withAuth(
       if (finalUpdateData.images && Array.isArray(finalUpdateData.images)) {
         const oldImages = existingProject.images || [];
         const newImages = finalUpdateData.images as string[];
-        const removedImages = oldImages.filter(img => !newImages.includes(img));
+        const removedImages = oldImages.filter(
+          (img) => !newImages.includes(img)
+        );
         removedBlobUrls.push(...removedImages);
       }
 
       // Vérifier si des vidéos ont été supprimées (nouveau système array)
       if (finalUpdateData.videos !== undefined) {
-        const oldVideos = (existingProject.videos as unknown as ProjectVideo[]) || [];
+        const oldVideos =
+          (existingProject.videos as unknown as ProjectVideo[]) || [];
         const newVideos = finalUpdateData.videos as unknown as ProjectVideo[];
 
         // Extraire les URLs Blob des anciennes et nouvelles vidéos
@@ -118,7 +124,9 @@ export const PUT = withAuth(
         const newBlobUrls = extractBlobUrlsFromVideos(newVideos);
 
         // Identifier les URLs supprimées
-        const removedVideoUrls = oldBlobUrls.filter(url => !newBlobUrls.includes(url));
+        const removedVideoUrls = oldBlobUrls.filter(
+          (url) => !newBlobUrls.includes(url)
+        );
         removedBlobUrls.push(...removedVideoUrls);
 
         // Transformer en Prisma.JsonValue pour la DB
@@ -142,7 +150,7 @@ export const PUT = withAuth(
 
       // Supprimer les anciens fichiers Blob (en arrière-plan)
       if (removedBlobUrls.length > 0) {
-        deleteManyFromBlob(removedBlobUrls).catch(error => {
+        deleteManyFromBlob(removedBlobUrls).catch((error) => {
           console.error(
             'Erreur lors de la suppression des anciens fichiers Blob:',
             error
@@ -159,7 +167,7 @@ export const PUT = withAuth(
         return NextResponse.json(
           {
             error: 'Données invalides',
-            details: (error as unknown as { errors: unknown }).errors,
+            details: (error as unknown as { issues: unknown }).issues,
           },
           { status: 400 }
         );
@@ -218,7 +226,7 @@ export const DELETE = withAuth(
 
       // Supprimer les fichiers Blob (en arrière-plan, non bloquant)
       if (blobUrls.length > 0) {
-        deleteManyFromBlob(blobUrls).catch(error => {
+        deleteManyFromBlob(blobUrls).catch((error) => {
           console.error(
             'Erreur lors de la suppression des fichiers Blob:',
             error

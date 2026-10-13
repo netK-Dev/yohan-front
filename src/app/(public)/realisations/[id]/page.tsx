@@ -7,7 +7,10 @@ import RichTextDisplay from '@/components/ui/RichTextDisplay';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 import { parseSkills } from '@/lib/utils/skills';
 import { getSoftwareById } from '@/lib/types/project';
-import { generateProjectMetadata, generateProjectStructuredData } from '@/lib/utils/seo';
+import {
+  generateProjectMetadata,
+  generateProjectStructuredData,
+} from '@/lib/utils/seo';
 import { type ProjectVideo } from '@/lib/types/video';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
@@ -59,7 +62,7 @@ export async function generateStaticParams() {
       `🔧 [STATIC] Generating static params for ${projects.length} projects`
     );
 
-    return projects.map(project => ({
+    return projects.map((project) => ({
       id: project.id.toString(),
     }));
   } catch (error) {
@@ -106,7 +109,7 @@ export async function generateMetadata({
   if (!project) {
     return {
       title: 'Projet non trouvé | Doens Production',
-      description: 'Le projet demandé n\'existe pas ou n\'est plus disponible.',
+      description: "Le projet demandé n'existe pas ou n'est plus disponible.",
     };
   }
 
@@ -143,17 +146,17 @@ export default async function ProjectDetailPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}
       />
-      
+
       <Suspense fallback={null}>
         <Header />
       </Suspense>
       <main
         className={`min-h-screen ${COLOR_COMBINATIONS.page.background} ${COLOR_COMBINATIONS.page.text}`}
       >
-        <section className="relative pb-12 pt-24 sm:pb-16 sm:pt-28 lg:pb-20 lg:pt-32">
+        <section className="relative pt-24 pb-12 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-20">
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="mb-4">
               <Link
@@ -192,7 +195,10 @@ export default async function ProjectDetailPage({
 
             {/* Description */}
             <div className="prose prose-invert mb-8 max-w-none">
-              <RichTextDisplay html={project.description} className="text-white/80" />
+              <RichTextDisplay
+                html={project.description}
+                className="text-white/80"
+              />
             </div>
 
             {/* Galerie d'images */}
@@ -201,21 +207,29 @@ export default async function ProjectDetailPage({
             )}
 
             {/* Vidéos (nouveau système avec VideoSlider) */}
-            {project.videos && (project.videos as unknown as ProjectVideo[]).length > 0 && (
-              <VideoSlider
-                videos={project.videos as unknown as ProjectVideo[]}
-                title={project.title}
-                posterImage={project.images && project.images[0] ? project.images[0] : undefined}
-              />
-            )}
+            {project.videos &&
+              (project.videos as unknown as ProjectVideo[]).length > 0 && (
+                <VideoSlider
+                  videos={project.videos as unknown as ProjectVideo[]}
+                  title={project.title}
+                  posterImage={
+                    project.images && project.images[0]
+                      ? project.images[0]
+                      : undefined
+                  }
+                />
+              )}
 
             {/* Fallback : Ancien système pour projets non migrés */}
-            {(!project.videos || (project.videos as unknown as ProjectVideo[]).length === 0) && (
+            {(!project.videos ||
+              (project.videos as unknown as ProjectVideo[]).length === 0) && (
               <>
                 {/* Vidéo uploadée */}
                 {project.videoFile && (
                   <div className="mb-8">
-                    <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
+                    <h2 className="mb-4 text-xl font-semibold text-white">
+                      Vidéo
+                    </h2>
                     <div className="relative aspect-video overflow-hidden rounded-lg bg-black">
                       <video
                         controls
@@ -237,7 +251,9 @@ export default async function ProjectDetailPage({
                 {/* Vidéo externe (YouTube/Vimeo) */}
                 {externalEmbed && (
                   <div className="mb-8">
-                    <h2 className="mb-4 text-xl font-semibold text-white">Vidéo</h2>
+                    <h2 className="mb-4 text-xl font-semibold text-white">
+                      Vidéo
+                    </h2>
                     <div className="relative aspect-video overflow-hidden rounded-lg">
                       <iframe
                         src={externalEmbed}
@@ -295,9 +311,7 @@ export default async function ProjectDetailPage({
                           height={24}
                           className="h-6 w-6 object-contain"
                         />
-                        <span className="text-sm text-white/80">
-                          {sw.name}
-                        </span>
+                        <span className="text-sm text-white/80">{sw.name}</span>
                       </div>
                     );
                   })}

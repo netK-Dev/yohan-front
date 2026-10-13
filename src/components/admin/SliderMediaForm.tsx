@@ -58,7 +58,7 @@ export default function SliderMediaForm({
   };
 
   const handleMediaUpload = (url: string, pathname: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       mediaUrl: url,
       mediaPath: pathname,
@@ -78,10 +78,10 @@ export default function SliderMediaForm({
         <input
           type="text"
           value={formData.title}
-          onChange={e =>
-            setFormData(prev => ({ ...prev, title: e.target.value }))
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, title: e.target.value }))
           }
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:outline-none focus:ring-2 focus:ring-[#ff0015]/20"
+          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
           placeholder="Titre du média"
           required
         />
@@ -96,10 +96,10 @@ export default function SliderMediaForm({
         </label>
         <textarea
           value={formData.description}
-          onChange={e =>
-            setFormData(prev => ({ ...prev, description: e.target.value }))
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, description: e.target.value }))
           }
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:outline-none focus:ring-2 focus:ring-[#ff0015]/20"
+          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
           placeholder="Description du média (optionnel)"
           rows={3}
         />
@@ -151,13 +151,13 @@ export default function SliderMediaForm({
         </label>
         <select
           value={formData.category}
-          onChange={e =>
-            setFormData(prev => ({ ...prev, category: e.target.value }))
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, category: e.target.value }))
           }
-          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:outline-none focus:ring-2 focus:ring-[#ff0015]/20"
+          className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
         >
           <option value="">Sélectionner une catégorie</option>
-          {SLIDER_CATEGORIES.map(category => (
+          {SLIDER_CATEGORIES.map((category) => (
             <option key={category} value={category} className="bg-gray-900">
               {category}
             </option>
@@ -176,13 +176,13 @@ export default function SliderMediaForm({
           <input
             type="number"
             value={formData.order}
-            onChange={e =>
-              setFormData(prev => ({
+            onChange={(e) =>
+              setFormData((prev) => ({
                 ...prev,
                 order: parseInt(e.target.value) || 0,
               }))
             }
-            className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:outline-none focus:ring-2 focus:ring-[#ff0015]/20"
+            className="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm transition-all duration-300 focus:border-[#ff0015] focus:ring-2 focus:ring-[#ff0015]/20 focus:outline-none"
             min="0"
           />
         </div>
@@ -198,8 +198,8 @@ export default function SliderMediaForm({
               type="checkbox"
               id="isActive"
               checked={formData.isActive}
-              onChange={e =>
-                setFormData(prev => ({ ...prev, isActive: e.target.checked }))
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, isActive: e.target.checked }))
               }
               className="h-4 w-4 rounded border-white/20 bg-white/5 text-[#ff0015] focus:ring-[#ff0015]/20"
             />

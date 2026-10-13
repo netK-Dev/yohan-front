@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { CTAContent } from '@/lib/types/page-content';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
@@ -20,11 +20,6 @@ export default function HomepageCTAForm({
   const [form, setForm] = useState<CTAContent>(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
 
-  useEffect(() => {
-    setForm(initialContent);
-    setHasChanges(false);
-  }, [initialContent]);
-
   function updateField<K extends keyof CTAContent>(
     key: K,
     value: CTAContent[K]
@@ -42,7 +37,7 @@ export default function HomepageCTAForm({
   async function handleReset() {
     if (
       !confirm(
-        'Rétablir les valeurs par défaut pour la section Appel à l\'action ?'
+        "Rétablir les valeurs par défaut pour la section Appel à l'action ?"
       )
     )
       return;
@@ -59,7 +54,7 @@ export default function HomepageCTAForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Prévisualisation */}
       <div className="rounded-lg border border-white/10 bg-gradient-to-r from-black/40 to-black/20 p-4 text-center">
-        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-white/40">
+        <p className="mb-1 text-xs font-medium tracking-wider text-white/40 uppercase">
           Prévisualisation
         </p>
         <h3 className="text-lg font-bold text-white sm:text-xl">

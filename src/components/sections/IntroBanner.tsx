@@ -18,7 +18,7 @@ export default function IntroBanner({
   return (
     <section
       className={clsx(
-        'intro-banner-halo relative overflow-hidden bg-[#000002] pb-10 pt-28 sm:pb-12 sm:pt-36',
+        'intro-banner-halo relative overflow-hidden bg-[#000002] pt-28 pb-10 sm:pt-36 sm:pb-12',
         className
       )}
     >

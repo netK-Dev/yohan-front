@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.local/
+pnpm-lock.yaml
+_bmad/
+_bmad-output/
+.cursor/
+.claude/
+public/
+src/generated/
+prisma/migrations/
+next-env.d.ts

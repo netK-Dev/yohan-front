@@ -38,14 +38,14 @@ export default function FileUploader({
       if (multiple) {
         const uploaded: Array<{ url: string; pathname: string }> = [];
         const validFiles = Array.from(files).filter(
-          f => f.size <= maxSizeMb * 1024 * 1024
+          (f) => f.size <= maxSizeMb * 1024 * 1024
         );
         for (let i = 0; i < validFiles.length; i++) {
           const file = validFiles[i];
           setUploadingFile(`${file.name} (${i + 1}/${validFiles.length})`);
           setProgress(0);
           const { url, pathname } = await uploadToBlob(file, {
-            onUploadProgress: e => setProgress(Math.round(e.percentage)),
+            onUploadProgress: (e) => setProgress(Math.round(e.percentage)),
           });
           uploaded.push({ url, pathname });
         }
@@ -58,7 +58,7 @@ export default function FileUploader({
         }
         setUploadingFile(file.name);
         const { url, pathname } = await uploadToBlob(file, {
-          onUploadProgress: e => setProgress(Math.round(e.percentage)),
+          onUploadProgress: (e) => setProgress(Math.round(e.percentage)),
         });
         onUploaded?.(url, pathname);
       }
@@ -79,14 +79,14 @@ export default function FileUploader({
           ? 'border-[#ff0015] bg-[#ff0015]/10 ring-2 ring-[#ff0015]/30'
           : 'border-white/10 bg-black/40'
       } p-6 text-center`}
-      onDragOver={e => {
+      onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
       }}
       onDragLeave={() => {
         setDragging(false);
       }}
-      onDrop={e => {
+      onDrop={(e) => {
         e.preventDefault();
         handleFiles(e.dataTransfer.files);
       }}
@@ -97,7 +97,7 @@ export default function FileUploader({
         accept={accept}
         multiple={multiple}
         className="hidden"
-        onChange={e => handleFiles(e.target.files)}
+        onChange={(e) => handleFiles(e.target.files)}
       />
 
       {isLoading ? (
@@ -153,7 +153,7 @@ export default function FileUploader({
             Max {maxSizeMb}MB •{' '}
             {accept
               .split(',')
-              .map(a => a.trim().replace('/*', ''))
+              .map((a) => a.trim().replace('/*', ''))
               .join(', ')}
           </div>
         </>

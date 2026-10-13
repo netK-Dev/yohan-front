@@ -14,8 +14,8 @@ export default function CTASection({ content }: CTASectionProps) {
     <section className={`relative ${COLOR_COMBINATIONS.page.background} py-20`}>
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-[#ff0015]/5 blur-3xl" />
-        <div className="bg-white/3 absolute -right-32 bottom-0 h-64 w-64 rounded-full blur-3xl" />
+        <div className="absolute top-0 -left-32 h-64 w-64 rounded-full bg-[#ff0015]/5 blur-3xl" />
+        <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-white/3 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -37,7 +37,7 @@ export default function CTASection({ content }: CTASectionProps) {
             </p>
             <Link
               href="/contact"
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff1a2a] via-[#ff3340] to-[#e6000c] px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#ff0015]/25 focus:outline-none focus:ring-2 focus:ring-[#ff0015]/50"
+              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff1a2a] via-[#ff3340] to-[#e6000c] px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#ff0015]/25 focus:ring-2 focus:ring-[#ff0015]/50 focus:outline-none"
             >
               <span>{c.ctaText}</span>
               <svg

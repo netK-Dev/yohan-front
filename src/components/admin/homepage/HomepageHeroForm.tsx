@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { HeroContent, HeroStat } from '@/lib/types/page-content';
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
@@ -19,11 +19,6 @@ export default function HomepageHeroForm({
 }: HomepageHeroFormProps) {
   const [form, setForm] = useState<HeroContent>(initialContent);
   const [hasChanges, setHasChanges] = useState(false);
-
-  useEffect(() => {
-    setForm(initialContent);
-    setHasChanges(false);
-  }, [initialContent]);
 
   function updateField<K extends keyof HeroContent>(
     key: K,

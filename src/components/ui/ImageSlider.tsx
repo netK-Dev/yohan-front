@@ -12,11 +12,11 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   const goToNext = () => {
-    setCurrentIndex(prev => (prev + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
   const goToPrev = () => {
-    setCurrentIndex(prev => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
   const goToSlide = (index: number) => {
@@ -49,7 +49,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
               {/* Bouton précédent */}
               <button
                 onClick={goToPrev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition hover:bg-black/70"
+                className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition hover:bg-black/70"
                 aria-label="Image précédente"
               >
                 <svg
@@ -70,7 +70,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
               {/* Bouton suivant */}
               <button
                 onClick={goToNext}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition hover:bg-black/70"
+                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white backdrop-blur-sm transition hover:bg-black/70"
                 aria-label="Image suivante"
               >
                 <svg

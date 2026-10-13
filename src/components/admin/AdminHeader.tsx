@@ -81,7 +81,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
                 href="/admin/dashboard"
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
                   pathname.startsWith('/admin/dashboard')
-                    ? 'bg-white/15 text-white border border-white/20'
+                    ? 'border border-white/20 bg-white/15 text-white'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -91,7 +91,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
                 href="/admin/slider"
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
                   pathname.startsWith('/admin/slider')
-                    ? 'bg-white/15 text-white border border-white/20'
+                    ? 'border border-white/20 bg-white/15 text-white'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -101,7 +101,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
                 href="/admin/homepage"
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ${
                   pathname.startsWith('/admin/homepage')
-                    ? 'bg-white/15 text-white border border-white/20'
+                    ? 'border border-white/20 bg-white/15 text-white'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -131,15 +131,35 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
             className="flex h-10 w-10 items-center justify-center rounded-lg text-white transition hover:bg-white/10 md:hidden"
             aria-label="Menu admin"
             aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen(prev => !prev)}
+            onClick={() => setMobileOpen((prev) => !prev)}
           >
             {mobileOpen ? (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             ) : (
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             )}
           </button>
@@ -158,7 +178,7 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
         />
         {/* Panel */}
         <div
-          className={`absolute right-0 top-0 flex h-full w-72 flex-col bg-gradient-to-b from-[#0a0a0a] to-[#000002] shadow-2xl transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute top-0 right-0 flex h-full w-72 flex-col bg-gradient-to-b from-[#0a0a0a] to-[#000002] shadow-2xl transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
           {/* Header du drawer */}
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
@@ -168,8 +188,18 @@ export default function AdminHeader({ className }: AdminHeaderProps) {
               aria-label="Fermer le menu"
               onClick={() => setMobileOpen(false)}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>

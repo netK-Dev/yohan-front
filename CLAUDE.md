@@ -7,7 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Yohan Front** est un portfolio professionnel pour Yohan Doens (Doens Production), spécialisé dans la création 3D/VFX, Motion Design et Courts Métrages. L'application combine une interface publique de présentation avec un panneau d'administration complet pour la gestion du contenu.
 
 **Stack technique :**
-- Next.js 15.3.3 avec App Router et Turbopack
+
+- Next.js 16.3.5 avec App Router et Turbopack
 - React 19, TypeScript (mode strict)
 - Tailwind CSS v4
 - Prisma ORM avec PostgreSQL (Neon en production)
@@ -19,23 +20,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Développement
-npm run dev              # Démarre le serveur avec Turbopack (http://localhost:3000)
+pnpm dev              # Démarre le serveur avec Turbopack (http://localhost:3000)
 
 # Build et Production
-npm run build            # prisma generate && next build
-npm run start            # Serveur de production
+pnpm build            # prisma generate && next build
+pnpm start            # Serveur de production
 
 # Qualité du code
-npm run lint             # Vérification ESLint
-npm run lint:fix         # Correction automatique ESLint
-npm run format           # Formatage Prettier
-npm run format:check     # Vérification du formatage
+pnpm lint             # Vérification ESLint
+pnpm lint:fix         # Correction automatique ESLint
+pnpm format           # Formatage Prettier
+pnpm format:check     # Vérification du formatage
 
 # Base de données
-npx prisma generate      # Régénérer le client après modification du schéma
-npx prisma migrate dev --name <nom>  # Créer une nouvelle migration
-npx prisma db push       # Appliquer le schéma sans migration (dev)
-npx prisma studio        # Interface visuelle pour la DB
+pnpm exec prisma generate      # Régénérer le client après modification du schéma
+pnpm exec prisma migrate dev --name <nom>  # Créer une nouvelle migration
+pnpm db:migrate          # Appliquer les migrations versionnées
+pnpm exec prisma studio        # Interface visuelle pour la DB
 ```
 
 ## Architecture
@@ -92,9 +93,12 @@ L'authentification utilise **Better Auth** avec Prisma adapter :
   - `withAuth(handler)` - HOC pour protéger une API Route
 
 **Pattern de protection des API Routes :**
+
 ```typescript
 // Route publique
-export async function GET() { /* ... */ }
+export async function GET() {
+  /* ... */
+}
 
 // Route protégée
 export const POST = withAuth(async (request, session) => {
@@ -105,6 +109,7 @@ export const POST = withAuth(async (request, session) => {
 ### Gestion des Fichiers (Vercel Blob)
 
 Utilitaires dans `src/lib/blob.ts` :
+
 - `uploadToBlob(file)` - Upload via `/api/blob/upload`
 - `deleteFromBlob(pathname)` - Suppression directe via SDK
 - `deleteManyFromBlob(urls)` - Suppression en lot
@@ -135,16 +140,19 @@ Les fichiers sont automatiquement nettoyés lors de la suppression/modification 
 ### Types et Validation (Zod)
 
 **Projets** (`src/lib/types/project.ts`) :
+
 - `PROJECT_CATEGORIES` : `['3D/VFX et Compositing', 'Motion Design', 'Court Métrage']`
 - `ProjectSchema`, `CreateProjectSchema`, `UpdateProjectSchema`
 - Types : `Project`, `ProjectUI`, `CreateProjectInput`, `UpdateProjectInput`
 
 **Slider** (`src/lib/types/slider.ts`) :
+
 - `SLIDER_CATEGORIES` : `['Sculpture', 'Produit', 'Environnement', 'Character', 'Animation', 'VFX', 'Motion Design']`
 - `SLIDER_MEDIA_TYPES` : `['image', 'gif']`
 - Types : `SliderMedia`, `CreateSliderMediaInput`, `UpdateSliderMediaInput`
 
 **Vidéos** (`src/lib/types/video.ts`) :
+
 - `ProjectVideo` : `{ type: 'youtube' | 'upload', url: string }` - Type pour les vidéos de projet
 - `getEmbedUrl(url)` - Convertit une URL YouTube/Vimeo en URL d'embed
 - `extractBlobUrlsFromVideos(videos)` - Extrait les URLs Blob des vidéos uploadées (pour nettoyage)
@@ -158,14 +166,17 @@ Les fichiers sont automatiquement nettoyés lors de la suppression/modification 
 ### Design System
 
 **Palette** (`src/lib/colors.ts`) :
+
 - `COLORS.primary.DEFAULT` : `#000002` (noir profond)
 - `COLORS.accent.DEFAULT` : `#ff0015` (rouge)
 - `COLORS.white` : `#ffffff`
 
 **Combinaisons prédéfinies** (`COLOR_COMBINATIONS`) :
+
 - `header`, `primaryButton`, `secondaryButton`, `card`, `admin`, `page`, `section`, `gradients`
 
 **Usage dans les composants :**
+
 ```tsx
 import { COLOR_COMBINATIONS } from '@/lib/colors';
 
@@ -175,6 +186,7 @@ import { COLOR_COMBINATIONS } from '@/lib/colors';
 ### SEO
 
 Utilitaires dans `src/lib/utils/seo.ts` :
+
 - `generateProjectMetadata(project)` - Métadonnées Next.js pour un projet
 - `generateProjectStructuredData(project)` - JSON-LD CreativeWork
 - `generateRealisationsListingMetadata(projects)` - Métadonnées page listing
@@ -185,6 +197,7 @@ Les pages de réalisations génèrent automatiquement les métadonnées et donn�
 ### Composants Clés
 
 **UI** (`src/components/ui/`) :
+
 - `FileUploader` - Upload drag & drop avec progress (single/multiple)
 - `SafeImage` - Wrapper Next/Image avec fallback d'erreur
 - `Modal` - Modal responsive avec overlay opaque
@@ -193,22 +206,26 @@ Les pages de réalisations génèrent automatiquement les métadonnées et donn�
 - `RichTextDisplay` - Affichage HTML sécurisé pour descriptions de projets
 
 **Admin** (`src/components/admin/`) :
+
 - `AdminHeader` - Navigation admin avec logout
 - `ProjectForm` - Formulaire création/édition projet avec upload images/vidéo
 - `SliderMediaForm` - Formulaire gestion médias slider
 
 **Sections** (`src/components/sections/`) :
+
 - `HeroSection`, `ServicesSection`, `CTASection`, `IntroBanner`
 - `RealisationsGallery` - Galerie avec filtres par catégorie
 - `AnimatedGridBackground` - Fond animé
 
 **Layout** (`src/components/layout/`) :
+
 - `Header` - Navigation publique
 - `Footer`
 
 ### Emails (React Email + Resend)
 
 Templates dans `src/email/templates/` :
+
 - `email-template.tsx` - Confirmation envoyée au client
 - `yohan-notification-template.tsx` - Notification pour Yohan
 
@@ -237,6 +254,7 @@ NEXT_PUBLIC_SITE_URL=https://doensproduction.com
 ### Scripts de Migration
 
 Dossier `dev/scripts/` (exclu du build TypeScript) :
+
 - `migrate-videos-to-array.ts` - Migration des anciens champs `video`/`videoFile` vers le nouveau tableau `videos`
 
 Usage : `tsx dev/scripts/migrate-videos-to-array.ts`
@@ -249,3 +267,17 @@ Usage : `tsx dev/scripts/migrate-videos-to-array.ts`
 - **API** : Validation Zod systématique, réponses JSON standardisées
 - **Styles** : Tailwind CSS uniquement, utiliser `COLOR_COMBINATIONS` pour la cohérence
 - **Vidéos** : Utiliser le nouveau système `videos` (array de `ProjectVideo`), les anciens champs sont conservés pour rétrocompatibilité
+
+## Installation et vérification
+
+Le guide de référence est `README.md`, avec le diagnostic dans `docs/SETUP_AUDIT.md`. Node et pnpm sont fixés dans `package.json`. Utiliser `pnpm setup:local`, `pnpm db:up`, `pnpm db:migrate`, `pnpm db:seed`, puis `pnpm admin:create`. Les inscriptions publiques sont désactivées. Les secrets restent dans `.env` et `.local/`, exclus de Git. Exécuter `pnpm check`, `pnpm build` et les tests d’intégration locaux après une migration de dépendances.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

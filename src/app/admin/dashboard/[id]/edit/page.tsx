@@ -85,9 +85,7 @@ export default function EditProjectPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.error || 'Erreur lors de la mise à jour'
-        );
+        throw new Error(errorData.error || 'Erreur lors de la mise à jour');
       }
 
       router.replace('/admin/dashboard');

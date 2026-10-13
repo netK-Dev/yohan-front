@@ -13,11 +13,8 @@ export function useSliderMedia(activeOnly: boolean = false) {
   const [error, setError] = useState<string | null>(null);
 
   // Charger les médias slider
-  const fetchSliderMedia = useCallback(async () => {
+  const loadSliderMedia = useCallback(async () => {
     try {
-      setIsLoading(true);
-      setError(null);
-
       const params = new URLSearchParams();
       if (activeOnly) params.set('activeOnly', 'true');
 
@@ -27,6 +24,7 @@ export function useSliderMedia(activeOnly: boolean = false) {
         throw new Error('Erreur lors du chargement des médias slider');
       }
 
+      setError(null);
       const data = await response.json();
       setSliderMedia(data);
     } catch (err) {
@@ -35,6 +33,12 @@ export function useSliderMedia(activeOnly: boolean = false) {
       setIsLoading(false);
     }
   }, [activeOnly]);
+
+  const fetchSliderMedia = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    await loadSliderMedia();
+  }, [loadSliderMedia]);
 
   // Créer un nouveau média slider
   const createSliderMedia = async (
@@ -54,7 +58,7 @@ export function useSliderMedia(activeOnly: boolean = false) {
     }
 
     const newMedia = await response.json();
-    setSliderMedia(prev => [...prev, newMedia]);
+    setSliderMedia((prev) => [...prev, newMedia]);
     return newMedia;
   };
 
@@ -77,8 +81,8 @@ export function useSliderMedia(activeOnly: boolean = false) {
     }
 
     const updatedMedia = await response.json();
-    setSliderMedia(prev =>
-      prev.map(media => (media.id === id ? updatedMedia : media))
+    setSliderMedia((prev) =>
+      prev.map((media) => (media.id === id ? updatedMedia : media))
     );
     return updatedMedia;
   };
@@ -94,7 +98,7 @@ export function useSliderMedia(activeOnly: boolean = false) {
       throw new Error(error.error || 'Erreur lors de la suppression');
     }
 
-    setSliderMedia(prev => prev.filter(media => media.id !== id));
+    setSliderMedia((prev) => prev.filter((media) => media.id !== id));
   };
 
   // Réorganiser l'ordre des médias
@@ -108,15 +112,17 @@ export function useSliderMedia(activeOnly: boolean = false) {
 
   // Basculer le statut actif/inactif
   const toggleSliderMediaStatus = async (id: number): Promise<void> => {
-    const media = sliderMedia.find(m => m.id === id);
+    const media = sliderMedia.find((m) => m.id === id);
     if (!media) return;
 
     await updateSliderMedia(id, { isActive: !media.isActive });
   };
 
   useEffect(() => {
-    fetchSliderMedia();
-  }, [fetchSliderMedia]);
+    // State changes in this loader follow awaited network I/O.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadSliderMedia();
+  }, [loadSliderMedia]);
 
   return {
     sliderMedia,

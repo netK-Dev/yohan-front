@@ -13,7 +13,10 @@ interface SectionAccordionProps {
   defaultOpen?: boolean;
 }
 
-const STATUS_BADGES: Record<SaveStatus, { label: string; className: string } | null> = {
+const STATUS_BADGES: Record<
+  SaveStatus,
+  { label: string; className: string } | null
+> = {
   idle: null,
   saving: {
     label: 'Sauvegarde...',

@@ -10,6 +10,6 @@ export function parseSkills(skillString: string): string[] {
 
   return skillString
     .split(',')
-    .map(skill => skill.trim())
-    .filter(skill => skill.length > 0);
+    .map((skill) => skill.trim())
+    .filter((skill) => skill.length > 0);
 }

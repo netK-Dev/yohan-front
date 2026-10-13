@@ -19,7 +19,7 @@ function shouldRemoveStat(label: string): boolean {
 function sanitizeStats(rawStats: unknown): unknown[] | null {
   if (!Array.isArray(rawStats)) return null;
 
-  return rawStats.filter(stat => {
+  return rawStats.filter((stat) => {
     if (!stat || typeof stat !== 'object' || Array.isArray(stat)) return true;
 
     const label = (stat as JsonObject).label;

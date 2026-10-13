@@ -155,7 +155,7 @@ export function generateSEOKeywords(project: ProjectForSEO): string[] {
 
   // Ajouter les compétences comme mots-clés
   const skillKeywords = project.skill
-    ? project.skill.split(',').map(skill => skill.trim().toLowerCase())
+    ? project.skill.split(',').map((skill) => skill.trim().toLowerCase())
     : [];
 
   // Combiner tous les mots-clés et supprimer les doublons

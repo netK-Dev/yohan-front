@@ -14,18 +14,19 @@ export async function POST(request: NextRequest) {
 
     const { pathname } = await request.json();
     if (!pathname) {
+      return NextResponse.json({ error: 'pathname requis' }, { status: 400 });
+    }
+
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return NextResponse.json(
-        { error: 'pathname requis' },
-        { status: 400 }
+        { error: 'Le stockage des médias n’est pas configuré.' },
+        { status: 503 }
       );
     }
 
     await del(pathname);
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json(
-      { error: 'Suppression échouée' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Suppression échouée' }, { status: 500 });
   }
 }

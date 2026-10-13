@@ -8,6 +8,8 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // All accounts can administer the portfolio; provision them via the CLI.
+    disableSignUp: true,
     requireEmailVerification: false, // Désactiver la vérification email pour simplifier
   },
   session: {
@@ -15,11 +17,12 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // 1 jour
   },
   baseURL:
-    process.env.BETTER_AUTH_URL || process.env.VERCEL_URL
+    process.env.BETTER_AUTH_URL ||
+    (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000',
+      : 'http://localhost:3000'),
   trustedOrigins: [
-    'http://localhost:3000',
+    process.env.BETTER_AUTH_URL || 'http://localhost:3000',
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     ...(process.env.VERCEL_BRANCH_URL
       ? [`https://${process.env.VERCEL_BRANCH_URL}`]

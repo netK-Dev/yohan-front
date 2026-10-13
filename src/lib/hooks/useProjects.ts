@@ -10,20 +10,18 @@ import {
 // Hook pour gérer les projets côté client
 export function useProjects() {
   const [projects, setProjects] = React.useState<Project[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
   // Récupérer tous les projets
-  const fetchProjects = React.useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
+  const loadProjects = React.useCallback(async () => {
     try {
       const response = await fetch('/api/projects');
       if (!response.ok) {
         throw new Error('Erreur lors du chargement des projets');
       }
 
+      setError(null);
       const data = await response.json();
       setProjects(data);
     } catch (err: unknown) {
@@ -32,6 +30,12 @@ export function useProjects() {
       setIsLoading(false);
     }
   }, []);
+
+  const fetchProjects = React.useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    await loadProjects();
+  }, [loadProjects]);
 
   // Créer un nouveau projet
   const createProject = React.useCallback(
@@ -52,10 +56,12 @@ export function useProjects() {
         }
 
         const newProject = await response.json();
-        setProjects(prev => [newProject, ...prev]);
+        setProjects((prev) => [newProject, ...prev]);
         return newProject;
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Erreur lors de la création');
+        setError(
+          err instanceof Error ? err.message : 'Erreur lors de la création'
+        );
         throw err;
       } finally {
         setIsLoading(false);
@@ -86,10 +92,14 @@ export function useProjects() {
         }
 
         const updatedProject = await response.json();
-        setProjects(prev => prev.map(p => (p.id === id ? updatedProject : p)));
+        setProjects((prev) =>
+          prev.map((p) => (p.id === id ? updatedProject : p))
+        );
         return updatedProject;
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+        setError(
+          err instanceof Error ? err.message : 'Erreur lors de la mise à jour'
+        );
         throw err;
       } finally {
         setIsLoading(false);
@@ -113,9 +123,11 @@ export function useProjects() {
         throw new Error(errorData.error || 'Erreur lors de la suppression');
       }
 
-      setProjects(prev => prev.filter(p => p.id !== id));
+      setProjects((prev) => prev.filter((p) => p.id !== id));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      setError(
+        err instanceof Error ? err.message : 'Erreur lors de la suppression'
+      );
       throw err;
     } finally {
       setIsLoading(false);
@@ -124,8 +136,10 @@ export function useProjects() {
 
   // Charger les projets au montage (une seule fois)
   React.useEffect(() => {
-    fetchProjects();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // State changes in this loader follow awaited network I/O.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadProjects();
+  }, [loadProjects]);
 
   return {
     projects,

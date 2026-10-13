@@ -60,7 +60,7 @@ function normalizeHeroStatLabel(label: string): string {
  */
 export function sanitizeHeroStats(stats: HeroStat[]): HeroStat[] {
   return stats.filter(
-    stat => !HERO_REMOVED_STAT_LABELS.has(normalizeHeroStatLabel(stat.label))
+    (stat) => !HERO_REMOVED_STAT_LABELS.has(normalizeHeroStatLabel(stat.label))
   );
 }
 
@@ -187,7 +187,11 @@ const SHOWREEL_PATH_FIELDS = [
 
 export function isBlobStorageUrl(url: string): boolean {
   try {
-    return new URL(url).hostname.includes('blob.vercel-storage.com');
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === 'https:' &&
+      parsed.hostname.endsWith('.public.blob.vercel-storage.com')
+    );
   } catch {
     return false;
   }
@@ -198,7 +202,7 @@ export function extractBlobUrlsFromShowreel(
 ): string[] {
   if (!content) return [];
 
-  const urls = SHOWREEL_URL_FIELDS.map(field => content[field]).filter(
+  const urls = SHOWREEL_URL_FIELDS.map((field) => content[field]).filter(
     (value): value is string =>
       typeof value === 'string' && value.length > 0 && isBlobStorageUrl(value)
   );
@@ -211,7 +215,7 @@ export function extractBlobPathnamesFromShowreel(
 ): string[] {
   if (!content) return [];
 
-  const pathnames = SHOWREEL_PATH_FIELDS.map(field => content[field]).filter(
+  const pathnames = SHOWREEL_PATH_FIELDS.map((field) => content[field]).filter(
     (value): value is string => typeof value === 'string' && value.length > 0
   );
 

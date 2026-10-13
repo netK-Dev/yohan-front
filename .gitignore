@@ -32,6 +32,11 @@ yarn-error.log*
 # Local env files
 .env*.local
 .env
+.local/
+/test-results/
+/playwright-report/
+prisma/*.db
+prisma/*.db-journal
 
 # Vercel
 .vercel

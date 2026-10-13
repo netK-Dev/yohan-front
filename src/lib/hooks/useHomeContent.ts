@@ -36,16 +36,14 @@ export function useHomeContent() {
   );
 
   // Charger tout le contenu
-  const fetchContent = useCallback(async () => {
+  const loadContent = useCallback(async () => {
     try {
-      setIsLoading(true);
-      setError(null);
-
       const response = await fetch('/api/page-content?page=home');
       if (!response.ok) {
         throw new Error('Erreur lors du chargement du contenu');
       }
 
+      setError(null);
       const data: HomeContentResponse = await response.json();
 
       setContent({
@@ -60,6 +58,12 @@ export function useHomeContent() {
       setIsLoading(false);
     }
   }, []);
+
+  const fetchContent = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    await loadContent();
+  }, [loadContent]);
 
   // Sauvegarder une section
   const saveSection = useCallback(
@@ -120,8 +124,10 @@ export function useHomeContent() {
   );
 
   useEffect(() => {
-    fetchContent();
-  }, [fetchContent]);
+    // State changes in this loader follow awaited network I/O.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadContent();
+  }, [loadContent]);
 
   return {
     content,

@@ -42,14 +42,14 @@ export default function HeroSection({ content }: HeroSectionProps) {
                 {c.badge}
               </div>
 
-              <h1 className="text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
+              <h1 className="text-4xl leading-tight font-bold text-white sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl">
                 {c.title}{' '}
                 <span className="block bg-gradient-to-r from-[#ff0015] to-[#e6000c] bg-clip-text text-transparent">
                   {c.titleHighlight}
                 </span>
               </h1>
 
-              <p className="text-lg font-light leading-relaxed text-white/90 sm:text-xl md:text-2xl lg:text-3xl">
+              <p className="text-lg leading-relaxed font-light text-white/90 sm:text-xl md:text-2xl lg:text-3xl">
                 {c.subtitle}
               </p>
             </div>
@@ -151,7 +151,7 @@ function CircularSlider({ isMobileBackground = false }: CircularSliderProps) {
 
   const models3D =
     sliderMedia.length > 0
-      ? sliderMedia.map(media => ({
+      ? sliderMedia.map((media) => ({
           id: media.id,
           src: media.mediaUrl,
           alt: media.description || media.title,
@@ -193,7 +193,7 @@ function CircularSlider({ isMobileBackground = false }: CircularSliderProps) {
                   sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  <div className="absolute bottom-4 left-4 right-4">
+                  <div className="absolute right-4 bottom-4 left-4">
                     <span className="inline-block rounded-full bg-[#ff0015] px-4 py-2 text-sm font-semibold text-white shadow-lg">
                       {singleModel.category}
                     </span>
@@ -283,7 +283,7 @@ function CircularSlider({ isMobileBackground = false }: CircularSliderProps) {
       >
         {/* Conteneur rotatif - animation continue */}
         <div
-          className="carousel-3d-wheel absolute left-1/2 top-1/2"
+          className="carousel-3d-wheel absolute top-1/2 left-1/2"
           style={{
             transformStyle: 'preserve-3d',
             animation: `spin3d ${animationDuration}s linear infinite`,
@@ -342,7 +342,7 @@ function CarouselCard({
 
   return (
     <div
-      className="carousel-3d-card absolute left-1/2 top-1/2"
+      className="carousel-3d-card absolute top-1/2 left-1/2"
       style={{
         transform: `
           translate(-50%, -50%)
@@ -396,7 +396,7 @@ function CarouselCard({
             {/* Overlay au hover avec catégorie (désactivé en mode mobile background) */}
             {showEffects && (
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 transition-all duration-300 group-hover:opacity-100">
-                <div className="absolute bottom-3 left-3 right-3">
+                <div className="absolute right-3 bottom-3 left-3">
                   <span className="inline-block rounded-full bg-[#ff0015] px-3 py-1.5 text-xs font-semibold text-white shadow-lg">
                     {model.category}
                   </span>
@@ -409,7 +409,7 @@ function CarouselCard({
           </div>
 
           {/* Bordure lumineuse subtile */}
-          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
+          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10 ring-inset" />
         </div>
       </div>
     </div>

@@ -58,6 +58,8 @@ export default function RichTextEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({
+        link: false,
+        underline: false,
         heading: {
           levels: [2, 3],
         },
@@ -93,7 +95,7 @@ export default function RichTextEditor({
   // Synchroniser le contenu externe
   React.useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '');
+      editor.commands.setContent(value || '', { emitUpdate: false });
     }
   }, [value, editor]);
 
@@ -176,7 +178,9 @@ export default function RichTextEditor({
 
         {/* Titres */}
         <MenuButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           isActive={editor.isActive('heading', { level: 2 })}
           disabled={disabled}
           title="Titre H2"
@@ -184,7 +188,9 @@ export default function RichTextEditor({
           H2
         </MenuButton>
         <MenuButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
           isActive={editor.isActive('heading', { level: 3 })}
           disabled={disabled}
           title="Titre H3"

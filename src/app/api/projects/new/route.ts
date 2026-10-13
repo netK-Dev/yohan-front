@@ -4,7 +4,7 @@ import { withAuth } from '@/lib/auth-server';
 import { CreateProjectSchema } from '@/lib/types/project';
 
 // POST /api/projects/new - Créer un nouveau projet (admin only)
-export const POST = withAuth(async request => {
+export const POST = withAuth(async (request) => {
   try {
     const body = await request.json();
 
@@ -25,12 +25,12 @@ export const POST = withAuth(async request => {
   } catch (error: unknown) {
     if (
       error instanceof Error &&
-      (error as unknown as { errors?: unknown }).errors
+      (error as unknown as { issues?: unknown }).issues
     ) {
       return NextResponse.json(
         {
           error: 'Données invalides',
-          details: (error as unknown as { errors: unknown }).errors,
+          details: (error as unknown as { issues: unknown }).issues,
         },
         { status: 400 }
       );

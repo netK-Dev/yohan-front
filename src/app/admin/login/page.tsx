@@ -9,14 +9,9 @@ import { signIn, useSession } from '@/lib/auth-client';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [mounted, setMounted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const { data: session } = useSession();
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   React.useEffect(() => {
     if (session?.user) {
@@ -56,10 +51,6 @@ export default function AdminLoginPage() {
     } finally {
       setLoading(false);
     }
-  }
-
-  if (!mounted) {
-    return null;
   }
 
   return (
@@ -109,7 +100,7 @@ export default function AdminLoginPage() {
                 required
                 disabled={loading}
                 autoComplete="username"
-                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none ring-0 placeholder:text-white/40 focus:border-white/20 disabled:opacity-50"
+                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white ring-0 outline-none placeholder:text-white/40 focus:border-white/20 disabled:opacity-50"
                 placeholder="admin@yohan.dev"
               />
             </div>
@@ -127,7 +118,7 @@ export default function AdminLoginPage() {
                 required
                 disabled={loading}
                 autoComplete="current-password"
-                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white outline-none ring-0 placeholder:text-white/40 focus:border-white/20 disabled:opacity-50"
+                className="w-full rounded-md border border-white/10 bg-black/60 px-3 py-2 text-sm text-white ring-0 outline-none placeholder:text-white/40 focus:border-white/20 disabled:opacity-50"
                 placeholder="••••••••"
               />
             </div>

@@ -4,20 +4,32 @@ import { getServerSession } from '@/lib/auth-server';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-    if (!session?.user) {
+    const body = (await request.json()) as HandleUploadBody;
+
+    // Upload-completed callbacks are signed by Vercel and have no browser
+    // session. handleUpload verifies them; only token generation needs a user.
+    if (body.type !== 'blob.upload-completed') {
+      const session = await getServerSession();
+      if (!session?.user) {
+        return NextResponse.json(
+          { error: 'Authentification requise' },
+          { status: 401 }
+        );
+      }
+    }
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return NextResponse.json(
-        { error: 'Authentification requise' },
-        { status: 401 }
+        { error: 'Le stockage des médias n’est pas configuré.' },
+        { status: 503 }
       );
     }
-
-    const body = (await request.json()) as HandleUploadBody;
 
     const jsonResponse = await handleUpload({
       body,
       request,
       onBeforeGenerateToken: async () => {
+        const session = await getServerSession();
+        if (!session?.user) throw new Error('Authentification requise');
         return {
           allowedContentTypes: [
             'image/jpeg',
@@ -40,9 +52,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(jsonResponse);
   } catch {
-    return NextResponse.json(
-      { error: 'Upload échoué' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Upload échoué' }, { status: 500 });
   }
 }

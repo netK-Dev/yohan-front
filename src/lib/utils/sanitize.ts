@@ -1,4 +1,4 @@
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
 // Configuration de DOMPurify pour le contenu rich text
 const ALLOWED_TAGS = [
@@ -24,16 +24,10 @@ const ALLOWED_ATTR = ['href', 'target', 'rel', 'class'];
 /**
  * Sanitize le HTML pour empêcher les attaques XSS
  * Autorise uniquement les tags et attributs nécessaires pour le rich text
- * IMPORTANT: Cette fonction doit être appelée côté client uniquement
+ * Même nettoyage lors du rendu serveur et dans le navigateur.
  */
 export function sanitizeHtml(dirty: string): string {
   if (!dirty) return '';
-
-  // Vérifier que nous sommes côté client
-  if (typeof window === 'undefined') {
-    console.warn('sanitizeHtml appelé côté serveur - retour du HTML brut');
-    return dirty;
-  }
 
   return DOMPurify.sanitize(dirty, {
     ALLOWED_TAGS,

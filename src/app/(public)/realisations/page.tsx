@@ -33,13 +33,15 @@ async function generateListingStructuredData() {
     },
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://doensproduction.com';
-  
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://doensproduction.com';
+
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Réalisations - Doens Production',
-    description: 'Portfolio de réalisations créatives en 3D/VFX, Motion Design et Court Métrage',
+    description:
+      'Portfolio de réalisations créatives en 3D/VFX, Motion Design et Court Métrage',
     url: `${siteUrl}/realisations`,
     mainEntity: {
       '@type': 'ItemList',
@@ -88,10 +90,10 @@ export default async function RealisationsPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}
       />
-      
+
       <Suspense fallback={null}>
         <Header />
       </Suspense>
